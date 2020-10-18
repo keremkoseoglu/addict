@@ -35,6 +35,24 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>017</MSGNR>
+     <TEXT>Entegrasyon verileri okunamadı</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>051</MSGNR>
+     <TEXT>Kuyruk verileri okunamadı</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>077</MSGNR>
+     <TEXT>Paket verileri okunamadı</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>090</MSGNR>
      <TEXT>&amp;1 Domain&apos;inde &amp;2 değeri yok</TEXT>
     </T100>
@@ -187,6 +205,18 @@
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>456</MSGNR>
      <TEXT>&amp;1 fonksiyonu hata döndürdü: &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>460</MSGNR>
+     <TEXT>&amp;1 anahtarı için herhangi bir veri bulunamadı</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>470</MSGNR>
+     <TEXT>&amp;1 için &amp;2 verileri okunamadı</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
