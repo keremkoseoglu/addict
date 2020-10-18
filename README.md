@@ -11,6 +11,7 @@ Here is a list of significant classes within the package:
 - **YCL_ADDICT_CLASS**: Represents an ABAP class (SE24)
 - **YCL_ADDICT_DATA_ELEMENT**: Represents a data element (SE11)
 - **YCL_ADDICT_DOMAIN**: Represents a domain (SE11)
+- **YCL_ADDICT_PACKAGE**: Represents an ABAP package (SE80)
 - **YCL_ADDICT_TABLE**: Represents a database table, structure or view (SE11)
 - **YCL_ADDICT_TABLE_FIELD**: Represents a field of a table (SE11)
 - **YCL_ADDICT_TEXT_TOOLKIT**: Provides some useful text utilities
