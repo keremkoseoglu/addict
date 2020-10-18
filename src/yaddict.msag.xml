@@ -41,6 +41,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>130</MSGNR>
+     <TEXT>&amp;1 fonksiyonunda &amp;2 hatası oluştu: &amp;3 - &amp;4</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>135</MSGNR>
      <TEXT>&amp;1 sınıfı &amp;2 Method&apos;unda beklenmedik bir hata oluştu</TEXT>
     </T100>
@@ -107,6 +113,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>324</MSGNR>
+     <TEXT>&amp;1 fonksiyonunda &amp;2 hatası oluştu</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>327</MSGNR>
      <TEXT>&amp;1 sınıfının &amp;2 yordamı, zorunlu bazı alanları doldurmamış</TEXT>
     </T100>
@@ -121,6 +133,12 @@
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>358</MSGNR>
      <TEXT>&amp;1 sınıfının &amp;2 yordamının yetki kontrolünde bir hata oluştu</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>382</MSGNR>
+     <TEXT>&amp;1 fonksiyonundan hata döndü</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
@@ -167,6 +185,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>456</MSGNR>
+     <TEXT>&amp;1 fonksiyonu hata döndürdü: &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>526</MSGNR>
      <TEXT>&amp;1 çok uzun süredir kilitli bekliyor, pes ediyorum (kilitleyen: &amp;2)</TEXT>
     </T100>
@@ -181,6 +205,12 @@
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>540</MSGNR>
      <TEXT>&amp;1 &amp;2 yordam hatası: &amp;3</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>584</MSGNR>
+     <TEXT>&amp;1 fonksiyonundan sonuç dönmedi; anahtar: &amp;2</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
