@@ -6,10 +6,9 @@ CLASS ycl_addict_dol_model DEFINITION
   PUBLIC SECTION.
     TYPES dol_list       TYPE STANDARD TABLE OF ysaddict_dol_list WITH EMPTY KEY.
     TYPES dol_list_wr    TYPE STANDARD TABLE OF ysaddict_dol_list_with_req WITH EMPTY KEY.
-    TYPES ticket_id_list TYPE STANDARD TABLE OF yd_addict_ticket_id WITH EMPTY KEY.
 
     TYPES: BEGIN OF param_dict,
-             ticket_ids TYPE ticket_id_list,
+             ticket_ids TYPE yif_addict_system_rules=>ticket_id_list,
              trkorr_rng TYPE ytt_addict_trkorr_rng,
            END OF param_dict.
 
@@ -41,14 +40,12 @@ CLASS ycl_addict_dol_model DEFINITION
 
            dol_obj_set TYPE HASHED TABLE OF dol_obj_dict WITH UNIQUE KEY primary_key COMPONENTS object.
 
-    TYPES trkorr_list TYPE STANDARD TABLE OF trkorr WITH EMPTY KEY.
-
     CONSTANTS clsname_obj_pfx  TYPE seoclsname VALUE 'YCL_ADDICT_DOL_OBJ_'.
 
     CLASS-DATA dol_objects TYPE dol_obj_set.
 
     DATA list    TYPE dol_list.
-    DATA trkorrs TYPE trkorr_list.
+    DATA trkorrs TYPE yif_addict_system_rules=>trkorr_list.
     DATA param   TYPE param_dict.
 
     METHODS build_request_list.
@@ -62,14 +59,8 @@ CLASS ycl_addict_dol_model IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Builds transport request list of provided tickets
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    me->trkorrs = CORRESPONDING #(
-        ycl_addict_transport_request=>get_request_list(
-          param = VALUE #(
-            as4text_rng = VALUE #( FOR _ticket_id IN me->param-ticket_ids (
-                option = ycl_addict_toolkit=>option-cp
-                sign   = ycl_addict_toolkit=>sign-include
-                low    = |{ _ticket_id }*| ) )
-            srch_strkorr = abap_true ) ) ).
+    data(rules) = ycl_Addict_toolkit=>get_System_rules( ).
+    me->trkorrs = rules->get_requests_of_tickets( me->param-ticket_ids ).
   ENDMETHOD.
 
 

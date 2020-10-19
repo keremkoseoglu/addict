@@ -62,9 +62,6 @@ CLASS ycl_addict_transport_request DEFINITION
 
            request_obj_list TYPE STANDARD TABLE OF request_obj_dict WITH EMPTY KEY.
 
-    CONSTANTS max_wait TYPE i VALUE 30.
-    CONSTANTS auto_prefix TYPE char4 VALUE 'Auto' ##NO_TEXT.
-
     CONSTANTS: BEGIN OF domain,
                  trfunction TYPE domname VALUE 'TRFUNCTION',
                END OF domain.
@@ -263,7 +260,7 @@ CLASS ycl_addict_transport_request DEFINITION
       IMPORTING !rel_subtasks_too    TYPE abap_bool
                 !del_empty_subtasks  TYPE abap_bool DEFAULT abap_true
                 !wait_until_released TYPE abap_bool DEFAULT abap_false
-                !max_rel_wait        TYPE i DEFAULT max_wait
+                !max_rel_wait        TYPE i OPTIONAL
                 !compl_sh_piece_list TYPE abap_bool DEFAULT abap_true
       EXPORTING rel_wait_success     TYPE abap_bool
       RAISING   ycx_addict_function_subrc
@@ -337,7 +334,7 @@ CLASS ycl_addict_transport_request DEFINITION
       IMPORTING !trkorr              TYPE trkorr
                 !req                 TYPE REF TO ycl_addict_transport_request OPTIONAL
                 !wait_until_released TYPE abap_bool DEFAULT abap_false
-                !max_rel_wait        TYPE i DEFAULT max_wait
+                !max_rel_wait        TYPE i
                 !compl_sh_piece_list TYPE abap_bool DEFAULT abap_true
       EXPORTING !rel_wait_success    TYPE abap_bool
       RAISING   ycx_addict_function_subrc
@@ -522,6 +519,8 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
             user = _user
             type = ycl_addict_transport_request=>trfunction-unclass ) ).
     ENDIF.
+
+    DATA(auto_prefix) = ycl_addict_toolkit=>get_system_definitions( )-auto_request_prefix.
 
     final_as4text = COND #(
         WHEN as4text IS SUPPLIED
@@ -1469,6 +1468,11 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     ENDIF.
 
     " Release subtasks if wanted """"""""""""""""""""""""""""""""""""
+    DATA(max_wait) = COND i(
+      WHEN max_rel_wait IS NOT INITIAL
+      THEN max_rel_wait
+      ELSE ycl_addict_toolkit=>get_system_definitions( )-max_wait ).
+
     IF rel_subtasks_too = abap_true.
       DATA(sub) = get_subtasks( ).
 
@@ -1477,7 +1481,7 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
           EXPORTING trkorr              = <sub>-trkorr
                     req                 = <sub>-obj
                     wait_until_released = wait_until_released
-                    max_rel_wait        = max_rel_wait
+                    max_rel_wait        = max_wait
                     compl_sh_piece_list = compl_sh_piece_list
           IMPORTING rel_wait_success    = DATA(this_wait_success) ).
 
@@ -1564,6 +1568,11 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
 
     " Wait until released (if wanted) """""""""""""""""""""""""""""""
     IF wait_until_released = abap_true.
+      DATA(max_wait) = COND i(
+        WHEN max_rel_wait IS NOT INITIAL
+        THEN max_rel_wait
+        ELSE ycl_addict_toolkit=>get_system_definitions( )-max_wait ).
+
       DATA(total_wait) = 0.
 
       DO.
@@ -1575,7 +1584,7 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
         WAIT UP TO 1 SECONDS.
 
         ADD 1 TO total_wait.
-        CHECK total_wait > max_rel_wait.
+        CHECK total_wait > max_wait.
         rel_wait_success = abap_false.
         EXIT.
       ENDDO.
