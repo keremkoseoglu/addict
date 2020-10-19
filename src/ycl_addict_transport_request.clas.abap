@@ -63,7 +63,7 @@ CLASS ycl_addict_transport_request DEFINITION
            request_obj_list TYPE STANDARD TABLE OF request_obj_dict WITH EMPTY KEY.
 
     CONSTANTS max_wait TYPE i VALUE 30.
-    CONSTANTS auto_prefix TYPE char4 VALUE 'Auto'.
+    CONSTANTS auto_prefix TYPE char4 VALUE 'Auto' ##NO_TEXT.
 
     CONSTANTS: BEGIN OF domain,
                  trfunction TYPE domname VALUE 'TRFUNCTION',
