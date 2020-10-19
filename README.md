@@ -6,16 +6,63 @@ This repository includes helpful objects regarding ABAP development & dictionary
 
 Here is a list of significant classes within the package:
 
-- **YCL_ADDICT_BDC**: Batch Input helper
-- **YCL_ADDICT_CLASS**: Represents an ABAP class (SE24)
-- **YCL_ADDICT_DATA_ELEMENT**: Represents a data element (SE11)
-- **YCL_ADDICT_DOMAIN**: Represents a domain (SE11)
-- **YCL_ADDICT_PACKAGE**: Represents an ABAP package (SE80)
-- **YCL_ADDICT_TABLE**: Represents a database table, structure or view (SE11)
-- **YCL_ADDICT_TABLE_FIELD**: Represents a field of a table (SE11)
-- **YCL_ADDICT_TEXT_TOOLKIT**: Provides some useful text utilities
-- **YCL_ADDICT_TOOLKIT**: Provides some useful data dictionary utilities
-- **YCL_ADDICT_TRANSPORT_REQUEST**: Represents a transport request (SE01)
+<table>
+  <tr>
+    <td><b>Class</b></td>
+    <td><b>Description</b></td>
+    <td><b>Relevant T-Code</b></td>
+  </tr>
+  <tr>
+    <td><b>YCL_ADDICT_BDC</b></td>
+    <td>Batch Input helper</td>
+    <td>SM35</td>
+  </tr>
+  <tr>
+    <td><b>YCL_ADDICT_CLASS</b></td>
+    <td>Represents an ABAP class</td>
+    <td>SE24</td>
+  </tr>
+  <tr>
+    <td><b>YCL_ADDICT_DATA_ELEMENT</b></td>
+    <td>Represents a data element</td>
+    <td>SE11</td>
+  </tr>
+  <tr>
+    <td><b>YCL_ADDICT_DOMAIN</b></td>
+    <td>Represents a domain</td>
+    <td>SE11</td>
+  </tr>
+  <tr>
+    <td><b>YCL_ADDICT_PACKAGE</b></td>
+    <td>Represents an ABAP package</td>
+    <td>SE80</td>
+  </tr>
+  <tr>
+    <td><b>YCL_ADDICT_TABLE</b></td>
+    <td>Represents a database table, structure or view</td>
+    <td>SE11</td>
+  </tr>
+  <tr>
+    <td><b>YCL_ADDICT_TABLE_FIELD</b></td>
+    <td>Represents a field of a table</td>
+    <td>SE11</td>
+  </tr>
+  <tr>
+    <td><b>YCL_ADDICT_TEXT_TOOLKIT</b></td>
+    <td>Provides some useful text utilities</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>YCL_ADDICT_TOOLKIT</b></td>
+    <td>Provides some useful data dictionary utilities</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>YCL_ADDICT_TRANSPORT_REQUEST</b></td>
+    <td>Represents a transport request</td>
+    <td>SE01</td>
+  </tr>
+</table>
 
 Most of those objects provide [multition design pattern](https://www.sap-press.com/design-patterns-in-abap-objects_4277/) functionality.
 
@@ -29,9 +76,44 @@ You may install it to your system using [abapGit](https://github.com/abapGit/aba
 
 However, each system has its own rules. If you need to change the behavior of **ADDICT**, you can add a new entry to the table **YTADDICT_SYDEF** (SM30) with the following values:
 
-- **SYSID** : ID of your system, found in SY-SYSID.
-- **RULE_CLASS** : Name of your Z-Class implementing the interface **YIF_ADDICT_SYSTEM_RULES** . You can check **YCL_ADDICT_DEF_SYSTEM_RULES** for the default implementation and its documentation. You can change many behaviors of **ADDICT** over such a Z-Class.
-- **MAX_WAIT** : For how many seconds should **ADDICT** wait until a time-out is assumed? (default: 30)
-- **AUTO_REQUEST_PREFIX** : The default text prefix of an automatically created request. (default: Auto)
+<table>
+  <tr>
+    <td><b>Field</b></td>
+    <td><b>Description</b></td>
+    <td><b>Default value</b></td>
+  </tr>
+  <tr>
+    <td><b>SYSID</b></td>
+    <td>ID of your system, found in SY-SYSID.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>MAX_WAIT</b></td>
+    <td>ID of your system, found in SY-SYSID.</td>
+    <td>30</td>
+  </tr>
+  <tr>
+    <td><b>AUTO_REQUEST_PREFIX</b></td>
+    <td>The default text prefix of an automatically created request.</td>
+    <td>Auto</td>
+  </tr>
+  <tr>
+    <td><b>RULE_CLASS</b></td>
+    <td>Your rule class implementing complex behavior. See below for details.</td>
+    <td>YCL_ADDICT_DEF_SYSTEM_RULES</td>
+  </tr>
+</table>
 
-You don't have to fill all of those values. If you leave a field empty, **ADDICT** will assume its default value.
+**SYSID** is mandantory. Other fields are not. If you leave a field empty, **ADDICT** will assume its default value.
+
+### Rule Class
+
+Rules, which can be represented with a single value, are stored in the table **YTADDICT_SYDEF** ; as explained above.
+
+However, some rules correspond to complex behavior, which need to be coded as ABAP methods.
+
+For such rules, **ADDICT** provides an interface: **YIF_ADDICT_SYSTEM_RULES** . You can create your own Z-Class, implement this interface and fill its following methods:
+
+- **GET_REQUESTS_OF_TICKETS** : This method gets a list of support ticket ID's, and should return a list of transport requests which were created for those tickets. If you don't use a ticket system, you can ignore this method.
+
+If you implement your own **YIF_ADDICT_SYSTEM_RULES** class, you need to register it into the table **YTADDICT_SYDEF**. Otherwise; **ADDICT** will use the default rule class.
