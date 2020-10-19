@@ -131,6 +131,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>319</MSGNR>
+     <TEXT>&amp;1 Request&apos;i için Sort Compress fonksiyonu hata döndürdü</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>324</MSGNR>
      <TEXT>&amp;1 fonksiyonunda &amp;2 hatası oluştu</TEXT>
     </T100>
@@ -247,6 +253,18 @@
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>586</MSGNR>
      <TEXT>&amp;1 &amp;2 yordamında &amp;3 değeri oluşturulmamış, ABAP hatası olabilir</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>901</MSGNR>
+     <TEXT>Toplu girdi hatası oluştu</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>902</MSGNR>
+     <TEXT>&amp;1 için SHI3 / SHI6 Piece List tamamlanamadı</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>

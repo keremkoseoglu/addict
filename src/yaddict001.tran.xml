@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_TRAN" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TSTC>
+    <TCODE>YADDICT001</TCODE>
+    <PGMNA>RS_STREE_OBJECTS_TO_REQ_GET</PGMNA>
+    <DYPNO>1000</DYPNO>
+    <CINFO>gA==</CINFO>
+   </TSTC>
+   <TSTCC>
+    <TCODE>YADDICT001</TCODE>
+   </TSTCC>
+   <TSTCT>
+    <SPRSL>T</SPRSL>
+    <TCODE>YADDICT001</TCODE>
+    <TTEXT>SHI3 / SHI6 tamamlama</TTEXT>
+   </TSTCT>
+  </asx:values>
+ </asx:abap>
+</abapGit>

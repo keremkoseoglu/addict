@@ -106,7 +106,7 @@ CLASS ycl_addict_data_element IMPLEMENTATION.
     " Object creation
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-    SELECT SINGLE * FROM dd04l
+    SELECT SINGLE * FROM dd04l                          "#EC CI_NOORDER
            WHERE rollname = @rollname
            INTO @me->def ##WARN_OK.
 
@@ -118,13 +118,13 @@ CLASS ycl_addict_data_element IMPLEMENTATION.
           tabname  = me->table-main.
     ENDIF.
 
-    SELECT SINGLE * FROM dd04t
+    SELECT SINGLE * FROM dd04t                          "#EC CI_NOORDER
            WHERE rollname   = @rollname AND
                  ddlanguage = @sy-langu
            INTO @me->txt ##WARN_OK.
 
     IF sy-subrc <> 0.
-      SELECT SINGLE * FROM dd04t
+      SELECT SINGLE * FROM dd04t                        "#EC CI_NOORDER
              WHERE rollname = @rollname
              INTO @me->txt ##WARN_OK.
     ENDIF.

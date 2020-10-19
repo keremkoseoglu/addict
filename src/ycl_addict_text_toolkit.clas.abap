@@ -11,7 +11,8 @@ CLASS ycl_addict_text_toolkit DEFINITION
         !candidates     TYPE string_list
         ignore_if_empty TYPE abap_bool DEFAULT abap_true
       RETURNING
-        VALUE(shortest) TYPE string .
+        VALUE(shortest) TYPE string.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF text_and_len_dict,

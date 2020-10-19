@@ -80,13 +80,13 @@ CLASS ycl_addict_domain IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     CHECK me->lazy_flag-text_read = abap_false.
 
-    SELECT SINGLE ddtext FROM dd01t
+    SELECT SINGLE ddtext FROM dd01t                     "#EC CI_NOORDER
            WHERE domname = @me->def-domname AND
                  ddlanguage = @sy-langu
            INTO @me->text ##WARN_OK.
 
     IF sy-subrc <> 0.
-      SELECT SINGLE ddtext FROM dd01t
+      SELECT SINGLE ddtext FROM dd01t                   "#EC CI_NOORDER
              WHERE domname = @me->def-domname
              INTO @me->text ##WARN_OK.
     ENDIF.
@@ -101,7 +101,7 @@ CLASS ycl_addict_domain IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     CHECK me->lazy_flag-value_text_read = abap_false.
 
-    SELECT dd07l~domvalue_l AS value,
+    SELECT dd07l~domvalue_l AS value,                  "#EC CI_BUFFJOIN
            dd07t~ddtext AS text
            FROM dd07l
                 LEFT JOIN dd07t ON
@@ -131,7 +131,7 @@ CLASS ycl_addict_domain IMPLEMENTATION.
 
       multiton-obj = NEW #( ).
 
-      SELECT SINGLE * FROM dd01l
+      SELECT SINGLE * FROM dd01l                        "#EC CI_NOORDER
              WHERE domname = @multiton-domname
              INTO @multiton-obj->def ##WARN_OK.
 

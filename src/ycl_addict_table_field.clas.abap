@@ -75,7 +75,7 @@ CLASS ycl_addict_table_field IMPLEMENTATION.
 
       CREATE OBJECT multiton-obj.
 
-      SELECT SINGLE * FROM dd03l
+      SELECT SINGLE * FROM dd03l                        "#EC CI_NOORDER
              WHERE tabname   = @multiton-tab AND
                    fieldname = @multiton-fld
              INTO @multiton-obj->def ##WARN_OK.

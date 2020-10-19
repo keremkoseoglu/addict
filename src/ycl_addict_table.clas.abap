@@ -4,25 +4,25 @@ CLASS ycl_addict_table DEFINITION
   CREATE PRIVATE .
 
   PUBLIC SECTION.
-    TYPES dd03l_list TYPE STANDARD TABLE OF dd03l WITH empty KEY.
-    types tabname_list type standard table of tabname with empty key.
-    types tabname_Range type range of tabname.
+    TYPES dd03l_list TYPE STANDARD TABLE OF dd03l WITH EMPTY KEY.
+    TYPES tabname_list TYPE STANDARD TABLE OF tabname WITH EMPTY KEY.
+    TYPES tabname_range TYPE RANGE OF tabname.
 
-    types: BEGIN OF tabfld_dict,
+    TYPES: BEGIN OF tabfld_dict,
              tabname   TYPE dd03l-tabname,
              fieldname TYPE dd03l-fieldname,
              rollname  TYPE dd03l-rollname,
            END OF tabfld_dict,
 
-           tabfld_list TYPE STANDARD TABLE OF tabfld_dict WITH empty KEY,
+           tabfld_list TYPE STANDARD TABLE OF tabfld_dict WITH EMPTY KEY,
            tabfld_sort TYPE SORTED TABLE OF tabfld_dict WITH UNIQUE KEY primary_key COMPONENTS fieldname.
 
-      types: BEGIN OF fldroll_dict,
-               fieldname TYPE dd03l-fieldname,
-               rollname  TYPE dd03l-rollname,
-             END OF fldroll_Dict,
+    TYPES: BEGIN OF fldroll_dict,
+             fieldname TYPE dd03l-fieldname,
+             rollname  TYPE dd03l-rollname,
+           END OF fldroll_dict,
 
-             fldroll_list TYPE STANDARD TABLE OF fldroll_Dict WITH empty KEY.
+           fldroll_list TYPE STANDARD TABLE OF fldroll_dict WITH EMPTY KEY.
 
     DATA def TYPE dd02l READ-ONLY.
 
@@ -30,22 +30,22 @@ CLASS ycl_addict_table DEFINITION
       IMPORTING !dbfield      TYPE clike
       RETURNING VALUE(output) TYPE ddtext.
 
-    class-methods get_instance
-      IMPORTING !tabname   TYPE tabname
+    CLASS-METHODS get_instance
+      IMPORTING !tabname      TYPE tabname
       RETURNING VALUE(output) TYPE REF TO ycl_addict_table
       RAISING   ycx_addict_table_content.
 
-    class-methods get_rollname_pairs
-      IMPORTING !tabname1  TYPE tabname
-                !tabname2  TYPE tabname
-      RETURNING VALUE(output) TYPE YTT_ADDICT_ROLLNAME_PAIR
+    CLASS-METHODS get_rollname_pairs
+      IMPORTING !tabname1     TYPE tabname
+                !tabname2     TYPE tabname
+      RETURNING VALUE(output) TYPE ytt_addict_rollname_pair
       RAISING   ycx_addict_table_content.
 
-    class-methods get_tables_containing_dtel
+    CLASS-METHODS get_tables_containing_dtel
       IMPORTING !rollname     TYPE rollname
       RETURNING VALUE(output) TYPE tabname_list.
 
-    class-methods get_tables_containing_fldroll
+    CLASS-METHODS get_tables_containing_fldroll
       IMPORTING !tabname_rng  TYPE tabname_range
                 !fldroll      TYPE fldroll_list
       RETURNING VALUE(output) TYPE tabname_list.
@@ -54,43 +54,43 @@ CLASS ycl_addict_table DEFINITION
       IMPORTING !tabname TYPE tabname
       RAISING   ycx_addict_table_content.
 
-    methods check_table_has_field
+    METHODS check_table_has_field
       IMPORTING !fieldname TYPE fieldname
       RAISING   ycx_addict_table_content.
 
-    methods enqueue
+    METHODS enqueue
       IMPORTING !key TYPE clike OPTIONAL
       RAISING   cx_rs_foreign_lock.
 
-    methods get_field
+    METHODS get_field
       IMPORTING !fnam         TYPE fieldname
       RETURNING VALUE(output) TYPE dd03l
       RAISING   ycx_addict_table_content.
 
-    methods get_field_count RETURNING VALUE(output) TYPE i.
+    METHODS get_field_count RETURNING VALUE(output) TYPE i.
 
-    methods get_fields RETURNING VALUE(output) TYPE dd03l_list.
+    METHODS get_fields RETURNING VALUE(output) TYPE dd03l_list.
 
-    methods get_included_tables
+    METHODS get_included_tables
       IMPORTING !recursive    TYPE abap_bool
       RETURNING VALUE(output) TYPE tabname_list.
 
-    methods get_key_fields
+    METHODS get_key_fields
       IMPORTING !with_mandt   TYPE abap_bool DEFAULT abap_true
       RETURNING VALUE(output) TYPE dd03l_list.
 
-    methods get_rollname_of_field
+    METHODS get_rollname_of_field
       IMPORTING !fnam         TYPE fieldname
       RETURNING VALUE(output) TYPE rollname
       RAISING   ycx_addict_table_content.
 
-    methods is_field_key
+    METHODS is_field_key
       IMPORTING !fnam         TYPE fieldname
       RETURNING VALUE(output) TYPE abap_bool.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
-    types rollname_list type standard table of rollname with empty key.
+    TYPES rollname_list TYPE STANDARD TABLE OF rollname WITH EMPTY KEY.
 
     TYPES: BEGIN OF dtel_tab_dict,
              rollname TYPE rollname,
@@ -100,29 +100,29 @@ CLASS ycl_addict_table DEFINITION
            dtel_tab_set TYPE HASHED TABLE OF dtel_tab_dict
                         WITH UNIQUE KEY primary_key COMPONENTS rollname.
 
-    types: BEGIN OF lazy_flag_dict,
+    TYPES: BEGIN OF lazy_flag_dict,
              field   TYPE abap_bool,
              include TYPE abap_bool,
              key     TYPE abap_bool,
            END OF lazy_flag_dict.
 
-    types: BEGIN OF lazy_val_dict,
+    TYPES: BEGIN OF lazy_val_dict,
              field   TYPE dd03l_list,
              include TYPE tabname_list,
              key     TYPE dd03l_list,
            END OF lazy_val_dict.
 
-    types: Begin of lazy_dict,
+    TYPES: BEGIN OF lazy_dict,
              flag TYPE lazy_flag_dict,
-             val  TYPE lazy_val_Dict,
-           END OF LAZY_DICT.
+             val  TYPE lazy_val_dict,
+           END OF lazy_dict.
 
-    types: BEGIN OF mt_dict, " Multiton
+    TYPES: BEGIN OF mt_dict, " Multiton
              tabname TYPE dd02l-tabname,
              obj     TYPE REF TO ycl_addict_table,
            END OF mt_dict,
 
-           mt_Set TYPE HASHED TABLE OF mt_dict
+           mt_set TYPE HASHED TABLE OF mt_dict
                   WITH UNIQUE KEY primary_key COMPONENTS tabname.
 
 
@@ -131,19 +131,19 @@ CLASS ycl_addict_table DEFINITION
                  fld TYPE tabname VALUE 'DD03L',
                END OF table.
 
-    constants: begin of fnam,
+    CONSTANTS: BEGIN OF fnam,
                  mandt TYPE fieldname VALUE 'MANDT',
-               end of fnam.
+               END OF fnam.
 
 
     CLASS-DATA dtel_tabs TYPE dtel_tab_set.
-    class-data mts TYPE mt_Set.
+    CLASS-DATA mts TYPE mt_set.
 
     DATA lazy TYPE lazy_dict.
 
     METHODS read_fields_lazy.
-    methods read_includes_lazy.
-    methods read_keys_lazy.
+    METHODS read_includes_lazy.
+    METHODS read_keys_lazy.
 ENDCLASS.
 
 
@@ -286,7 +286,7 @@ CLASS ycl_addict_table IMPLEMENTATION.
 
       SELECT SINGLE * FROM dd02l
              WHERE tabname = @mt-tabname
-             INTO @mt-obj->def. "#EC CI_NOORDER
+             INTO @mt-obj->def.                         "#EC CI_NOORDER
 
       IF sy-subrc <> 0.
         RAISE EXCEPTION TYPE ycx_addict_table_content
@@ -329,24 +329,24 @@ CLASS ycl_addict_table IMPLEMENTATION.
     " Returns rollname pairs
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     DATA dd04t TYPE STANDARD TABLE OF dd04t.
-    data roll  TYPE rollname_list.
-    data tab1  TYPE tabfld_sort.
-    data tab2  TYPE tabfld_sort.
-    data ret   LIKE LINE OF output.
+    DATA roll  TYPE rollname_list.
+    DATA tab1  TYPE tabfld_sort.
+    DATA tab2  TYPE tabfld_sort.
+    DATA ret   LIKE LINE OF output.
 
     tab1 = CORRESPONDING #( get_instance( tabname1 )->get_fields( ) ).
     tab2 = CORRESPONDING #( get_instance( tabname2 )->get_fields( ) ).
 
     LOOP AT tab1 ASSIGNING FIELD-SYMBOL(<tab1>) WHERE rollname IS NOT INITIAL. "#EC CI_SORTSEQ
-      append <tab1>-rollname to roll.
+      APPEND <tab1>-rollname TO roll.
     ENDLOOP.
 
     LOOP AT tab2 ASSIGNING FIELD-SYMBOL(<tab2>) WHERE rollname IS NOT INITIAL. "#EC CI_SORTSEQ
-      append <tab2>-rollname TO roll.
+      APPEND <tab2>-rollname TO roll.
     ENDLOOP.
 
-    sort roll by table_line.
-    delete adjacent duplicates from roll comparing table_line.
+    SORT roll BY table_line.
+    DELETE ADJACENT DUPLICATES FROM roll COMPARING table_line.
 
     IF roll IS INITIAL.
       RETURN.
@@ -374,14 +374,14 @@ CLASS ycl_addict_table IMPLEMENTATION.
 
       LOOP AT tab1 ASSIGNING <tab1>
            USING KEY primary_key
-           WHERE rollname = <roll>.           "#EC CI_SORTSEQ
+           WHERE rollname = <roll>.                     "#EC CI_SORTSEQ
 
         ret-tabname1   = <tab1>-tabname.
         ret-fieldname1 = <tab1>-fieldname.
 
         LOOP AT tab2 ASSIGNING <tab2>
              USING KEY primary_key
-             WHERE rollname = <roll>.         "#EC CI_SORTSEQ
+             WHERE rollname = <roll>.                   "#EC CI_SORTSEQ
 
           ret-tabname2   = <tab2>-tabname.
           ret-fieldname2 = <tab2>-fieldname.

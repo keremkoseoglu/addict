@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>YD_ADDICT_DOL_CREATION</ROLLNAME>
+    <DDLANGUAGE>T</DDLANGUAGE>
+    <DOMNAME>XFELD</DOMNAME>
+    <HEADLEN>30</HEADLEN>
+    <SCRLEN1>09</SCRLEN1>
+    <SCRLEN2>14</SCRLEN2>
+    <SCRLEN3>30</SCRLEN3>
+    <DDTEXT>Gösterge: Nesne yeni yaratıldı</DDTEXT>
+    <REPTEXT>Gösterge: Nesne yeni yaratıldı</REPTEXT>
+    <SCRTEXT_S>Yaratıldı</SCRTEXT_S>
+    <SCRTEXT_M>Yeni yaratıldı</SCRTEXT_M>
+    <SCRTEXT_L>Gösterge: Nesne yeni yaratıldı</SCRTEXT_L>
+    <DTELMASTER>T</DTELMASTER>
+    <REFKIND>D</REFKIND>
+   </DD04V>
+  </asx:values>
+ </asx:abap>
+</abapGit>
