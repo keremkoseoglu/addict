@@ -1,6 +1,5 @@
 CLASS ycl_addict_dol_obj_enho DEFINITION
   PUBLIC
-  FINAL
   CREATE PUBLIC .
 
   PUBLIC SECTION.

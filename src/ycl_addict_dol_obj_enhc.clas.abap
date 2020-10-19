@@ -1,0 +1,15 @@
+CLASS ycl_addict_dol_obj_enhc DEFINITION
+  INHERITING FROM ycl_addict_dol_obj_enho
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS ycl_addict_dol_obj_enhc IMPLEMENTATION.
+ENDCLASS.
