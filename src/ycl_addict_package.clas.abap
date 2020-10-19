@@ -32,7 +32,7 @@ CLASS ycl_addict_package DEFINITION
 
     CLASS-METHODS get_nonsap_package_rng RETURNING VALUE(rng) TYPE package_range.
 
-    CLASS-METHODS obj_custom_development
+    CLASS-METHODS is_obj_custom_development
       IMPORTING !key          TYPE tadir_key_dict
       RETURNING VALUE(nonsap) TYPE abap_bool.
 
@@ -140,7 +140,7 @@ CLASS ycl_addict_package IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD obj_custom_development.
+  METHOD is_obj_custom_development.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Tells if the object is a custom development or not
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
