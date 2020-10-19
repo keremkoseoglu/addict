@@ -84,22 +84,22 @@ However, each system has its own rules. If you need to change the behavior of **
   </tr>
   <tr>
     <td><b>SYSID</b></td>
-    <td>ID of your system, found in SY-SYSID.</td>
+    <td>ID of your system, found in SY-SYSID</td>
     <td></td>
   </tr>
   <tr>
     <td><b>MAX_WAIT</b></td>
-    <td>ID of your system, found in SY-SYSID.</td>
+    <td>Max wait time before timeout (in seconds)</td>
     <td>30</td>
   </tr>
   <tr>
     <td><b>AUTO_REQUEST_PREFIX</b></td>
-    <td>The default text prefix of an automatically created request.</td>
+    <td>The default text prefix of an automatically created request</td>
     <td>Auto</td>
   </tr>
   <tr>
     <td><b>RULE_CLASS</b></td>
-    <td>Your rule class implementing complex behavior. See below for details.</td>
+    <td>Your rule class implementing complex behavior - see below for details</td>
     <td>YCL_ADDICT_DEF_SYSTEM_RULES</td>
   </tr>
 </table>
