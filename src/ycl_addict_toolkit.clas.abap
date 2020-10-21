@@ -38,7 +38,7 @@ CLASS ycl_addict_toolkit DEFINITION
     CONSTANTS: BEGIN OF defaults,
                  rule_class          TYPE ytaddict_sydef-rule_class VALUE 'YCL_ADDICT_DEF_SYSTEM_RULES',
                  max_wait            TYPE ytaddict_sydef-max_wait   VALUE 30,
-                 auto_request_prefix TYPE ytaddict_sydef-auto_request_prefix VALUE 'Auto',
+                 auto_request_prefix TYPE ytaddict_sydef-auto_request_prefix VALUE 'Auto' ##NO_TEXT,
                END OF defaults.
 
 

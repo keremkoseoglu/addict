@@ -23,6 +23,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>&amp;1 sınıfından nesne oluşturulamadı</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>003</MSGNR>
      <TEXT>&amp;1 tablosunun &amp;2 kaydında hatalı bir giriş var</TEXT>
     </T100>

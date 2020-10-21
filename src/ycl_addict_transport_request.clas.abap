@@ -348,7 +348,7 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Appends the given objects to the transport request
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA t071 TYPE STANDARD TABLE OF e071 WITH EMPTY KEY.
+    DATA t071 TYPE STANDARD TABLE OF e071 WITH DEFAULT KEY.
 
     " Add objects """""""""""""""""""""""""""""""""""""""""""""""""""
     CHECK obj IS NOT INITIAL.
@@ -361,7 +361,7 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
         wi_trkorr                 = me->trkorr
         iv_append_at_order        = abap_true
       TABLES
-        wt_e071                   = t071
+        wt_e071                   = t071[]
       EXCEPTIONS
         key_check_keysyntax_error = 1
         ob_check_obj_error        = 2
