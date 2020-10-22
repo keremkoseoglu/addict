@@ -137,6 +137,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>277</MSGNR>
+     <TEXT>&amp;1 sisteminin TPALOG tablosu, elde hiç Request olmadığı için okunamıyor</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>301</MSGNR>
      <TEXT>Hatalı satırlar var, &amp;1 sınıfının &amp;2 Method&apos;u yürütülemez</TEXT>
     </T100>
@@ -145,6 +151,18 @@
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>319</MSGNR>
      <TEXT>&amp;1 Request&apos;i için Sort Compress fonksiyonu hata döndürdü</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>320</MSGNR>
+     <TEXT>&amp;1 sisteminin TPALOG tablosu okunurken bir hata oluştu</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>323</MSGNR>
+     <TEXT>TPALOG okunurken bir hata oluştu</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
