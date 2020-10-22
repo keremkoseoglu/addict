@@ -2,7 +2,7 @@ INTERFACE yif_addict_system_rules
   PUBLIC .
 
   TYPES: BEGIN OF ticket_key_dict,
-           ticsy_id  TYPE yd_ticksys_ticsy_id,
+           ticsy_id  TYPE yd_addict_ticsy_id,
            ticket_id TYPE yd_addict_ticket_id,
          END OF ticket_key_dict,
 
@@ -16,7 +16,7 @@ INTERFACE yif_addict_system_rules
              END OF class.
 
   METHODS get_requests_of_tickets
-    IMPORTING !ticketing_system TYPE clike OPTIONAL
+    IMPORTING !ticketing_system TYPE yd_addict_ticsy_id OPTIONAL
               !tickets          TYPE ticket_id_list
     RETURNING VALUE(requests)   TYPE trkorr_list.
 ENDINTERFACE.
