@@ -43,6 +43,11 @@ Here is a list of significant classes within the package:
     <td>SE80</td>
   </tr>
   <tr>
+    <td><b>YCL_ADDICT_SE01_READER</b></td>
+    <td>Reads request status from source system</td>
+    <td>SE01</td>
+  </tr>
+  <tr>
     <td><b>YCL_ADDICT_TABLE</b></td>
     <td>Represents a database table, structure or view</td>
     <td>SE11</td>
@@ -64,7 +69,7 @@ Here is a list of significant classes within the package:
   </tr>
   <tr>
     <td><b>YCL_ADDICT_TPALOG_READER</b></td>
-    <td>Reads STMS status from various systems</td>
+    <td>Reads request status from target systems</td>
     <td>STMS</td>
   </tr>
   <tr>
