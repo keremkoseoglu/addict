@@ -19,14 +19,13 @@ CLASS ycl_addict_def_system_rules IMPLEMENTATION.
     " Sample format:
     " VOL-12345 - Explanation
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    requests = CORRESPONDING #(
-        ycl_addict_transport_request=>get_request_list(
-          param = VALUE #(
-            as4text_rng = VALUE #( FOR _ticket_id IN tickets (
-                option = ycl_addict_toolkit=>option-cp
-                sign   = ycl_addict_toolkit=>sign-include
-                low    = |{ _ticket_id }*| ) )
-            srch_strkorr = abap_true ) ) ).
-  ENDMETHOD.
+    DATA(request_details) = ycl_addict_transport_request=>get_request_list(
+        VALUE #( as4text_rng = VALUE #( FOR _ticket_id IN tickets (
+                   option = ycl_addict_toolkit=>option-cp
+                   sign   = ycl_addict_toolkit=>sign-include
+                   low    = |{ _ticket_id }*| ) )
+                 srch_strkorr = abap_true ) ).
 
+    requests = VALUE #( FOR _rd IN request_details ( _rd-trkorr ) ).
+  ENDMETHOD.
 ENDCLASS.
