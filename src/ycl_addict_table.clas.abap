@@ -489,6 +489,7 @@ CLASS ycl_addict_table IMPLEMENTATION.
     SELECT * FROM dd03l
            WHERE tabname = @me->def-tabname AND
                  fieldname NOT LIKE '.%'
+           ORDER BY position
            INTO TABLE @me->lazy-val-field.
 
     me->lazy-flag-field = abap_true.
