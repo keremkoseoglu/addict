@@ -64,8 +64,8 @@ Here is a list of significant classes within the package:
   </tr>
   <tr>
     <td><b>YCL_ADDICT_TPALOG_READER</b></td>
-    <td>Reads request status from various systems</td>
-    <td></td>
+    <td>Reads STMS status from various systems</td>
+    <td>STMS</td>
   </tr>
   <tr>
     <td><b>YCL_ADDICT_TRANSPORT_REQUEST</b></td>
