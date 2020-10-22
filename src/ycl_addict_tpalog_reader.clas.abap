@@ -24,12 +24,12 @@ CLASS ycl_addict_tpalog_reader DEFINITION
            output_list TYPE STANDARD TABLE OF output_dict WITH EMPTY KEY.
 
     TYPES: BEGIN OF sys_data_dict,
-             rfcdest TYPE rfcdest,
-             list    TYPE output_list,
+             sysid TYPE sysysid,
+             list  TYPE output_list,
            END OF sys_data_dict,
 
            sys_data_set TYPE HASHED TABLE OF sys_data_dict
-                        WITH UNIQUE KEY primary_key COMPONENTS rfcdest.
+                        WITH UNIQUE KEY primary_key COMPONENTS sysid.
 
     CONSTANTS: BEGIN OF status,
                  error        TYPE icon_d VALUE '@5C@',
@@ -52,7 +52,7 @@ CLASS ycl_addict_tpalog_reader DEFINITION
       CHANGING !ticket_ids TYPE yif_addict_system_rules=>ticket_id_list.
 
     METHODS get_list
-      IMPORTING !rfcdest      TYPE rfcdest
+      IMPORTING !rfcdest     TYPE rfcdest
                 !trkorr_rng  TYPE cts_organizer_tt_wd_request OPTIONAL
                 !ticket_ids  TYPE yif_addict_system_rules=>ticket_id_list OPTIONAL
                 !sys_data    TYPE sys_data_set OPTIONAL
@@ -262,11 +262,12 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
         " ______________________________
         " Add requests to where condition
         " ¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
-        LOOP AT me->sys_data ASSIGNING FIELD-SYMBOL(<sys_data>).
-          CHECK <sys_data>-rfcdest CS sy-sysid.
+        ASSIGN me->sys_data[ KEY primary_key COMPONENTS
+                             sysid = sy-sysid
+                           ] TO FIELD-SYMBOL(<sys_data>).
+        IF sy-subrc = 0.
           APPEND LINES OF CORRESPONDING trkorr_list( <sys_data>-list ) TO trkorr.
-          EXIT.
-        ENDLOOP.
+        ENDIF.
 
         IF me->trkorr_rng IS NOT INITIAL.
           SELECT trkorr FROM e070
