@@ -35,6 +35,15 @@ public section.
       attr3 type scx_attrname value '',
       attr4 type scx_attrname value '',
     end of INVALID_ENTRY .
+  constants:
+    begin of COLUMN_VALUES_DUPLICATE,
+      msgid type symsgid value 'YADDICT',
+      msgno type symsgno value '188',
+      attr1 type scx_attrname value 'TABNAME',
+      attr2 type scx_attrname value 'FIELDNAME',
+      attr3 type scx_attrname value '',
+      attr4 type scx_attrname value '',
+    end of COLUMN_VALUES_DUPLICATE .
   data TABNAME type TABNAME .
   data OBJECTID type CDOBJECTV .
   data FIELDNAME type FIELDNAME .

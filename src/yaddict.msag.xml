@@ -101,6 +101,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>188</MSGNR>
+     <TEXT>&amp;1 tablosunda, &amp;2 alanı mükerrer kayıtlar var</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>214</MSGNR>
      <TEXT>Seçilen nesnelerin tamamı kilitli</TEXT>
     </T100>
