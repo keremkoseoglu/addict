@@ -33,6 +33,11 @@ Here is a list of significant classes within the package:
     <td>SE11</td>
   </tr>
   <tr>
+    <td><b>YCL_ADDICT_DYNAMIC_ITAB</b></td>
+    <td>Dynamic internal table helper</td>
+    <td></td>
+  </tr>
+  <tr>
     <td><b>YCL_ADDICT_PACKAGE</b></td>
     <td>Represents an ABAP package</td>
     <td>SE80</td>
