@@ -32,19 +32,19 @@ CLASS ycl_addict_tpalog_reader DEFINITION
                         WITH UNIQUE KEY primary_key COMPONENTS sysid.
 
     CONSTANTS: BEGIN OF status,
-                 error        TYPE icon_d VALUE '@5C@',
+                 error        TYPE icon_d   VALUE '@5C@',
                  error_txt    TYPE iconname VALUE 'ICON_LED_RED',
-                 imported     TYPE icon_d VALUE '@K5@',
+                 imported     TYPE icon_d   VALUE '@K5@',
                  imported_txt TYPE iconname VALUE 'ICON_IMPORT_TRANSPORT_REQUEST',
-                 missing      TYPE icon_d VALUE '@BZ@',
+                 missing      TYPE icon_d   VALUE '@BZ@',
                  missing_txt  TYPE iconname VALUE 'ICON_LED_INACTIVE',
-                 open         TYPE icon_d VALUE '@E1@',
+                 open         TYPE icon_d   VALUE '@E1@',
                  open_txt     TYPE iconname VALUE 'ICON_ENVELOPE_OPEN',
-                 released     TYPE icon_d VALUE '@4A@',
+                 released     TYPE icon_d   VALUE '@4A@',
                  released_txt TYPE iconname VALUE 'ICON_TRANSPORT',
-                 unknown      TYPE icon_d VALUE '@1C@',
+                 unknown      TYPE icon_d   VALUE '@1C@',
                  unknown_txt  TYPE iconname VALUE 'ICON_MESSAGE_QUESTION',
-                 waiting      TYPE icon_d VALUE '@1T@',
+                 waiting      TYPE icon_d   VALUE '@1T@',
                  waiting_txt  TYPE iconname VALUE 'ICON_TIME',
                END OF status.
 

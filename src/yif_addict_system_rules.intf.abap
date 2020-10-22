@@ -1,6 +1,13 @@
 INTERFACE yif_addict_system_rules
   PUBLIC .
 
+  TYPES: BEGIN OF ticket_key_dict,
+           ticsy_id  TYPE yd_ticksys_ticsy_id,
+           ticket_id TYPE yd_addict_ticket_id,
+         END OF ticket_key_dict,
+
+         ticket_key_list TYPE STANDARD TABLE OF ticket_key_dict WITH EMPTY KEY.
+
   TYPES ticket_id_list TYPE STANDARD TABLE OF yd_addict_ticket_id WITH EMPTY KEY.
   TYPES trkorr_list TYPE STANDARD TABLE OF trkorr WITH EMPTY KEY.
 
