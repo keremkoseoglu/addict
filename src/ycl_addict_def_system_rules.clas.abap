@@ -23,7 +23,7 @@ CLASS ycl_addict_def_system_rules IMPLEMENTATION.
         VALUE #( as4text_rng = VALUE #( FOR _ticket_id IN tickets (
                    option = ycl_addict_toolkit=>option-cp
                    sign   = ycl_addict_toolkit=>sign-include
-                   low    = |{ _ticket_id }*| ) )
+                   low    = |{ _ticket_id } - *| ) )
                  srch_strkorr = abap_true ) ).
 
     requests = VALUE #( FOR _rd IN request_details ( _rd-trkorr ) ).
