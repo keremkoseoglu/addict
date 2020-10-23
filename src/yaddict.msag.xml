@@ -185,6 +185,18 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>349</MSGNR>
+     <TEXT>&amp;1 sınıfında &amp;2 Observer&apos;ının işlenmesi sırasında bir hata oluştu</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>350</MSGNR>
+     <TEXT>&amp;1 sınıfında Observer hatası oluştu</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>358</MSGNR>
      <TEXT>&amp;1 sınıfının &amp;2 yordamının yetki kontrolünde bir hata oluştu</TEXT>
     </T100>
