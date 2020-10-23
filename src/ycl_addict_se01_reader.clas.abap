@@ -47,6 +47,8 @@ CLASS ycl_addict_se01_reader IMPLEMENTATION.
                 ticketing_system = <ticket>-ticsy_id
                 tickets          = VALUE #( ( <ticket>-ticket_id ) ) ).
 
+            CHECK ticket_request_list IS NOT INITIAL.
+
             DATA(req_by_ticket) = ycl_addict_transport_request=>get_request_list(
                 VALUE #( trkorr_rng = VALUE #( FOR _tr IN ticket_request_list (
                   sign   = ycl_addict_toolkit=>sign-include
