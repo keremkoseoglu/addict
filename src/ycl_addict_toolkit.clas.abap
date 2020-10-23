@@ -35,13 +35,6 @@ CLASS ycl_addict_toolkit DEFINITION
 
   PROTECTED SECTION.
   PRIVATE SECTION.
-    CONSTANTS: BEGIN OF defaults,
-                 rule_class          TYPE ytaddict_sydef-rule_class VALUE 'YCL_ADDICT_DEF_SYSTEM_RULES',
-                 max_wait            TYPE ytaddict_sydef-max_wait   VALUE 30,
-                 auto_request_prefix TYPE ytaddict_sydef-auto_request_prefix VALUE 'Auto' ##NO_TEXT,
-               END OF defaults.
-
-
     CLASS-DATA sydef TYPE ytaddict_sydef.
     CLASS-DATA rules TYPE REF TO yif_addict_system_rules.
 ENDCLASS.
@@ -55,30 +48,15 @@ CLASS ycl_addict_toolkit IMPLEMENTATION.
     " the definition is not present
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     IF ycl_addict_toolkit=>sydef IS INITIAL.
-      SELECT SINGLE * FROM ytaddict_sydef
-             WHERE sysid = @sy-sysid
+      SELECT SINGLE * FROM yv_addict_system_definitions( sy_sysid = @sy-sysid )
              INTO CORRESPONDING FIELDS OF @ycl_addict_toolkit=>sydef.
-
-      IF ycl_addict_toolkit=>sydef-sysid IS INITIAL.
-        ycl_addict_toolkit=>sydef-sysid = sy-sysid.
-      ENDIF.
-
-      IF ycl_addict_toolkit=>sydef-rule_class IS INITIAL.
-        ycl_addict_toolkit=>sydef-rule_class = ycl_addict_toolkit=>defaults-rule_class.
-      ENDIF.
-
-      IF ycl_addict_toolkit=>sydef-max_wait IS INITIAL.
-        ycl_addict_toolkit=>sydef-max_wait = ycl_addict_toolkit=>defaults-max_wait.
-      ENDIF.
-
-      IF ycl_addict_toolkit=>sydef-auto_request_prefix IS INITIAL.
-        ycl_addict_toolkit=>sydef-auto_request_prefix = ycl_addict_toolkit=>defaults-auto_request_prefix.
-      ENDIF.
     ENDIF.
 
     def = ycl_addict_toolkit=>sydef.
 
-    IF 1 = 0. " Where Used List
+    " Where Used List: ycl_addict_def_system_rules has been
+    " mentioned in the CDS View above.
+    IF 1 = 0.
       DATA(dummy) = NEW ycl_addict_def_system_rules( ).
     ENDIF.
   ENDMETHOD.
