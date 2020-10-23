@@ -41,6 +41,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>Ticketing sistemi hatası</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>017</MSGNR>
      <TEXT>Entegrasyon verileri okunamadı</TEXT>
     </T100>
@@ -115,6 +121,12 @@
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>220</MSGNR>
      <TEXT>Seçilen nesne &amp;1 tarafından işleniyor</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>233</MSGNR>
+     <TEXT>&amp;1 metninin formatı hatalı</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>

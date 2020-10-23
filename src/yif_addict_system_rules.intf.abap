@@ -19,4 +19,9 @@ INTERFACE yif_addict_system_rules
     IMPORTING !ticketing_system TYPE yd_addict_ticsy_id OPTIONAL
               !tickets          TYPE ticket_id_list
     RETURNING VALUE(requests)   TYPE trkorr_list.
+
+  METHODS get_ticket_key_of_request
+    IMPORTING !ticketing_system TYPE REF TO yif_addict_ticketing_system
+              !trkorr           TYPE trkorr
+    RETURNING VALUE(ticket_key) TYPE ticket_key_dict.
 ENDINTERFACE.
