@@ -125,6 +125,30 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>205</MSGNR>
+     <TEXT>&amp;1 tarihi geçersiz</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>207</MSGNR>
+     <TEXT>Tarih &amp;1, &amp;2 fabrika takvimi başlangıcından önce</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>208</MSGNR>
+     <TEXT>Tarih &amp;1, fabrika takvimi bitişinden sonra</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>209</MSGNR>
+     <TEXT>Fabrika takvimi &amp; tanımlanmadı</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>214</MSGNR>
      <TEXT>Seçilen nesnelerin tamamı kilitli</TEXT>
     </T100>
