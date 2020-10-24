@@ -17,6 +17,15 @@ public section.
       attr3 type scx_attrname value '',
       attr4 type scx_attrname value '',
     end of USER_CANCELLED .
+  constants:
+    begin of NO_ITEM_SELECTED,
+      msgid type symsgid value 'YADDICT',
+      msgno type symsgno value '163',
+      attr1 type scx_attrname value '',
+      attr2 type scx_attrname value '',
+      attr3 type scx_attrname value '',
+      attr4 type scx_attrname value '',
+    end of NO_ITEM_SELECTED .
 
   methods CONSTRUCTOR
     importing
