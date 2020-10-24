@@ -121,7 +121,7 @@ However, each system has its own rules. If you need to change the behavior of **
   </tr>
 </table>
 
-**SYSID** is mandantory. Other fields are not. If you leave a field empty, **ADDICT** will assume its default value.
+Default values are coded into **YV_ADDICT_SYSTEM_DEFINITIONS**.
 
 ### Rule Class
 
