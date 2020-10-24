@@ -4,7 +4,7 @@ This repository includes helpful objects regarding ABAP development & dictionary
 
 ## Object index
 
-Here is a list of significant classes within the package:
+Significant classes within the package:
 
 <table>
   <tr>
@@ -80,6 +80,19 @@ Here is a list of significant classes within the package:
 </table>
 
 Most of those objects provide [multition design pattern](https://www.sap-press.com/design-patterns-in-abap-objects_4277/) functionality.
+
+Significant CDS views within the package:
+
+<table>
+  <tr>
+    <td><b>View</b></td>
+    <td><b>Description</b></td>
+  </tr>
+  <tr>
+    <td><b>YV_ADDICT_SYSTEM_DEFINITIONS</b></td>
+    <td>Custom ADDICT settings</td>
+  </tr>
+</table>
 
 ## Installation
 
