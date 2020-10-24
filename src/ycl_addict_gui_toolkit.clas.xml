@@ -14,6 +14,18 @@
    <TPOOL>
     <item>
      <ID>I</ID>
+     <KEY>105</KEY>
+     <ENTRY>Tamam</ENTRY>
+     <LENGTH>15</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>106</KEY>
+     <ENTRY>İptal</ENTRY>
+     <LENGTH>15</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
      <KEY>608</KEY>
      <ENTRY>Onay</ENTRY>
      <LENGTH>14</LENGTH>
