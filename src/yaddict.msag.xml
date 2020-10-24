@@ -71,6 +71,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>120</MSGNR>
+     <TEXT>İşlem kullanıcı tarafından iptal edildi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>130</MSGNR>
      <TEXT>&amp;1 fonksiyonunda &amp;2 hatası oluştu: &amp;3 - &amp;4</TEXT>
     </T100>

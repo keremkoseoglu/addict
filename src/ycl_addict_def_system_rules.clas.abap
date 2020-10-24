@@ -22,13 +22,9 @@ CLASS ycl_addict_def_system_rules DEFINITION
     CLASS-DATA trkorr_ticket_cache TYPE trkorr_ticket_set.
 
     CLASS-METHODS extract_ticket_from_as4text
-      IMPORTING !as4text            TYPE as4text
-                !ticketing_system   TYPE REF TO yif_addict_ticketing_system OPTIONAL
-                !validate_ticket_id TYPE abap_bool OPTIONAL
-      EXPORTING !ticket             TYPE yif_addict_system_rules=>ticket_key_dict
-                !summary            TYPE clike
-      RAISING   ycx_addict_as4text
-                ycx_addict_ticketing_system.
+      IMPORTING !as4text TYPE as4text
+      EXPORTING !ticket  TYPE yif_addict_system_rules=>ticket_key_dict
+                !summary TYPE clike.
 ENDCLASS.
 
 
@@ -56,15 +52,6 @@ CLASS ycl_addict_def_system_rules IMPLEMENTATION.
                     |{ <split> }|.
       ENDCASE.
     ENDLOOP.
-
-    IF validate_ticket_id = abap_true AND ticketing_system IS NOT INITIAL.
-      IF ticketing_system->is_ticket_id_valid( ticket-ticket_id ) = abap_false.
-        RAISE EXCEPTION TYPE ycx_addict_as4text
-          EXPORTING
-            textid  = ycx_addict_as4text=>invalid_format
-            as4text = as4text.
-      ENDIF.
-    ENDIF.
   ENDMETHOD.
 
 
@@ -100,14 +87,12 @@ CLASS ycl_addict_def_system_rules IMPLEMENTATION.
 
     IF sy-subrc <> 0.
       DATA(cache) = VALUE trkorr_ticket_dict( trkorr = trkorr ).
-      data(As4text) = ycl_Addict_transport_request=>get_as4text_safe( cache-trkorr ).
+      DATA(as4text) = ycl_addict_transport_request=>get_as4text_safe( cache-trkorr ).
 
       TRY.
           extract_ticket_from_as4text(
-            EXPORTING as4text            = as4text
-                      ticketing_system   = ticketing_system
-                      validate_ticket_id = abap_false
-            IMPORTING ticket             = ticket_key ).
+            EXPORTING as4text = as4text
+            IMPORTING ticket  = ticket_key ).
 
         CATCH cx_root ##no_handler .
       ENDTRY.

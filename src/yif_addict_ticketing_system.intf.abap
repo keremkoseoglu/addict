@@ -6,7 +6,12 @@ INTERFACE yif_addict_ticketing_system
              END OF class.
 
   METHODS is_ticket_id_valid
-    IMPORTING !ticket_id   TYPE yd_addict_ticket_id
+    IMPORTING !ticket_id    TYPE yd_addict_ticket_id
     RETURNING VALUE(output) TYPE abap_bool
+    RAISING   ycx_addict_ticketing_system.
+
+  METHODS get_ticket_header
+    IMPORTING !ticket_id    TYPE yd_addict_ticket_id
+    RETURNING VALUE(output) TYPE ysaddict_ticket_header
     RAISING   ycx_addict_ticketing_system.
 ENDINTERFACE.
