@@ -1564,7 +1564,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
         OTHERS                     = 13
         ##FM_SUBRC_OK ##NUMBER_OK.
 
-    ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'TR_RELEASE_REQUEST' ).
+    IF sy-subrc <> 5.
+      ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'TR_RELEASE_REQUEST' ).
+    ENDIF.
 
     " Wait until released (if wanted) """""""""""""""""""""""""""""""
     IF wait_until_released = abap_true.
@@ -1608,7 +1610,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
             OTHERS               = 5
             ##FM_SUBRC_OK.
 
-        ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'TRINT_SORT_AND_COMPRESS_COMM' ).
+        IF sy-subrc <> 2.
+          ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'TRINT_SORT_AND_COMPRESS_COMM' ).
+        ENDIF.
 
       CATCH cx_root INTO DATA(diaper).
         RAISE EXCEPTION TYPE ycx_addict_sort_and_compress
