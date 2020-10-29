@@ -4,6 +4,7 @@ CLASS ycl_addict_package DEFINITION
   CREATE PUBLIC .
 
   PUBLIC SECTION.
+    TYPES objname_range TYPE RANGE OF tadir-obj_name.
     TYPES package_range TYPE RANGE OF tdevc-devclass.
 
     TYPES: BEGIN OF tadir_key_dict,
@@ -30,6 +31,7 @@ CLASS ycl_addict_package DEFINITION
       IMPORTING !key            TYPE tadir_key_list
       RETURNING VALUE(devclass) TYPE pack_cache_set.
 
+    CLASS-METHODS get_nonsap_objname_rng RETURNING VALUE(rng) TYPE objname_range.
     CLASS-METHODS get_nonsap_package_rng RETURNING VALUE(rng) TYPE package_range.
 
     CLASS-METHODS is_obj_custom_development
@@ -38,6 +40,8 @@ CLASS ycl_addict_package DEFINITION
 
   PROTECTED SECTION.
   PRIVATE SECTION.
+    TYPES devclass_range TYPE RANGE OF tdevc-devclass.
+
     TYPES: BEGIN OF custom_dev_cache_dict,
              key    TYPE tadir_key_dict,
              custom TYPE abap_bool,
@@ -46,27 +50,57 @@ CLASS ycl_addict_package DEFINITION
            custom_dev_cache_set TYPE HASHED TABLE OF custom_dev_cache_dict
                            WITH UNIQUE KEY primary_key COMPONENTS key.
 
-    CLASS-DATA custom_dev_cache TYPE custom_dev_cache_set.
-    CLASS-DATA nonsap_pack_rng  TYPE package_range.
-    CLASS-DATA pack_cache       TYPE pack_cache_set.
+    CLASS-DATA custom_dev_cache   TYPE custom_dev_cache_set.
+    CLASS-DATA nonsap_objname_rng TYPE objname_range.
+    CLASS-DATA nonsap_pack_rng    TYPE package_range.
+    CLASS-DATA pack_cache         TYPE pack_cache_set.
 ENDCLASS.
 
 
 
 CLASS ycl_addict_package IMPLEMENTATION.
+  METHOD get_nonsap_objname_rng.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Returns object name pattern for objects not provided by SAP
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    DATA(output) = REF #( ycl_addict_package=>nonsap_objname_rng ).
+
+    IF output->* IS INITIAL.
+      SELECT obj_sign   AS sign,                        "#EC CI_NOWHERE
+             obj_option AS option,
+             obj_low    AS low,
+             obj_high   AS high
+             FROM ytaddict_nsobj
+             INTO CORRESPONDING FIELDS OF TABLE @output->*.
+
+      IF output->* IS INITIAL.
+        output->* = VALUE #(
+            sign   = ycl_addict_toolkit=>sign-include
+            option = ycl_addict_toolkit=>option-cp
+             ( low = 'Y*' )
+             ( low = 'Z*' ) ).
+      ENDIF.
+    ENDIF.
+
+    rng = output->*.
+  ENDMETHOD.
+
+
   METHOD get_nonsap_package_rng.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns packages which are not provided by SAP
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     IF ycl_addict_package=>nonsap_pack_rng IS INITIAL.
-      SELECT @ycl_addict_toolkit=>option-eq AS option,
+      DATA(devclass_rng) = CORRESPONDING devclass_range(
+          get_nonsap_objname_rng( ) ).
+
+      SELECT @ycl_addict_toolkit=>option-eq AS option,  "#EC CI_GENBUFF
              @ycl_addict_toolkit=>sign-include AS sign,
              devclass AS low
              FROM tdevc
-             WHERE pdevclass LIKE 'Z%' OR
-                   pdevclass LIKE 'Y%'
-             INTO CORRESPONDING FIELDS OF TABLE @ycl_addict_package=>nonsap_pack_rng
-             ##too_many_itab_fields. "#EC CI_GENBUFF
+             WHERE devclass IN @devclass_rng
+             INTO CORRESPONDING FIELDS OF TABLE
+             @ycl_addict_package=>nonsap_pack_rng ##too_many_itab_fields.
     ENDIF.
 
     rng = ycl_addict_package=>nonsap_pack_rng.
