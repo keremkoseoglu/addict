@@ -53,6 +53,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>024</MSGNR>
+     <TEXT>&amp;1 tablosunun &amp;2 kaydının &amp;3 alanında hatalı bir değer var</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>051</MSGNR>
      <TEXT>Kuyruk verileri okunamadı</TEXT>
     </T100>
