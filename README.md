@@ -102,9 +102,13 @@ If you are using a ticketing system, it is recommended (but not required) to ins
 
 ## Configuration
 
-**ADDICT** needs zero configuration. It will run with its default configuration out of the box.
+**ADDICT** needs zero configuration. It will run with its default configuration out of the box. So everything below is optional.
 
-However, each system has its own rules. If you need to change the behavior of **ADDICT**, you can add a new entry to the table **YTADDICT_SYDEF** (SM30) with the following values:
+### System rules
+
+Each system has its own rules. If you need to change the behavior of **ADDICT** according to the rules of your own system, you have two options.
+
+Rules, which can be represented with a single value, are stored in the table **YTADDICT_SYDEF** (SM30). You can add a new entry to the table **YTADDICT_SYDEF** (SM30) with the following values:
 
 <table>
   <tr>
@@ -136,10 +140,6 @@ However, each system has its own rules. If you need to change the behavior of **
 
 Default values are coded into **YV_ADDICT_SYSTEM_DEFINITIONS**.
 
-### Rule Class
-
-Rules, which can be represented with a single value, are stored in the table **YTADDICT_SYDEF** ; as explained above.
-
 However, some rules correspond to complex behavior, which need to be coded as ABAP methods.
 
 For such rules, **ADDICT** provides an interface: **YIF_ADDICT_SYSTEM_RULES** . You can create your own Z-Class, implement this interface and fill its following methods:
@@ -147,3 +147,7 @@ For such rules, **ADDICT** provides an interface: **YIF_ADDICT_SYSTEM_RULES** . 
 - **GET_REQUESTS_OF_TICKETS** : This method gets a list of support ticket ID's, and should return a list of transport requests which were created for those tickets. If you don't use a ticket system, you can ignore this method.
 
 If you implement your own **YIF_ADDICT_SYSTEM_RULES** class, you need to register it into the table **YTADDICT_SYDEF**. Otherwise; **ADDICT** will use the default rule class.
+
+### Customer development objects
+
+**ADDICT** needs to know which ABAP objects are developed by you. By default, **ADDICT** will assume that Y- and Z- objects are developed by yourself. However, if you have custom namespaces or something, you should register those (along Y* Z*) into the table **YTADDICT_NSOBJ** .
