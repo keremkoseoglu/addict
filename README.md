@@ -145,6 +145,8 @@ However, some rules correspond to complex behavior, which need to be coded as AB
 For such rules, **ADDICT** provides an interface: **YIF_ADDICT_SYSTEM_RULES** . You can create your own Z-Class, implement this interface and fill its following methods:
 
 - **GET_REQUESTS_OF_TICKETS** : This method gets a list of support ticket ID's, and should return a list of transport requests which were created for those tickets. If you don't use a ticket system, you can ignore this method.
+- **GET_TICKET_KEY_OF_REQEST** : This method is expected to return the ticket ID to which the request corresponds.
+- **IS_REQUEST_TOC_SAFE** : This method tells if the given request can safely be put into a ToC or not.
 
 If you implement your own **YIF_ADDICT_SYSTEM_RULES** class, you need to register it into the table **YTADDICT_SYDEF**. Otherwise; **ADDICT** will use the default rule class.
 
