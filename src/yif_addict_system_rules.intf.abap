@@ -23,4 +23,8 @@ INTERFACE yif_addict_system_rules
   METHODS get_ticket_key_of_request
     IMPORTING !trkorr           TYPE trkorr
     RETURNING VALUE(ticket_key) TYPE ticket_key_dict.
+
+  METHODS is_request_toc_safe
+    IMPORTING !trkorr     TYPE trkorr
+    RETURNING VALUE(safe) TYPE abap_bool.
 ENDINTERFACE.

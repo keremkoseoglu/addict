@@ -1441,13 +1441,8 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     " Is this Request safe enough to be included in a ToC?
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     IF me->lazy_flag-toc_safe = abap_false.
-      DATA(trf) = get_header( )-trfunction.
-
-      me->lazy_val-toc_safe = xsdbool( NOT (
-          ( trf = ycl_addict_transport_request=>trfunction-cust OR
-            trf = ycl_addict_transport_request=>trfunction-cust_task ) AND
-          ( get_source_client( ) <> sy-mandt ) ) ).
-
+      DATA(rules) = ycl_addict_toolkit=>get_system_rules( ).
+      me->lazy_val-toc_safe = rules->is_request_toc_safe( me->trkorr ).
       me->lazy_flag-toc_safe = abap_true.
     ENDIF.
 
