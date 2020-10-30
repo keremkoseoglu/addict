@@ -14,4 +14,9 @@ INTERFACE yif_addict_ticketing_system
     IMPORTING !ticket_id    TYPE yd_addict_ticket_id
     RETURNING VALUE(output) TYPE ysaddict_ticket_header
     RAISING   ycx_addict_ticketing_system.
+
+  METHODS set_ticket_status
+    IMPORTING !ticket_id TYPE yd_addict_ticket_id
+              !status_id TYPE yd_addict_ticket_status_id
+    RAISING   ycx_addict_ticketing_system.
 ENDINTERFACE.
