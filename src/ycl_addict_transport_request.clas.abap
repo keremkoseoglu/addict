@@ -17,7 +17,7 @@ CLASS ycl_addict_transport_request DEFINITION
     TYPES request_key_list TYPE STANDARD TABLE OF e071k WITH EMPTY KEY.
     TYPES request_nametab_list TYPE STANDARD TABLE OF e071kf WITH EMPTY KEY.
     TYPES request_object_list TYPE STANDARD TABLE OF e071 WITH EMPTY KEY.
-    TYPES trkorr_list TYPE STANDARD TABLE OF trkorr WITH EMPTY KEY.
+    TYPES trkorr_list TYPE STANDARD TABLE OF trkorr WITH KEY table_line.
     TYPES user_list TYPE STANDARD TABLE OF xubname WITH EMPTY KEY.
 
     TYPES: BEGIN OF content_dict,
