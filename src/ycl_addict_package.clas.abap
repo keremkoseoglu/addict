@@ -13,7 +13,7 @@ CLASS ycl_addict_package DEFINITION
              obj_name TYPE tadir-obj_name,
            END OF tadir_key_dict,
 
-           tadir_key_list TYPE STANDARD TABLE OF tadir_key_dict WITH EMPTY KEY.
+           tadir_key_list TYPE STANDARD TABLE OF tadir_key_dict WITH KEY pgmid object obj_name.
 
     TYPES: BEGIN OF pack_cache_dict,
              key      TYPE tadir_key_dict,

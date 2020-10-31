@@ -35,6 +35,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>&amp;1 sınıfı &amp;2 yordamında &amp;3 uygulaması eksik kalmış, ABAP&apos;çı tamamlamalı</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>010</MSGNR>
      <TEXT>&amp;1 sınıfı &amp;2 Method&apos;unda hatalı parametre var (ABAP hatası)</TEXT>
     </T100>

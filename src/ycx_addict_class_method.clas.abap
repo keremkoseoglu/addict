@@ -98,6 +98,15 @@ public section.
       attr3 type scx_attrname value '',
       attr4 type scx_attrname value '',
     end of UNEXPECTED_ERROR .
+  constants:
+    begin of UNIMPLEMENTED_FEATURE,
+      msgid type symsgid value 'YADDICT',
+      msgno type symsgno value '004',
+      attr1 type scx_attrname value 'CLASS',
+      attr2 type scx_attrname value 'METHOD',
+      attr3 type scx_attrname value 'FNAME',
+      attr4 type scx_attrname value '',
+    end of UNIMPLEMENTED_FEATURE .
   data CLASS type SEOCLSNAME .
   data METHOD type SEOCPDNAME .
   data FNAME type FIELDNAME .
