@@ -4,14 +4,12 @@
   <asx:values>
    <DD40V>
     <TYPENAME>YTT_ADDICT_TRKORR_DET</TYPENAME>
-    <DDLANGUAGE>T</DDLANGUAGE>
     <ROWTYPE>YSADDICT_TRKORR_DET</ROWTYPE>
     <ROWKIND>S</ROWKIND>
     <DATATYPE>STRU</DATATYPE>
     <ACCESSMODE>T</ACCESSMODE>
     <KEYDEF>D</KEYDEF>
     <KEYKIND>N</KEYKIND>
-    <DDTEXT>Detaylı Request alanları</DDTEXT>
    </DD40V>
   </asx:values>
  </asx:abap>

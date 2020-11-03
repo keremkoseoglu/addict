@@ -4,20 +4,27 @@
   <asx:values>
    <DD04V>
     <ROLLNAME>YD_ADDICT_DOL_OBJECT_TXT</ROLLNAME>
-    <DDLANGUAGE>T</DDLANGUAGE>
     <DOMNAME>TEXT40</DOMNAME>
     <HEADLEN>10</HEADLEN>
     <SCRLEN1>10</SCRLEN1>
     <SCRLEN2>10</SCRLEN2>
     <SCRLEN3>10</SCRLEN3>
-    <DDTEXT>Nesne türü</DDTEXT>
-    <REPTEXT>Nesne türü</REPTEXT>
-    <SCRTEXT_S>Nesne türü</SCRTEXT_S>
-    <SCRTEXT_M>Nesne türü</SCRTEXT_M>
-    <SCRTEXT_L>Nesne türü</SCRTEXT_L>
     <DTELMASTER>T</DTELMASTER>
     <REFKIND>D</REFKIND>
    </DD04V>
+   <I18N_LANGS>
+    <LANGU>T</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>T</DDLANGUAGE>
+     <DDTEXT>Nesne türü</DDTEXT>
+     <REPTEXT>Nesne türü</REPTEXT>
+     <SCRTEXT_S>Nesne türü</SCRTEXT_S>
+     <SCRTEXT_M>Nesne türü</SCRTEXT_M>
+     <SCRTEXT_L>Nesne türü</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
   </asx:values>
  </asx:abap>
 </abapGit>

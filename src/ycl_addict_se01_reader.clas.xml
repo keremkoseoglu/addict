@@ -4,7 +4,7 @@
   <asx:values>
    <VSEOCLASS>
     <CLSNAME>YCL_ADDICT_SE01_READER</CLSNAME>
-    <LANGU>T</LANGU>
+    <LANGU>E</LANGU>
     <DESCRIPT>SE01&apos;den Request bilgilerini okur</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>

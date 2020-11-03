@@ -4,13 +4,20 @@
   <asx:values>
    <DD01V>
     <DOMNAME>YD_ADDICT_TICKET_ID</DOMNAME>
-    <DDLANGUAGE>T</DDLANGUAGE>
     <DATATYPE>CHAR</DATATYPE>
     <LENG>000020</LENG>
     <OUTPUTLEN>000020</OUTPUTLEN>
     <LOWERCASE>X</LOWERCASE>
-    <DDTEXT>Ticket ID</DDTEXT>
    </DD01V>
+   <I18N_LANGS>
+    <LANGU>T</LANGU>
+   </I18N_LANGS>
+   <DD01_TEXTS>
+    <item>
+     <DDLANGUAGE>T</DDLANGUAGE>
+     <DDTEXT>Ticket ID</DDTEXT>
+    </item>
+   </DD01_TEXTS>
   </asx:values>
  </asx:abap>
 </abapGit>

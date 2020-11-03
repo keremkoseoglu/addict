@@ -4,7 +4,7 @@
   <asx:values>
    <VSEOCLASS>
     <CLSNAME>YCL_ADDICT_TPALOG_READER</CLSNAME>
-    <LANGU>T</LANGU>
+    <LANGU>E</LANGU>
     <DESCRIPT>Farklı sistemlerden Request durumunu döndürür</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>

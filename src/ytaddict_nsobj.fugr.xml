@@ -406,7 +406,7 @@
        <CONT_NAME>TCTRL_YTADDICT_NSOBJ</CONT_NAME>
        <TYPE>TEXT</TYPE>
        <NAME>*YTADDICT_NSOBJ-OBJ_LOW</NAME>
-       <TEXT>Object_Name_____________________________</TEXT>
+       <TEXT>Objektname______________________________</TEXT>
        <LINE>001</LINE>
        <COLUMN>003</COLUMN>
        <LENGTH>040</LENGTH>
@@ -423,7 +423,7 @@
        <CONT_NAME>TCTRL_YTADDICT_NSOBJ</CONT_NAME>
        <TYPE>TEXT</TYPE>
        <NAME>*YTADDICT_NSOBJ-OBJ_HIGH</NAME>
-       <TEXT>Object_Name_____________________________</TEXT>
+       <TEXT>Objektname______________________________</TEXT>
        <LINE>001</LINE>
        <COLUMN>004</COLUMN>
        <LENGTH>040</LENGTH>

@@ -4,8 +4,6 @@
   <asx:values>
    <DDLS>
     <DDLNAME>YV_ADDICT_SYSTEM_DEFINITIONS</DDLNAME>
-    <DDLANGUAGE>T</DDLANGUAGE>
-    <DDTEXT>Sistem tanımları</DDTEXT>
    </DDLS>
   </asx:values>
  </asx:abap>

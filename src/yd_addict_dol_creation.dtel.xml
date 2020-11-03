@@ -4,20 +4,27 @@
   <asx:values>
    <DD04V>
     <ROLLNAME>YD_ADDICT_DOL_CREATION</ROLLNAME>
-    <DDLANGUAGE>T</DDLANGUAGE>
     <DOMNAME>XFELD</DOMNAME>
     <HEADLEN>30</HEADLEN>
     <SCRLEN1>09</SCRLEN1>
     <SCRLEN2>14</SCRLEN2>
     <SCRLEN3>30</SCRLEN3>
-    <DDTEXT>Gösterge: Nesne yeni yaratıldı</DDTEXT>
-    <REPTEXT>Gösterge: Nesne yeni yaratıldı</REPTEXT>
-    <SCRTEXT_S>Yaratıldı</SCRTEXT_S>
-    <SCRTEXT_M>Yeni yaratıldı</SCRTEXT_M>
-    <SCRTEXT_L>Gösterge: Nesne yeni yaratıldı</SCRTEXT_L>
     <DTELMASTER>T</DTELMASTER>
     <REFKIND>D</REFKIND>
    </DD04V>
+   <I18N_LANGS>
+    <LANGU>T</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>T</DDLANGUAGE>
+     <DDTEXT>Gösterge: Nesne yeni yaratıldı</DDTEXT>
+     <REPTEXT>Gösterge: Nesne yeni yaratıldı</REPTEXT>
+     <SCRTEXT_S>Yaratıldı</SCRTEXT_S>
+     <SCRTEXT_M>Yeni yaratıldı</SCRTEXT_M>
+     <SCRTEXT_L>Gösterge: Nesne yeni yaratıldı</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
   </asx:values>
  </asx:abap>
 </abapGit>

@@ -4,10 +4,8 @@
   <asx:values>
    <DD02V>
     <TABNAME>YTADDICT_NSOBJ</TABNAME>
-    <DDLANGUAGE>T</DDLANGUAGE>
     <TABCLASS>TRANSP</TABCLASS>
     <CLIDEP>X</CLIDEP>
-    <DDTEXT>Lokal sistemde geliştirilen nesnelerin isimleri</DDTEXT>
     <MAINFLAG>X</MAINFLAG>
     <CONTFLAG>A</CONTFLAG>
     <EXCLASS>1</EXCLASS>
@@ -75,6 +73,15 @@
      <COMPTYPE>E</COMPTYPE>
     </DD03P>
    </DD03P_TABLE>
+   <I18N_LANGS>
+    <LANGU>T</LANGU>
+   </I18N_LANGS>
+   <DD02_TEXTS>
+    <item>
+     <DDLANGUAGE>T</DDLANGUAGE>
+     <DDTEXT>Lokal sistemde geliştirilen nesnelerin isimleri</DDTEXT>
+    </item>
+   </DD02_TEXTS>
    <TABL_EXTRAS>
     <TDDAT>
      <TABNAME>YTADDICT_NSOBJ</TABNAME>

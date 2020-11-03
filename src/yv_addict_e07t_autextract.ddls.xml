@@ -4,8 +4,6 @@
   <asx:values>
    <DDLS>
     <DDLNAME>YV_ADDICT_E07T_AUTEXTRACT</DDLNAME>
-    <DDLANGUAGE>T</DDLANGUAGE>
-    <DDTEXT>Otomatik yaratılmış Request&apos;ler için Extract</DDTEXT>
    </DDLS>
   </asx:values>
  </asx:abap>

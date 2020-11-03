@@ -376,7 +376,7 @@
        <CONT_NAME>TCTRL_YTADDICT_SYDEF</CONT_NAME>
        <TYPE>TEXT</TYPE>
        <NAME>*YTADDICT_SYDEF-SYSID</NAME>
-       <TEXT>SAP_sistem_tn.__________________________</TEXT>
+       <TEXT>SAP-System-ID___________________________</TEXT>
        <LINE>001</LINE>
        <COLUMN>001</COLUMN>
        <LENGTH>040</LENGTH>

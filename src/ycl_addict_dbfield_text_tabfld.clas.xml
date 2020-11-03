@@ -4,7 +4,7 @@
   <asx:values>
    <VSEOCLASS>
     <CLSNAME>YCL_ADDICT_DBFIELD_TEXT_TABFLD</CLSNAME>
-    <LANGU>T</LANGU>
+    <LANGU>E</LANGU>
     <DESCRIPT>Tablo alanından metin döndürür</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>

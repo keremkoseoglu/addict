@@ -4,8 +4,6 @@
   <asx:values>
    <DEVC>
     <CTEXT>ABAP Data Dictionary</CTEXT>
-    <COMP_POSID>BC-ABA</COMP_POSID>
-    <COMPONENT>HLB0009083</COMPONENT>
    </DEVC>
   </asx:values>
  </asx:abap>

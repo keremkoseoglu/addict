@@ -4,10 +4,8 @@
   <asx:values>
    <DD25V>
     <VIEWNAME>EYADDICT_CLSNAME</VIEWNAME>
-    <DDLANGUAGE>T</DDLANGUAGE>
     <AGGTYPE>E</AGGTYPE>
     <ROOTTAB>SEOCLASS</ROOTTAB>
-    <DDTEXT>Sınıf kilidi (aynı anda 2 kişi yürütmesin)</DDTEXT>
    </DD25V>
    <DD26E_TABLE>
     <DD26E>
