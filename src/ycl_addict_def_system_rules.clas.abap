@@ -69,7 +69,9 @@ CLASS ycl_addict_def_system_rules IMPLEMENTATION.
                    low    = |{ _ticket_id } - *| ) )
                  srch_strkorr = abap_true ) ).
 
-    requests = VALUE #( FOR _rd IN request_details ( _rd-trkorr ) ).
+    requests = VALUE #( FOR _rd IN request_details
+                        WHERE ( strkorr IS INITIAL )
+                        ( _rd-trkorr ) ).
   ENDMETHOD.
 
 

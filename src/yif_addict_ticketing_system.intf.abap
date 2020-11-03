@@ -1,6 +1,8 @@
 INTERFACE yif_addict_ticketing_system
   PUBLIC .
 
+  TYPES ticket_id_list TYPE STANDARD TABLE OF yd_addict_ticket_id WITH EMPTY KEY.
+
   CONSTANTS: BEGIN OF class,
                me TYPE seoclsname VALUE 'YIF_ADDICT_TICKETING_SYSTEM',
              END OF class.
