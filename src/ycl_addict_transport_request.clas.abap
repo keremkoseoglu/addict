@@ -254,7 +254,9 @@ CLASS ycl_addict_transport_request DEFINITION
       RAISING   ycx_addict_function_subrc
                 ycx_addict_table_content.
 
-    METHODS is_toc_safe RETURNING VALUE(safe) TYPE abap_bool.
+    METHODS is_toc_safe
+      RETURNING VALUE(safe) TYPE abap_bool
+      RAISING   ycx_addict_class_method.
 
     METHODS release
       IMPORTING !rel_subtasks_too    TYPE abap_bool

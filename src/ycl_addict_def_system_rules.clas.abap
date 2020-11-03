@@ -107,6 +107,48 @@ CLASS ycl_addict_def_system_rules IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD yif_addict_system_rules~get_request_related_tickets.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Some tickets are related by their corresponding requests.
+    "
+    " Example: Jira has a concept of issue + sub-issue.
+    " Parent issues might be request-related to their child
+    " issues. This means; a request taken for the child issue is also
+    " related to the parent issue.
+    "
+    " Following that concept; the default behavior is to read
+    " the sub-tickets of the given ticketing system, and return
+    " the children as related.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    CHECK tickets IS NOT INITIAL.
+
+    TRY.
+        DATA(parents) = VALUE yif_addict_system_rules=>ticket_id_list(
+            FOR GROUPS _trkorr OF _ticket IN tickets
+            GROUP BY _ticket
+            ( _trkorr ) ).
+
+        LOOP AT parents ASSIGNING FIELD-SYMBOL(<parent>).
+          DATA(children) = ticketing_system->get_sub_tickets( <parent> ).
+          APPEND LINES OF children TO related_tickets.
+        ENDLOOP.
+
+        SORT related_tickets BY table_line.
+        DELETE ADJACENT DUPLICATES FROM related_tickets COMPARING table_line.
+
+      CATCH ycx_addict_class_method INTO DATA(method_error).
+        RAISE EXCEPTION method_error.
+      CATCH cx_root INTO DATA(diaper).
+        RAISE EXCEPTION TYPE ycx_addict_class_method
+          EXPORTING
+            textid   = ycx_addict_class_method=>unexpected_error
+            previous = diaper
+            class    = CONV #( cl_abap_classdescr=>get_class_name( me ) )
+            method   = yif_addict_system_rules=>method-get_request_related_tickets.
+    ENDTRY.
+  ENDMETHOD.
+
+
   METHOD yif_addict_system_rules~is_request_toc_safe.
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Is request ToC safe?

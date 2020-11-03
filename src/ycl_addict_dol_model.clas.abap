@@ -28,7 +28,8 @@ CLASS ycl_addict_dol_model DEFINITION
 
     METHODS get_list
       IMPORTING !param      TYPE param_dict
-      RETURNING VALUE(list) TYPE dol_list.
+      RETURNING VALUE(list) TYPE dol_list
+      RAISING   ycx_addict_class_method.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -48,7 +49,7 @@ CLASS ycl_addict_dol_model DEFINITION
     DATA trkorrs TYPE yif_addict_system_rules=>trkorr_list.
     DATA param   TYPE param_dict.
 
-    METHODS build_request_list.
+    METHODS build_request_list RAISING ycx_addict_class_method.
     METHODS read_request_contents.
 ENDCLASS.
 
@@ -111,10 +112,6 @@ CLASS ycl_addict_dol_model IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     me->param = param.
     CLEAR me->list.
-
-    ##todo.
-    " burada ticket system ID de bilmeli değil miyiz?
-    " TUG: ZCL_BC_DOL_MODEL
 
     build_request_list( ).
     IF me->trkorrs IS INITIAL.
