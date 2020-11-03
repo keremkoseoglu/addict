@@ -17,6 +17,11 @@ INTERFACE yif_addict_ticketing_system
     RETURNING VALUE(output) TYPE ysaddict_ticket_header
     RAISING   ycx_addict_ticketing_system.
 
+  METHODS get_sub_tickets
+    IMPORTING !parent         TYPE yd_addict_ticket_id
+    RETURNING VALUE(children) TYPE ticket_id_list
+    RAISING   ycx_addict_ticketing_system.
+
   METHODS set_ticket_status
     IMPORTING !ticket_id TYPE yd_addict_ticket_id
               !status_id TYPE yd_addict_ticket_status_id

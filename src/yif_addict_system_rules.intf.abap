@@ -16,8 +16,7 @@ INTERFACE yif_addict_system_rules
              END OF class.
 
   METHODS get_requests_of_tickets
-    IMPORTING !ticketing_system TYPE yd_addict_ticsy_id OPTIONAL
-              !tickets          TYPE ticket_id_list
+    IMPORTING !ticket_keys      TYPE ticket_key_list
     RETURNING VALUE(requests)   TYPE trkorr_list.
 
   METHODS get_ticket_key_of_request

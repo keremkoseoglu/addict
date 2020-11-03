@@ -8,8 +8,8 @@ CLASS ycl_addict_dol_model DEFINITION
     TYPES dol_list_wr    TYPE STANDARD TABLE OF ysaddict_dol_list_with_req WITH EMPTY KEY.
 
     TYPES: BEGIN OF param_dict,
-             ticket_ids TYPE yif_addict_system_rules=>ticket_id_list,
-             trkorr_rng TYPE ytt_addict_trkorr_rng,
+             ticket_keys TYPE yif_addict_system_rules=>ticket_key_list,
+             trkorr_rng  TYPE ytt_addict_trkorr_rng,
            END OF param_dict.
 
     CONSTANTS: BEGIN OF field,
@@ -59,8 +59,8 @@ CLASS ycl_addict_dol_model IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Builds transport request list of provided tickets
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    data(rules) = ycl_Addict_toolkit=>get_System_rules( ).
-    me->trkorrs = rules->get_requests_of_tickets( me->param-ticket_ids ).
+    DATA(rules) = ycl_addict_toolkit=>get_system_rules( ).
+    me->trkorrs = rules->get_requests_of_tickets( me->param-ticket_keys ).
   ENDMETHOD.
 
 
@@ -111,6 +111,10 @@ CLASS ycl_addict_dol_model IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     me->param = param.
     CLEAR me->list.
+
+    ##todo.
+    " burada ticket system ID de bilmeli değil miyiz?
+    " TUG: ZCL_BC_DOL_MODEL
 
     build_request_list( ).
     IF me->trkorrs IS INITIAL.

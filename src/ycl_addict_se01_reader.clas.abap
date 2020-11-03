@@ -44,8 +44,7 @@ CLASS ycl_addict_se01_reader IMPLEMENTATION.
 
           LOOP AT tickets ASSIGNING FIELD-SYMBOL(<ticket>).
             DATA(ticket_request_list) = ycl_addict_toolkit=>get_system_rules( )->get_requests_of_tickets(
-                ticketing_system = <ticket>-ticsy_id
-                tickets          = VALUE #( ( <ticket>-ticket_id ) ) ).
+                VALUE #( ( <ticket> ) ) ).
 
             CHECK ticket_request_list IS NOT INITIAL.
 
