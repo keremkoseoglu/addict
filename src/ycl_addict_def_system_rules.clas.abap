@@ -118,21 +118,34 @@ CLASS ycl_addict_def_system_rules IMPLEMENTATION.
     "
     " Following that concept; the default behavior is to read
     " the sub-tickets of the given ticketing system, and return
-    " the children as related.
+    " the children as related. Parents of sub-issues are also
+    " considered as related. Siblings too.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     CHECK tickets IS NOT INITIAL.
 
     TRY.
-        DATA(parents) = VALUE yif_addict_system_rules=>ticket_id_list(
+        DATA(unique_tickets) = VALUE yif_addict_system_rules=>ticket_id_list(
             FOR GROUPS _trkorr OF _ticket IN tickets
             GROUP BY _ticket
             ( _trkorr ) ).
 
-        LOOP AT parents ASSIGNING FIELD-SYMBOL(<parent>).
-          DATA(children) = ticketing_system->get_sub_tickets( <parent> ).
+        LOOP AT unique_tickets ASSIGNING FIELD-SYMBOL(<ticket_id>).
+          DATA(children) = ticketing_system->get_sub_tickets( <ticket_id> ).
           APPEND LINES OF children TO related_tickets.
+
+          DATA(ticket_header) = ticketing_system->get_ticket_header( <ticket_id> ).
+          IF ticket_header-parent_ticket_id IS NOT INITIAL.
+            APPEND ticket_header-parent_ticket_id TO related_tickets.
+
+            DATA(siblings) = ticketing_system->get_sub_tickets( ticket_header-parent_ticket_id ).
+
+            APPEND LINES OF VALUE yif_addict_system_rules=>ticket_id_list(
+                FOR _sibling IN siblings WHERE ( table_line <> <ticket_id> ) ( _sibling )
+              ) TO related_tickets.
+          ENDIF.
         ENDLOOP.
 
+        DELETE related_tickets WHERE table_line IS INITIAL.
         SORT related_tickets BY table_line.
         DELETE ADJACENT DUPLICATES FROM related_tickets COMPARING table_line.
 
