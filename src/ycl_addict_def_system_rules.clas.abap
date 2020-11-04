@@ -162,6 +162,47 @@ CLASS ycl_addict_def_system_rules IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD yif_addict_system_rules~get_request_substitute_tickets.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Sometimes, an issue may have requests for ticket A or ticket B.
+    "
+    " Typical example:
+    " Assume that ticket A is parent and ticket B is child.
+    " Developer working on ticket B may create a request for ticket A,
+    " and put stuff regarding ticket B into request of ticket A.
+    "
+    " This method will be called with ticket B, and we are expected
+    " to return ticket A.
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    TRY.
+        LOOP AT tickets ASSIGNING FIELD-SYMBOL(<ticket>).
+          DATA(ticket_header) = ticketing_system->get_ticket_header( <ticket> ).
+          CHECK ticket_header-parent_ticket_id IS NOT INITIAL.
+          APPEND ticket_header-parent_ticket_id TO related_tickets.
+        ENDLOOP.
+
+        SORT related_tickets.
+        DELETE ADJACENT DUPLICATES FROM related_tickets.
+
+      CATCH ycx_addict_class_method INTO DATA(method_error).
+        RAISE EXCEPTION method_error.
+      CATCH cx_root INTO DATA(diaper).
+        RAISE EXCEPTION TYPE ycx_addict_class_method
+          EXPORTING
+            textid   = ycx_addict_class_method=>unexpected_error
+            previous = diaper
+            class    = CONV #( cl_abap_classdescr=>get_class_name( me ) )
+            method   = yif_addict_system_rules=>method-get_request_substitute_tickets.
+    ENDTRY.
+
+    ##todo.
+    " tamamla
+    " addict publish
+    " YCL*SSHIT devam edebilir
+
+  ENDMETHOD.
+
+
   METHOD yif_addict_system_rules~is_request_toc_safe.
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Is request ToC safe?
