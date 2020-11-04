@@ -6,7 +6,7 @@ CLASS ycl_addict_alv DEFINITION
   PUBLIC SECTION.
     TYPES: BEGIN OF form_dict,
              html_end_of_list TYPE slis_formname,
-             pf_status_set    TYPE slis_formname,
+             pf_status        TYPE slis_formname,
              user_command     TYPE slis_formname,
            END OF form_dict.
 
@@ -20,12 +20,16 @@ CLASS ycl_addict_alv DEFINITION
              hotspot_fields TYPE field_list,
            END OF build_fcat_input_dict.
 
-    CONSTANTS: BEGIN OF defaults,
-                 field_alvsl       TYPE fieldname     VALUE 'ALVSL',
-                 field_celltab     TYPE fieldname     VALUE 'CELLTAB',
-                 form_pf_status    TYPE slis_formname VALUE 'PF_STATUS',
-                 form_user_command TYPE slis_formname VALUE 'USER_COMMAND',
-               END OF defaults.
+    CONSTANTS: BEGIN OF default_fields,
+                 alvsl   TYPE fieldname     VALUE 'ALVSL',
+                 celltab TYPE fieldname     VALUE 'CELLTAB',
+               END OF default_fields.
+
+    CONSTANTS: BEGIN OF default_forms,
+                 html_end_of_list TYPE slis_formname VALUE 'HTML_END_OF_LIST',
+                 pf_status        TYPE slis_formname VALUE 'PF_STATUS',
+                 user_command     TYPE slis_formname VALUE 'USER_COMMAND',
+               END OF default_forms.
 
     DATA cprog  TYPE sycprog.
     DATA itab   TYPE REF TO data.
@@ -159,7 +163,7 @@ CLASS ycl_addict_alv IMPLEMENTATION.
         CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
           EXPORTING
             i_callback_program          = me->cprog
-            i_callback_pf_status_set    = me->forms-pf_status_set
+            i_callback_pf_status_set    = me->forms-pf_status
             i_callback_user_command     = me->forms-user_command
             i_callback_html_end_of_list = me->forms-html_end_of_list
             i_grid_settings             = grid_settings
