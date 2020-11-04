@@ -13,6 +13,11 @@ Significant classes within the package:
     <td><b>Relevant T-Code</b></td>
   </tr>
   <tr>
+    <td><b>YCL_ADDICT_ALV</b></td>
+    <td>ALV helper</td>
+    <td></td>
+  </tr>
+  <tr>
     <td><b>YCL_ADDICT_BDC</b></td>
     <td>Batch Input helper</td>
     <td>SM35</td>
