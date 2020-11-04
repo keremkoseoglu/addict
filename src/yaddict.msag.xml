@@ -41,6 +41,24 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Bir ALV hatası oluştu</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>ALV alan kataloğu oluşturulamadı</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>ALV Grid gösteriminde bir hata oluştu</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>010</MSGNR>
      <TEXT>&amp;1 sınıfı &amp;2 Method&apos;unda hatalı parametre var (ABAP hatası)</TEXT>
     </T100>
