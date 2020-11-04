@@ -6,10 +6,10 @@ INTERFACE yif_addict_system_rules
            ticket_id TYPE yd_addict_ticket_id,
          END OF ticket_key_dict,
 
-         ticket_key_list TYPE STANDARD TABLE OF ticket_key_dict WITH EMPTY KEY.
+         ticket_key_list TYPE STANDARD TABLE OF ticket_key_dict WITH KEY ticsy_id ticket_id.
 
-  TYPES ticket_id_list TYPE STANDARD TABLE OF yd_addict_ticket_id WITH EMPTY KEY.
-  TYPES trkorr_list TYPE STANDARD TABLE OF trkorr WITH EMPTY KEY.
+  TYPES ticket_id_list TYPE STANDARD TABLE OF yd_addict_ticket_id WITH KEY table_line.
+  TYPES trkorr_list TYPE STANDARD TABLE OF trkorr WITH KEY table_line.
 
   CONSTANTS: BEGIN OF class,
                me TYPE seoclsname VALUE 'YIF_ADDICT_SYSTEM_RULES',
