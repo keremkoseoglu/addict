@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>YCL_ADDICT_TRANSPORT_REQ_IMP</CLSNAME>
+    <LANGU>T</LANGU>
+    <DESCRIPT>Transport Request Import eder</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+   </VSEOCLASS>
+   <TPOOL>
+    <item>
+     <ID>I</ID>
+     <KEY>505</KEY>
+     <ENTRY>Şu anda Request taşınıyor, hata alırsanız lütfen bekleyiniz.</ENTRY>
+     <LENGTH>120</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>506</KEY>
+     <ENTRY>İşlem kısa sürede bitecektir, akabinde devam edebilirsiniz.</ENTRY>
+     <LENGTH>118</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>507</KEY>
+     <ENTRY>(Normal şartlar altında maksimum 5 dakika)</ENTRY>
+     <LENGTH>84</LENGTH>
+    </item>
+   </TPOOL>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -53,6 +53,24 @@ public section.
       attr3 type scx_attrname value 'FIELDNAME',
       attr4 type scx_attrname value '',
     end of VALUE_INVALID .
+  constants:
+    begin of TABLE_EMPTY,
+      msgid type symsgid value 'YADDICT',
+      msgno type symsgno value '179',
+      attr1 type scx_attrname value 'TABNAME',
+      attr2 type scx_attrname value '',
+      attr3 type scx_attrname value '',
+      attr4 type scx_attrname value '',
+    end of TABLE_EMPTY .
+  constants:
+    begin of MULTIPLE_ENTRIES,
+      msgid type symsgid value 'YADDICT',
+      msgno type symsgno value '008',
+      attr1 type scx_attrname value 'TABNAME',
+      attr2 type scx_attrname value '',
+      attr3 type scx_attrname value '',
+      attr4 type scx_attrname value '',
+    end of MULTIPLE_ENTRIES .
   data TABNAME type TABNAME .
   data OBJECTID type CDOBJECTV .
   data FIELDNAME type FIELDNAME .

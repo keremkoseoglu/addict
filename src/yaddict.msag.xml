@@ -59,6 +59,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>&amp;1 tablosunda tek bir kayıt beklenirken birden fazla kayıt bulundu</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>010</MSGNR>
      <TEXT>&amp;1 sınıfı &amp;2 Method&apos;unda hatalı parametre var (ABAP hatası)</TEXT>
     </T100>
@@ -133,6 +139,12 @@
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>163</MSGNR>
      <TEXT>Hiçbir satır seçilmemiş</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>179</MSGNR>
+     <TEXT>&amp;1 tablosu tamamen boş</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
