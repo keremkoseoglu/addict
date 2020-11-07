@@ -164,14 +164,12 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
     DATA(expire_time) = sy-uzeit.
     DATA(thour)       = CONV yd_addict_thour( 1 / 10 ).
 
-    CALL FUNCTION 'CATT_ADD_TO_TIME'
-      EXPORTING
-        idate = sy-datum
-        itime = sy-uzeit
-        stdaz = thour
-      IMPORTING
-        edate = expire_date
-        etime = expire_time.
+    ycl_addict_datetime_toolkit=>add_to_time(
+      EXPORTING idate = sy-datum
+                itime = sy-uzeit
+                stdaz = thour
+      IMPORTING edate = expire_date
+                etime = expire_time ).
 
     CALL FUNCTION 'SM02_ADD_MESSAGE'
       DESTINATION me->state-input-rfcdest

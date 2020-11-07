@@ -10,6 +10,13 @@ CLASS ycl_addict_datetime_toolkit DEFINITION
       RETURNING VALUE(workday) TYPE abap_bool
       RAISING   ycx_addict_function_subrc.
 
+    CLASS-METHODS add_to_time
+      IMPORTING !idate TYPE dats
+                !itime TYPE tims
+                !stdaz TYPE yd_addict_thour
+      EXPORTING !edate TYPE dats
+                !etime TYPE tims.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF factory_workday_cache_dict,
@@ -80,5 +87,19 @@ CLASS ycl_addict_datetime_toolkit IMPLEMENTATION.
     ENDIF.
 
     workday = <fwd>-workday.
+  ENDMETHOD.
+
+
+  METHOD add_to_time.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Add time to a date + time.
+    " This method has been shamelessly copied from CATT_ADD_TO_TIME
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    DATA low_date TYPE d VALUE '19000101'.
+    DATA s(16) TYPE p.
+    s = ( idate - low_date ) * 86400 + itime.
+    s = s + stdaz * 3600.
+    edate = low_date + ( s DIV 86400 ).
+    etime = s MOD 86400.
   ENDMETHOD.
 ENDCLASS.
