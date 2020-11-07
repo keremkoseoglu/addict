@@ -82,6 +82,11 @@ Significant classes within the package:
     <td>Represents a transport request</td>
     <td>SE01</td>
   </tr>
+  <tr>
+    <td><b>YCL_ADDICT_TRANSPORT_REQ_IMP</b></td>
+    <td>Imports a transport request in the target system</td>
+    <td>STMS</td>
+  </tr>
 </table>
 
 Most of those objects provide [multition design pattern](https://www.sap-press.com/design-patterns-in-abap-objects_4277/) functionality.
