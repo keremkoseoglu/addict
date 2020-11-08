@@ -26,4 +26,14 @@ INTERFACE yif_addict_ticketing_system
     IMPORTING !ticket_id TYPE yd_addict_ticket_id
               !status_id TYPE yd_addict_ticket_status_id
     RAISING   ycx_addict_ticketing_system.
+
+  METHODS set_ticket_assignee
+    IMPORTING !ticket_id TYPE yd_addict_ticket_id
+              !assignee  TYPE clike
+    RAISING   ycx_ticksys_assignee_update.
+
+  METHODS set_ticket_assignee_for_status
+    IMPORTING !ticket_id TYPE yd_addict_ticket_id
+              !status_id TYPE yd_addict_ticket_status_id
+    RAISING   ycx_ticksys_assignee_update.
 ENDINTERFACE.
