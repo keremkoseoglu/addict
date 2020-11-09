@@ -84,6 +84,40 @@
       </RSFDO>
      </DOCUMENTATION>
     </item>
+    <item>
+     <FUNCNAME>YF_ADDICT_SCC1</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <SHORT_TEXT>SCC1 işlemini yürütür</SHORT_TEXT>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>TRKORR</PARAMETER>
+       <TYP>TRKORR</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>SRC_CLIENT</PARAMETER>
+       <TYP>SYMANDT</TYP>
+      </RSIMP>
+     </IMPORT>
+     <EXCEPTION>
+      <RSEXC>
+       <EXCEPTION>SCC1_ERROR</EXCEPTION>
+      </RSEXC>
+     </EXCEPTION>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>TRKORR</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>SRC_CLIENT</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>SCC1_ERROR</PARAMETER>
+       <KIND>X</KIND>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
    </FUNCTIONS>
   </asx:values>
  </asx:abap>
