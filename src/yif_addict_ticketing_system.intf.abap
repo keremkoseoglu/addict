@@ -2,6 +2,7 @@ INTERFACE yif_addict_ticketing_system
   PUBLIC .
 
   TYPES ticket_id_list TYPE STANDARD TABLE OF yd_addict_ticket_id WITH KEY table_line.
+  TYPES string_list TYPE STANDARD TABLE OF string WITH EMPTY KEY.
 
   CONSTANTS: BEGIN OF class,
                me TYPE seoclsname VALUE 'YIF_ADDICT_TICKETING_SYSTEM',
@@ -15,6 +16,11 @@ INTERFACE yif_addict_ticketing_system
   METHODS get_ticket_header
     IMPORTING !ticket_id    TYPE yd_addict_ticket_id
     RETURNING VALUE(output) TYPE ysaddict_ticket_header
+    RAISING   ycx_addict_ticketing_system.
+
+  METHODS get_transport_instructions
+    IMPORTING !ticket_id          TYPE yd_addict_ticket_id
+    RETURNING VALUE(instructions) TYPE string_list
     RAISING   ycx_addict_ticketing_system.
 
   METHODS get_sub_tickets
