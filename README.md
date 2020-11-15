@@ -63,6 +63,11 @@ Significant classes within the package:
     <td>SE11</td>
   </tr>
   <tr>
+    <td><b>YCL_ADDICT_TADIR_READER</b></td>
+    <td>Reads TADIR from the local or remote system</td>
+    <td>SE16</td>
+  </tr>
+  <tr>
     <td><b>YCL_ADDICT_TEXT_TOOLKIT</b></td>
     <td>Provides some useful text utilities</td>
     <td></td>
