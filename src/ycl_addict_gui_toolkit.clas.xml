@@ -14,6 +14,12 @@
    <TPOOL>
     <item>
      <ID>I</ID>
+     <KEY>013</KEY>
+     <ENTRY>Request listesi</ENTRY>
+     <LENGTH>25</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
      <KEY>105</KEY>
      <ENTRY>Tamam</ENTRY>
      <LENGTH>15</LENGTH>

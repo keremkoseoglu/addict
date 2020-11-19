@@ -4,6 +4,12 @@ INTERFACE yif_addict_ticketing_system
   TYPES string_list TYPE STANDARD TABLE OF string WITH EMPTY KEY.
   TYPES tcode_list TYPE STANDARD TABLE OF tcode WITH KEY table_line.
   TYPES ticket_id_list TYPE STANDARD TABLE OF yd_addict_ticket_id WITH KEY table_line.
+  TYPES status_id_list TYPE STANDARD TABLE OF yd_addict_ticket_status_id WITH KEY table_line.
+
+  TYPES: BEGIN OF status_dict,
+           status_id   TYPE yd_addict_ticket_status_id,
+           status_text TYPE yd_addict_ticket_status_text,
+         END OF status_dict.
 
   CONSTANTS: BEGIN OF class,
                me TYPE seoclsname VALUE 'YIF_ADDICT_TICKETING_SYSTEM',
@@ -44,6 +50,10 @@ INTERFACE yif_addict_ticketing_system
     RETURNING VALUE(tickets) TYPE ticket_id_list
     RAISING   ycx_addict_ticketing_system.
 
+  METHODS get_earliest_status
+    IMPORTING !statuses       TYPE status_id_list
+    RETURNING VALUE(earliest) TYPE status_dict.
+
   METHODS set_ticket_status
     IMPORTING !ticket_id TYPE yd_addict_ticket_id
               !status_id TYPE yd_addict_ticket_status_id
@@ -57,5 +67,9 @@ INTERFACE yif_addict_ticketing_system
   METHODS set_ticket_assignee_for_status
     IMPORTING !ticket_id TYPE yd_addict_ticket_id
               !status_id TYPE yd_addict_ticket_status_id
+    RAISING   ycx_addict_ticketing_system.
+
+  METHODS display_ticket
+    IMPORTING !ticket_id TYPE yd_addict_ticket_id
     RAISING   ycx_addict_ticketing_system.
 ENDINTERFACE.

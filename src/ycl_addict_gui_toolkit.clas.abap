@@ -8,6 +8,9 @@ CLASS ycl_addict_gui_toolkit DEFINITION
       IMPORTING !text TYPE clike
       RAISING   ycx_addict_user_input.
 
+    CLASS-METHODS display_transport_requests
+      IMPORTING !requests TYPE ycl_addict_transport_request=>trkorr_list.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
     CONSTANTS: BEGIN OF answer,
@@ -53,5 +56,42 @@ CLASS ycl_addict_gui_toolkit IMPLEMENTATION.
         EXPORTING
           textid = ycx_addict_user_input=>user_cancelled.
     ENDIF.
+  ENDMETHOD.
+
+
+  METHOD display_transport_requests.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Displays transport requests in standard TCode
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    CHECK requests IS NOT INITIAL.
+
+    DATA(displayable_requests) = ycl_addict_transport_request=>get_request_list( VALUE #(
+                                     srch_strkorr = abap_true
+                                     trkorr_rng   = VALUE #( FOR _request IN requests (
+                                                             sign   = ycl_addict_toolkit=>sign-include
+                                                             option = ycl_addict_toolkit=>option-eq
+                                                             low    = _request ) ) ) ).
+
+    DATA(wd_requests) = VALUE strhi_requests_wd( ).
+
+    LOOP AT displayable_requests ASSIGNING FIELD-SYMBOL(<request>).
+      TRY.
+          DATA(request_obj) = ycl_addict_transport_request=>get_instance( <request>-trkorr ).
+          DATA(content) = request_obj->get_content( ).
+
+          APPEND VALUE #( h              = CORRESPONDING #( request_obj->get_header( ) )
+                          objects        = CORRESPONDING #( content-objects )
+                          keys           = CORRESPONDING #( content-keys )
+                          objects_filled = abap_true
+                        ) TO wd_requests.
+
+        CATCH cx_root ##no_handler.
+      ENDTRY.
+    ENDLOOP.
+
+    CALL FUNCTION 'TRINT_DISPLAY_REQUESTS'
+      EXPORTING
+        it_requests        = wd_requests
+        iv_first_node_text = TEXT-013.
   ENDMETHOD.
 ENDCLASS.
