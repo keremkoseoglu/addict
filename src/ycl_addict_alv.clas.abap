@@ -38,8 +38,8 @@ CLASS ycl_addict_alv DEFINITION
     DATA fcat   TYPE slis_t_fieldcat_alv.
 
     METHODS constructor
-      IMPORTING !cprog      TYPE sy-cprog
-                !itab       TYPE REF TO data
+      IMPORTING !itab       TYPE REF TO data
+                !cprog      TYPE sy-cprog OPTIONAL
                 !forms      TYPE form_dict OPTIONAL
                 !layout     TYPE slis_layout_alv OPTIONAL
                 !fcat       TYPE slis_t_fieldcat_alv OPTIONAL
@@ -208,12 +208,18 @@ CLASS ycl_addict_alv IMPLEMENTATION.
     FIELD-SYMBOLS <itab> TYPE STANDARD TABLE.
 
     ASSIGN me->itab->* TO <itab>.
+
     IF <itab> IS INITIAL.
-      RETURN.
+      DATA(itab_was_initial) = abap_true.
+      APPEND INITIAL LINE TO <itab>.
     ENDIF.
 
     ASSIGN <itab>[ 1 ] TO FIELD-SYMBOL(<line>).
-    set_fcat_from_itab_line( <line> ).
+    set_fcat_from_itab_line( REF #( <line> ) ).
+
+    IF itab_was_initial = abap_true.
+      CLEAR <itab>.
+    ENDIF.
   ENDMETHOD.
 
 

@@ -52,7 +52,8 @@ INTERFACE yif_addict_ticketing_system
 
   METHODS get_earliest_status
     IMPORTING !statuses       TYPE status_id_list
-    RETURNING VALUE(earliest) TYPE status_dict.
+    RETURNING VALUE(earliest) TYPE status_dict
+    RAISING   ycx_addict_ticketing_system.
 
   METHODS set_ticket_status
     IMPORTING !ticket_id TYPE yd_addict_ticket_id
