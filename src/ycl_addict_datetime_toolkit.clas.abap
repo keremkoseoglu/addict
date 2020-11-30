@@ -17,6 +17,10 @@ CLASS ycl_addict_datetime_toolkit DEFINITION
       EXPORTING !edate TYPE dats
                 !etime TYPE tims.
 
+    CLASS-METHODS get_day_in_week
+      IMPORTING !date         TYPE sydatum
+      RETURNING VALUE(result) TYPE i.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF factory_workday_cache_dict,
@@ -29,7 +33,16 @@ CLASS ycl_addict_datetime_toolkit DEFINITION
            factory_workday_cache_set TYPE HASHED TABLE OF factory_workday_cache_dict
              WITH UNIQUE KEY primary_key COMPONENTS datum calid.
 
+    TYPES: BEGIN OF day_in_week_dict,
+             datum TYPE sydatum,
+             day   TYPE i,
+           END OF day_in_week_dict,
+
+           day_in_week_set TYPE HASHED TABLE OF day_in_week_dict
+                           WITH UNIQUE KEY primary_key COMPONENTS datum.
+
     CLASS-DATA factory_workday_cache TYPE factory_workday_cache_set.
+    CLASS-DATA day_in_week_cache TYPE day_in_week_set.
 ENDCLASS.
 
 
@@ -101,5 +114,31 @@ CLASS ycl_addict_datetime_toolkit IMPLEMENTATION.
     s = s + stdaz * 3600.
     edate = low_date + ( s DIV 86400 ).
     etime = s MOD 86400.
+  ENDMETHOD.
+
+
+  METHOD get_day_in_week.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Returns the day in week
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    DATA day TYPE scal-indicator.
+
+    ASSIGN day_in_week_cache[ datum = date ]
+           TO FIELD-SYMBOL(<day_in_week>).
+
+    IF sy-subrc <> 0.
+      DATA(cache) = VALUE day_in_week_dict( datum = date ).
+
+      CALL FUNCTION 'DATE_COMPUTE_DAY'
+        EXPORTING
+          date = cache-datum
+        IMPORTING
+          day  = day.
+
+      cache-day = day.
+      INSERT cache INTO TABLE day_in_week_cache ASSIGNING <day_in_week>.
+    ENDIF.
+
+    result = <day_in_week>-day.
   ENDMETHOD.
 ENDCLASS.

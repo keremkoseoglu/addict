@@ -398,12 +398,13 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     DATA(trkorr_from) = from.
 
     LOOP AT from ASSIGNING FIELD-SYMBOL(<from>).
-      APPEND LINES OF VALUE trkorr_list(
-          FOR _subtask IN get_instance(
-            trkorr = <from>
-            top = abap_true
-          )->get_subtasks( ) ( _subtask-trkorr )
-        ) TO trkorr_from.
+      DATA(subtasks) = get_instance( trkorr = <from>
+                                     top = abap_true
+                                   )->get_subtasks( ).
+
+      APPEND LINES OF VALUE trkorr_list( FOR _subtask IN subtasks
+                                         ( _subtask-trkorr ) )
+             TO trkorr_from.
     ENDLOOP.
 
     SORT trkorr_from BY table_line.
