@@ -103,6 +103,10 @@ CLASS ycl_addict_transport_request DEFINITION
                  modif_prot TYPE trstatus VALUE 'L',
                END OF trstatus.
 
+    CONSTANTS: BEGIN OF method,
+                 get_request_subtask_tree TYPE seocpdname VALUE 'GET_REQUEST_SUBTASK_TREE',
+               END OF method.
+
     DATA trkorr TYPE trkorr READ-ONLY .
 
     CLASS-METHODS create_new_request
@@ -243,6 +247,11 @@ CLASS ycl_addict_transport_request DEFINITION
                 ycx_addict_table_content.
 
     METHODS get_text RETURNING VALUE(as4text) TYPE as4text.
+
+    METHODS get_request_subtask_tree
+      RETURNING VALUE(result) TYPE trkorr_list
+      RAISING   ycx_addict_class_method.
+
     METHODS has_locked_object RETURNING VALUE(has) TYPE abap_bool.
 
     METHODS has_merge
@@ -286,21 +295,23 @@ CLASS ycl_addict_transport_request DEFINITION
            END OF clazy_val_dict.
 
     TYPES: BEGIN OF lazy_flag_dict,
-             as4text       TYPE abap_bool,
-             content       TYPE abap_bool,
-             e070          TYPE abap_bool,
-             empty         TYPE abap_bool,
-             source_client TYPE abap_bool,
-             toc_safe      TYPE abap_bool,
+             as4text              TYPE abap_bool,
+             content              TYPE abap_bool,
+             e070                 TYPE abap_bool,
+             empty                TYPE abap_bool,
+             source_client        TYPE abap_bool,
+             toc_safe             TYPE abap_bool,
+             request_subtask_tree TYPE abap_bool,
            END OF lazy_flag_dict.
 
     TYPES: BEGIN OF lazy_val_dict,
-             as4text       TYPE as4text,
-             content       TYPE content_dict,
-             e070          TYPE e070,
-             empty         TYPE abap_bool,
-             source_client TYPE e070c-client,
-             toc_safe      TYPE abap_bool,
+             as4text              TYPE as4text,
+             content              TYPE content_dict,
+             e070                 TYPE e070,
+             empty                TYPE abap_bool,
+             source_client        TYPE e070c-client,
+             toc_safe             TYPE abap_bool,
+             request_subtask_tree TYPE trkorr_list,
            END OF lazy_val_dict.
 
     TYPES abap_bool_list TYPE STANDARD TABLE OF abap_bool WITH EMPTY KEY.
@@ -1331,6 +1342,41 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     ENDIF.
 
     as4text = me->lazy_val-as4text.
+  ENDMETHOD.
+
+
+  METHOD get_request_subtask_tree.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Returns the entire request structure as a list
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    TRY.
+        DATA(flag) = REF #( me->lazy_flag-request_subtask_tree ).
+        DATA(val)  = REF #( me->lazy_val-request_subtask_tree ).
+
+        IF flag->* = abap_false.
+          DATA(header) = get_header( ).
+
+          DATA(parent_request) = COND trkorr( WHEN header-strkorr IS NOT INITIAL
+                                              THEN header-strkorr
+                                              ELSE header-trkorr ).
+
+          DATA(subtasks) = get_instance( parent_request )->get_subtasks( ).
+
+          val->* = VALUE #( ( parent_request ) ).
+          APPEND LINES OF VALUE trkorr_list( FOR _subtask IN subtasks ( _subtask-trkorr ) ) TO val->*.
+          flag->* = abap_true.
+        ENDIF.
+
+        result = val->*.
+
+      CATCH cx_root INTO DATA(diaper).
+        RAISE EXCEPTION TYPE ycx_addict_class_method
+          EXPORTING
+            textid   = ycx_addict_class_method=>unexpected_error
+            previous = diaper
+            class    = CONV #( cl_abap_classdescr=>get_class_name( me ) )
+            method   = me->method-get_request_subtask_tree.
+    ENDTRY.
   ENDMETHOD.
 
 
