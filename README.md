@@ -185,7 +185,7 @@ If you implement your own **YIF_ADDICT_SYSTEM_RULES** class, you need to registe
   </tr>
   <tr>
     <td><b>DISABLE_INHERIT</b></td>
-    <td>X = Class will be invisible in inheritance queries of **YCL_ADDICT_CLASS**</td>
+    <td>X = Class will be invisible in inheritance queries of YCL_ADDICT_CLASS </td>
     <td></td>
   </tr>
 </table>
