@@ -4,7 +4,7 @@ CLASS ycl_addict_class DEFINITION
   CREATE PRIVATE .
 
   PUBLIC SECTION.
-    TYPES clsname_list  TYPE STANDARD TABLE OF seoclsname WITH EMPTY KEY.
+    TYPES clsname_list TYPE STANDARD TABLE OF seoclsname WITH EMPTY KEY.
     TYPES dok_text_list TYPE STANDARD TABLE OF dok_text WITH EMPTY KEY.
 
     TYPES clsname_range TYPE RANGE OF seoclsname.
@@ -109,23 +109,11 @@ CLASS ycl_addict_class DEFINITION
     DATA dokil                 TYPE dokil.
     DATA txt                   TYPE seoclasstx.
     DATA component_std         TYPE component_list.
-    DATA immed_subcnam      TYPE clsname_list.
-    DATA insta_subcnam      TYPE clsname_list.
-    DATA recur_subcnam      TYPE clsname_list.
     DATA dokil_read            TYPE abap_bool.
     DATA txt_read              TYPE abap_bool.
     DATA component_read        TYPE abap_bool.
-    DATA immed_subcnam_read TYPE abap_bool.
-    DATA insta_subcnam_read TYPE abap_bool.
-    DATA recur_subcnam_read TYPE abap_bool.
 
     CLASS-DATA multiton TYPE multiton_set.
-
-    METHODS get_recursive_subclass_names_p
-      IMPORTING !refclsname   TYPE seoclsname
-                !rec          TYPE abap_bool
-      RETURNING VALUE(output) TYPE clsname_list.
-
     METHODS read_dokil.
 ENDCLASS.
 
@@ -236,15 +224,7 @@ CLASS ycl_addict_class IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns immediate children classes
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    IF me->immed_subcnam_read = abap_false. " Lazy initialization
-      SELECT clsname FROM seometarel
-        WHERE refclsname = @me->def-clsname
-        INTO TABLE @me->immed_subcnam.                  "#EC CI_GENBUFF
-
-      me->immed_subcnam_read = abap_true.
-    ENDIF.
-
-    output = me->immed_subcnam.
+    output = ycl_addict_class_inheritance=>get_instance( )->get_immediate_subclasses( def-clsname ).
   ENDMETHOD.
 
 
@@ -252,10 +232,9 @@ CLASS ycl_addict_class IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Factory
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    ASSIGN ycl_addict_class=>multiton[
-             KEY primary_key
-             COMPONENTS clsname = clsname
-           ] TO FIELD-SYMBOL(<multiton>).
+    ASSIGN ycl_addict_class=>multiton[ KEY primary_key COMPONENTS
+                                       clsname = clsname ]
+           TO FIELD-SYMBOL(<multiton>).
 
     IF sy-subrc <> 0.
       DATA(multiton) = VALUE multiton_dict( clsname = clsname ).
@@ -284,42 +263,7 @@ CLASS ycl_addict_class IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns subclasses which are instanceable
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    IF me->insta_subcnam_read = abap_false. " Lazy initialization
-      me->insta_subcnam_read = abap_true.
-
-      me->insta_subcnam = get_recursive_subclass_names( ).
-      IF me->insta_subcnam IS INITIAL.
-        RETURN.
-      ENDIF.
-
-      DATA(clsname_rng) = VALUE clsname_range(
-          FOR cn IN me->insta_subcnam (
-            option = ycl_addict_toolkit=>option-eq
-            sign   = ycl_addict_toolkit=>sign-include
-            low    = cn ) ).
-
-      SELECT clsname FROM seoclassdf AS sd1
-             WHERE clsname IN @clsname_rng AND
-                   version > 0 AND
-                   version = ( SELECT MAX( version )
-                               FROM seoclassdf AS sd2
-                               WHERE clsname = sd1~clsname ) AND
-                   clsabstrct = @abap_true
-             ORDER BY clsname
-             INTO TABLE @data(abstract).               "#EC CI_BUFFSUBQ
-
-      LOOP AT me->insta_subcnam ASSIGNING FIELD-SYMBOL(<clsname>).
-        READ TABLE abstract TRANSPORTING NO FIELDS
-             WITH KEY clsname = <clsname>
-             BINARY SEARCH.
-
-        CHECK sy-subrc = 0.
-        DELETE me->insta_subcnam.
-        CONTINUE.
-      ENDLOOP.
-    ENDIF.
-
-    output = me->insta_subcnam.
+    output = ycl_addict_class_inheritance=>get_instance( )->get_instanceable_subclasses( me->def-clsname ).
   ENDMETHOD.
 
 
@@ -327,44 +271,7 @@ CLASS ycl_addict_class IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns subclass names in a recursive manner
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    IF me->recur_subcnam_read = abap_false. " Lazy initialization
-
-      get_recursive_subclass_names_p(
-          refclsname = me->def-clsname
-          rec        = abap_false ).
-
-      me->recur_subcnam_read = abap_true.
-    ENDIF.
-
-    output = me->recur_subcnam.
-  ENDMETHOD.
-
-
-  METHOD get_recursive_subclass_names_p.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Recursion helper method
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    TRY.
-        DATA(clsname_local) = ycl_addict_class=>get_instance( refclsname )->get_immediate_subclass_names( ).
-      CATCH cx_root ##no_handler .
-        RETURN.
-    ENDTRY.
-
-    LOOP AT clsname_local ASSIGNING FIELD-SYMBOL(<cl>).
-      APPEND: <cl> TO me->recur_subcnam,
-              LINES OF get_recursive_subclass_names_p(
-                refclsname = <cl>
-                rec        = abap_true
-              ) TO me->recur_subcnam.
-    ENDLOOP.
-
-    IF rec = abap_true.
-      RETURN.
-    ENDIF.
-
-    SORT me->recur_subcnam BY table_line.
-    DELETE ADJACENT DUPLICATES FROM me->recur_subcnam COMPARING table_line.
-    output = me->recur_subcnam.
+    output = ycl_addict_class_inheritance=>get_instance( )->get_recursive_subclasses( me->def-clsname ).
   ENDMETHOD.
 
 
@@ -390,6 +297,7 @@ CLASS ycl_addict_class IMPLEMENTATION.
 
     output = me->txt.
   ENDMETHOD.
+
 
   METHOD is_in_call_stack.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
