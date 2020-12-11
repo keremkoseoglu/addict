@@ -55,6 +55,10 @@ CLASS ycl_addict_class DEFINITION
       IMPORTING !prgname       TYPE clike
       RETURNING VALUE(clsname) TYPE seoclsname.
 
+    CLASS-METHODS get_class_name
+      IMPORTING !obj          TYPE REF TO object
+      RETURNING VALUE(result) TYPE seoclsname.
+
     CLASS-METHODS get_instance
       IMPORTING !clsname   TYPE seoclsname
       RETURNING VALUE(obj) TYPE REF TO ycl_addict_class
@@ -225,6 +229,17 @@ CLASS ycl_addict_class IMPLEMENTATION.
     " Returns immediate children classes
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     output = ycl_addict_class_inheritance=>get_instance( )->get_immediate_subclasses( def-clsname ).
+  ENDMETHOD.
+
+
+  METHOD get_class_name.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Returns class name of the given object
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    CHECK obj IS NOT INITIAL.
+    DATA(long_class_name) = cl_abap_classdescr=>get_class_name( obj ).
+    REPLACE ALL OCCURRENCES OF '\CLASS=' IN long_class_name WITH space.
+    result = long_class_name.
   ENDMETHOD.
 
 
