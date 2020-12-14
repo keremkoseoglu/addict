@@ -51,6 +51,8 @@ CLASS ycl_addict_alv DEFINITION
       RAISING   ycx_addict_alv.
 
     METHODS show_grid RAISING ycx_addict_alv.
+    METHODS show_list RAISING ycx_addict_alv.
+    METHODS show RAISING ycx_addict_alv.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -186,6 +188,54 @@ CLASS ycl_addict_alv IMPLEMENTATION.
             textid   = ycx_addict_alv=>grid_error
             previous = diaper.
     ENDTRY.
+  ENDMETHOD.
+
+
+  METHOD show_list.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Display list
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    FIELD-SYMBOLS <itab> TYPE STANDARD TABLE.
+
+    TRY.
+        ASSIGN me->itab->* TO <itab>.
+
+        CALL FUNCTION 'REUSE_ALV_LIST_DISPLAY'
+          EXPORTING
+            i_callback_program       = me->cprog
+            i_callback_pf_status_set = me->forms-pf_status
+            i_callback_user_command  = me->forms-user_command
+            is_layout                = me->layout
+            it_fieldcat              = me->fcat
+            i_save                   = me->alv_save
+          TABLES
+            t_outtab                 = <itab>
+          EXCEPTIONS
+            program_error            = 1
+            OTHERS                   = 2 ##FM_SUBRC_OK.
+
+        ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'REUSE_ALV_LIST_DISPLAY' ).
+
+      CATCH ycx_addict_alv INTO DATA(alv_error).
+        RAISE EXCEPTION alv_error.
+      CATCH cx_root INTO DATA(diaper).
+        RAISE EXCEPTION TYPE ycx_addict_alv
+          EXPORTING
+            textid   = ycx_addict_alv=>grid_error
+            previous = diaper.
+    ENDTRY.
+  ENDMETHOD.
+
+
+  METHOD show.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Display grid or list, depending on SY-BATCH
+    " Why? Grid produces an error in case the program is in the background
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    CASE sy-batch.
+      WHEN abap_true . show_list( ).
+      WHEN abap_false. show_grid( ).
+    ENDCASE.
   ENDMETHOD.
 
 
