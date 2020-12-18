@@ -4,6 +4,7 @@ INTERFACE yif_addict_ticketing_system PUBLIC.
   TYPES tcode_list TYPE STANDARD TABLE OF tcode WITH KEY table_line.
   TYPES ticket_id_list TYPE STANDARD TABLE OF yd_addict_ticket_id WITH KEY table_line.
   TYPES status_id_list TYPE STANDARD TABLE OF yd_addict_ticket_status_id WITH KEY table_line.
+  types type_id_list type standard table of yd_addict_ticket_type_id with key table_line.
 
   TYPES: BEGIN OF status_dict,
            status_id   TYPE yd_addict_ticket_status_id,
@@ -63,6 +64,7 @@ INTERFACE yif_addict_ticketing_system PUBLIC.
 
   METHODS get_tickets_with_status
     IMPORTING !statuses      TYPE status_id_list
+              !types         type type_id_list optional
     RETURNING VALUE(tickets) TYPE ticket_status_list
     RAISING   ycx_addict_ticketing_system.
 
