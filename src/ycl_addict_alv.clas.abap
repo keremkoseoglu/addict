@@ -13,11 +13,12 @@ CLASS ycl_addict_alv DEFINITION
     TYPES field_list TYPE STANDARD TABLE OF fieldname WITH EMPTY KEY.
 
     TYPES: BEGIN OF build_fcat_input_dict,
-             structure      TYPE tabname,
-             itab_name      TYPE tabname,
-             tech_fields    TYPE field_list,
-             edit_fields    TYPE field_list,
-             hotspot_fields TYPE field_list,
+             structure       TYPE tabname,
+             itab_name       TYPE tabname,
+             tech_fields     TYPE field_list,
+             edit_fields     TYPE field_list,
+             hotspot_fields  TYPE field_list,
+             checkbox_fields TYPE field_list,
            END OF build_fcat_input_dict.
 
     CONSTANTS: BEGIN OF default_fields,
@@ -139,6 +140,14 @@ CLASS ycl_addict_alv IMPLEMENTATION.
           MODIFY me->fcat FROM VALUE #( hotspot = abap_true )
                  TRANSPORTING hotspot
                  WHERE fieldname IN hotspot_rng.
+        ENDIF.
+
+        IF input-checkbox_fields IS NOT INITIAL.
+          DATA(checkbox_rng) = conv_field_list_to_range( input-checkbox_fields ).
+
+          MODIFY me->fcat FROM VALUE #( checkbox = abap_true )
+                 TRANSPORTING checkbox
+                 WHERE fieldname IN checkbox_rng.
         ENDIF.
 
       CATCH ycx_addict_alv INTO DATA(alv_error).
