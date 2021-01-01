@@ -123,7 +123,7 @@ CLASS ycl_addict_transport_request DEFINITION
       RETURNING VALUE(output) TYPE as4text .
 
     CLASS-METHODS get_empty_open_requests
-      IMPORTING !trkorr_rng   TYPE ytt_addict_trfunction_rng
+      IMPORTING !trkorr_rng   TYPE ytt_addict_trkorr_rng
       RETURNING VALUE(output) TYPE ytt_addict_trkorr_det
       RAISING   ycx_addict_table_content
                 ycx_addict_function_subrc.
@@ -741,14 +741,13 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
       RETURN.
     ENDIF.
 
-    output = get_request_list( VALUE #(
-        trkorr_rng    = VALUE #( FOR _trkorr IN trkorr (
-                          option = ycl_addict_toolkit=>option-eq
-                          sign   = ycl_addict_toolkit=>sign-include
-                          low    = _trkorr ) )
-        trstatus_rng  = get_open_status_rng( )
-        srch_strkorr  = abap_false
-        ignore_trkorr = abap_false ) ).
+    output = get_request_list( VALUE #( trkorr_rng    = VALUE #( FOR _trkorr IN trkorr
+                                                                 ( option = ycl_addict_toolkit=>option-eq
+                                                                   sign   = ycl_addict_toolkit=>sign-include
+                                                                   low    = _trkorr ) )
+                                       trstatus_rng   = get_open_status_rng( )
+                                       srch_strkorr   = abap_false
+                                       ignore_trkorr  = abap_false ) ).
   ENDMETHOD.
 
 
