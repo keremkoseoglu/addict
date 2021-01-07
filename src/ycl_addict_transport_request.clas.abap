@@ -99,8 +99,11 @@ CLASS ycl_addict_transport_request DEFINITION
                END OF trfunction.
 
     CONSTANTS: BEGIN OF trstatus,
-                 modif      TYPE trstatus VALUE 'D',
-                 modif_prot TYPE trstatus VALUE 'L',
+                 modif           TYPE trstatus VALUE 'D',
+                 modif_prot      TYPE trstatus VALUE 'L',
+                 release_started TYPE trstatus VALUE 'O',
+                 released        TYPE trstatus VALUE 'R',
+                 release_prot    TYPE trstatus VALUE 'N',
                END OF trstatus.
 
     CONSTANTS: BEGIN OF method,
@@ -141,6 +144,7 @@ CLASS ycl_addict_transport_request DEFINITION
         VALUE(output) TYPE ytt_addict_e071_obj_key.
 
     CLASS-METHODS get_open_status_rng RETURNING VALUE(output) TYPE trstatus_range.
+    CLASS-METHODS get_released_status_rng RETURNING VALUE(result) TYPE trstatus_range.
 
     CLASS-METHODS get_open_requests
       IMPORTING !as4text_rng       TYPE as4text_range OPTIONAL
@@ -267,6 +271,8 @@ CLASS ycl_addict_transport_request DEFINITION
       RETURNING VALUE(safe) TYPE abap_bool
       RAISING   ycx_addict_class_method.
 
+    METHODS is_released RETURNING VALUE(result) TYPE abap_bool.
+
     METHODS release
       IMPORTING !rel_subtasks_too    TYPE abap_bool
                 !del_empty_subtasks  TYPE abap_bool DEFAULT abap_true
@@ -287,11 +293,13 @@ CLASS ycl_addict_transport_request DEFINITION
     TYPES: BEGIN OF clazy_flag_dict,
              class_related_obj_tags TYPE abap_bool,
              dev_req_rng            TYPE abap_bool,
+             released_trstatus_rng  TYPE abap_bool,
            END OF clazy_flag_dict.
 
     TYPES: BEGIN OF clazy_val_dict,
              class_related_obj_tag TYPE request_object_type_set,
              dev_req_rng           TYPE ytt_addict_trkorr_rng,
+             released_trstatus_rng TYPE trstatus_range,
            END OF clazy_val_dict.
 
     TYPES: BEGIN OF lazy_flag_dict,
@@ -945,6 +953,27 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD get_released_status_rng.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Returns a range of released request statuses
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    DATA(flg) = REF #( ycl_addict_transport_request=>clazy_flag-released_trstatus_rng ).
+    DATA(val) = REF #( ycl_addict_transport_request=>clazy_val-released_trstatus_rng ).
+
+    IF flg->* = abap_false.
+      val->* = VALUE #( sign   = ycl_addict_toolkit=>sign-include
+                        option = ycl_addict_toolkit=>option-eq
+                        ( low =  ycl_addict_transport_request=>trstatus-released )
+                        ( low =  ycl_addict_transport_request=>trstatus-release_prot )
+                        ( low =  ycl_addict_transport_request=>trstatus-release_started ) ).
+
+      flg->* = abap_true.
+    ENDIF.
+
+    result = val->*.
+  ENDMETHOD.
+
+
   METHOD get_requests_containing_obj.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns a list of requests which contain the provided objects
@@ -1495,6 +1524,15 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     ENDIF.
 
     safe = me->lazy_val-toc_safe.
+  ENDMETHOD.
+
+
+  METHOD is_released.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Is this Request released
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    DATA(header) = me->get_header( ).
+    result = xsdbool( header-trstatus IN get_released_status_rng( ) ).
   ENDMETHOD.
 
 
