@@ -67,6 +67,7 @@ CLASS ycl_addict_transport_request DEFINITION
                END OF domain.
 
     CONSTANTS: BEGIN OF object,
+                 cdat TYPE e071-object VALUE 'CDAT',
                  cinc TYPE e071-object VALUE 'CINC',
                  clas TYPE e071-object VALUE 'CLAS',
                  clsd TYPE e071-object VALUE 'CLSD',
@@ -82,6 +83,7 @@ CLASS ycl_addict_transport_request DEFINITION
                  intf TYPE e071-object VALUE 'INTF',
                  meth TYPE e071-object VALUE 'METH',
                  prog TYPE e071-object VALUE 'PROG',
+                 vdat TYPE e071-object VALUE 'VDAT',
                END OF object.
 
     CONSTANTS: BEGIN OF pgmid,
@@ -234,6 +236,7 @@ CLASS ycl_addict_transport_request DEFINITION
     METHODS get_obj_related_requests
       IMPORTING !include_self   TYPE abap_bool DEFAULT abap_false
                 !top            TYPE abap_bool DEFAULT abap_true
+                !object_rng     TYPE object_range OPTIONAL
                 !obj_name_rng   TYPE obj_name_range OPTIONAL
                 !holistic_cls   TYPE abap_bool DEFAULT abap_false
                 !trfunction_rng TYPE ytt_addict_trfunction_rng OPTIONAL
@@ -490,34 +493,27 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     TRY.
         DATA(bdc) = NEW ycl_addict_bdc( ).
 
-        bdc->add_scr(
-            prg = 'RS_STREE_OBJECTS_TO_REQ_GET'
-            dyn = '1000' ).
+        bdc->add_scr( prg = 'RS_STREE_OBJECTS_TO_REQ_GET'
+                      dyn = '1000' ).
 
-        bdc->add_fld(:
-            nam = 'BDC_OKCODE' val = '=ONLI' ),
-            nam = 'P_TRKORR'   val = CONV #( me->trkorr ) ).
+        bdc->add_fld(: nam = 'BDC_OKCODE' val = '=ONLI' ),
+                       nam = 'P_TRKORR'   val = CONV #( me->trkorr ) ).
 
-        bdc->add_scr(
-            prg = 'RS_STREE_OBJECTS_TO_REQ_GET'
-            dyn = '0100' ).
+        bdc->add_scr( prg = 'RS_STREE_OBJECTS_TO_REQ_GET'
+                      dyn = '0100' ).
 
-        bdc->add_fld(
-            nam = 'BDC_OKCODE'
-            val = '=ENTER' ).
+        bdc->add_fld( nam = 'BDC_OKCODE'
+                      val = '=ENTER' ).
 
-        bdc->add_scr(
-            prg = 'RS_STREE_OBJECTS_TO_REQ_GET'
-            dyn = '1000' ).
+        bdc->add_scr( prg = 'RS_STREE_OBJECTS_TO_REQ_GET'
+                      dyn = '1000' ).
 
-        bdc->add_fld(
-            nam = 'BDC_OKCODE'
-            val = '/EE' ).
+        bdc->add_fld( nam = 'BDC_OKCODE'
+                      val = '/EE' ).
 
-        bdc->submit(
-            tcode        = me->tcode-shi_piece_list
-            option       = VALUE #( dismode = ycl_addict_bdc=>dismode-none )
-            validate_msg = abap_true ).
+        bdc->submit( tcode        = me->tcode-shi_piece_list
+                     option       = VALUE #( dismode = ycl_addict_bdc=>dismode-none )
+                     validate_msg = abap_true ).
 
       CATCH cx_root INTO DATA(diaper).
         RAISE EXCEPTION TYPE ycx_addict_sh_piece_list_comp
@@ -536,18 +532,16 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     DATA final_as4text TYPE as4text.
 
     IF users IS SUPPLIED.
-      DATA(user) = VALUE scts_users(
-          FOR _user IN users (
-            user = _user
-            type = ycl_addict_transport_request=>trfunction-unclass ) ).
+      DATA(user) = VALUE scts_users( FOR _user IN users
+                                     ( user = _user
+                                       type = ycl_addict_transport_request=>trfunction-unclass ) ).
     ENDIF.
 
     DATA(auto_prefix) = ycl_addict_toolkit=>get_system_definitions( )-auto_request_prefix.
 
-    final_as4text = COND #(
-        WHEN as4text IS SUPPLIED
-        THEN as4text
-        ELSE |{ auto_prefix } Request| ).
+    final_as4text = COND #( WHEN as4text IS SUPPLIED
+                            THEN as4text
+                            ELSE |{ auto_prefix } Request| ).
 
     CLEAR head.
 
@@ -712,11 +706,10 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
       LOOP AT get_subtasks( ) ASSIGNING FIELD-SYMBOL(<sub>).
         DATA(sub_content) = <sub>-obj->get_content( ).
 
-        APPEND LINES OF:
-          sub_content-objects    TO me->lazy_val-content-objects,
-          sub_content-keys       TO me->lazy_val-content-keys,
-          sub_content-nametabs   TO me->lazy_val-content-nametabs,
-          sub_content-attributes TO me->lazy_val-content-attributes.
+        APPEND LINES OF: sub_content-objects    TO me->lazy_val-content-objects,
+                         sub_content-keys       TO me->lazy_val-content-keys,
+                         sub_content-nametabs   TO me->lazy_val-content-nametabs,
+                         sub_content-attributes TO me->lazy_val-content-attributes.
       ENDLOOP.
 
       me->lazy_flag-content = abap_true.
@@ -786,9 +779,8 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
            ] TO FIELD-SYMBOL(<mt>).
 
     IF sy-subrc <> 0.
-      DATA(mt) = VALUE multiton_dict(
-           trkorr = trkorr
-           top    = top ).
+      DATA(mt) = VALUE multiton_dict( trkorr = trkorr
+                                      top    = top ).
 
       SELECT SINGLE trkorr, strkorr
              FROM e070
@@ -806,10 +798,10 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
       mt-obj = NEW #( ).
 
       mt-obj->trkorr = SWITCH #( top
-          WHEN abap_false THEN e070-trkorr
-          WHEN abap_true  THEN COND #(
-            WHEN e070-strkorr IS NOT INITIAL THEN e070-strkorr
-            ELSE e070-trkorr ) ).
+                                 WHEN abap_false THEN e070-trkorr
+                                 WHEN abap_true  THEN COND #( WHEN e070-strkorr IS NOT INITIAL
+                                                              THEN e070-strkorr
+                                                              ELSE e070-trkorr ) ).
 
       INSERT mt INTO TABLE ycl_addict_transport_request=>multitons ASSIGNING <mt>.
     ENDIF.
@@ -822,10 +814,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns modified objects within the request
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA(req) = get_requests_containing_obj(
-        obj          = obj
-        top          = abap_true
-        holistic_cls = abap_true ).
+    DATA(req) = get_requests_containing_obj( obj          = obj
+                                             top          = abap_true
+                                             holistic_cls = abap_true ).
 
     DELETE req WHERE trkorr+0(3) <> sy-sysid.
     SORT req BY pgmid object obj_name.
@@ -833,10 +824,10 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
 
     LOOP AT obj ASSIGNING FIELD-SYMBOL(<obj>).
       READ TABLE req ASSIGNING FIELD-SYMBOL(<req>)
-            WITH KEY pgmid    = <obj>-pgmid
-                     object   = <obj>-object
-                     obj_name = <obj>-obj_name
-            BINARY SEARCH.
+                     WITH KEY pgmid    = <obj>-pgmid
+                              object   = <obj>-object
+                              obj_name = <obj>-obj_name
+                     BINARY SEARCH.
 
       IF sy-subrc = 0.
         APPEND <obj> TO output.
@@ -861,10 +852,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     objects = get_content( )-objects.
 
-    DELETE objects WHERE NOT (
-        pgmid    IN pgmid_rng  AND
-        object   IN object_rng AND
-        obj_name IN obj_name_rng ).
+    DELETE objects WHERE NOT ( pgmid    IN pgmid_rng  AND
+                               object   IN object_rng AND
+                               obj_name IN obj_name_rng ).
 
     IF NOT ( devclass_rng IS NOT INITIAL AND
              object IS NOT INITIAL ).
@@ -891,14 +881,14 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns requests related to the given objects
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    DATA(objects) = get_objects( object_rng   = object_rng
+                                 obj_name_rng = obj_name_rng
+                                 devclass_rng = devclass_rng ).
 
-    list = get_requests_containing_obj(
-        obj            = CORRESPONDING #( get_objects(
-                           obj_name_rng = obj_name_rng
-                           devclass_rng = devclass_rng ) )
-        top            = top
-        holistic_cls   = holistic_cls
-        trfunction_rng = trfunction_rng ).
+    list = get_requests_containing_obj( obj            = CORRESPONDING #( objects )
+                                        top            = top
+                                        holistic_cls   = holistic_cls
+                                        trfunction_rng = trfunction_rng ).
 
     IF include_self = abap_true.
       RETURN.
@@ -907,19 +897,17 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     TRY.
         DATA(head) = get_header( ).
 
-        DELETE list WHERE
-            trkorr  = head-trkorr  OR
-            trkorr  = head-strkorr OR
-            ( strkorr IS NOT INITIAL AND
-              ( strkorr = head-trkorr  OR
-                strkorr = head-strkorr ) ).
+        DELETE list WHERE trkorr  = head-trkorr  OR
+                          trkorr  = head-strkorr OR
+                          ( strkorr IS NOT INITIAL AND
+                            ( strkorr = head-trkorr  OR
+                              strkorr = head-strkorr ) ).
 
         IF head-strkorr IS NOT INITIAL.
           DATA(shead) = get_instance( head-strkorr )->get_header( ).
 
-          DELETE list WHERE
-            trkorr  = shead-trkorr OR
-            strkorr = shead-trkorr.
+          DELETE list WHERE trkorr  = shead-trkorr OR
+                            strkorr = shead-trkorr.
         ENDIF.
 
       CATCH cx_root ##no_handler .
@@ -931,13 +919,12 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns a list of corresponding open requests
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    output = get_request_list( VALUE #(
-        trfunction_rng    = COND #(
-                              WHEN trfunction_rng IS NOT INITIAL THEN trfunction_rng
-                              ELSE get_user_creatable_trf_rng( ) )
-        trstatus_rng      = get_open_status_rng( )
-        as4text_rng       = as4text_rng
-        must_have_subtask = must_have_subtask ) ).
+    output = get_request_list( VALUE #( trfunction_rng    = COND #( WHEN trfunction_rng IS NOT INITIAL
+                                                                    THEN trfunction_rng
+                                                                    ELSE get_user_creatable_trf_rng( ) )
+                                        trstatus_rng      = get_open_status_rng( )
+                                        as4text_rng       = as4text_rng
+                                        must_have_subtask = must_have_subtask ) ).
   ENDMETHOD.
 
 
@@ -945,11 +932,10 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns a range of open request statuses
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    output = VALUE #(
-        option = ycl_addict_toolkit=>option-eq
-        sign   = ycl_addict_toolkit=>sign-include
-        ( low = ycl_addict_transport_request=>trstatus-modif )
-        ( low = ycl_addict_transport_request=>trstatus-modif_prot ) ).
+    output = VALUE #( option = ycl_addict_toolkit=>option-eq
+                      sign   = ycl_addict_toolkit=>sign-include
+                      ( low  = ycl_addict_transport_request=>trstatus-modif )
+                      ( low  = ycl_addict_transport_request=>trstatus-modif_prot ) ).
   ENDMETHOD.
 
 
@@ -963,9 +949,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     IF flg->* = abap_false.
       val->* = VALUE #( sign   = ycl_addict_toolkit=>sign-include
                         option = ycl_addict_toolkit=>option-eq
-                        ( low =  ycl_addict_transport_request=>trstatus-released )
-                        ( low =  ycl_addict_transport_request=>trstatus-release_prot )
-                        ( low =  ycl_addict_transport_request=>trstatus-release_started ) ).
+                        ( low  = ycl_addict_transport_request=>trstatus-released )
+                        ( low  = ycl_addict_transport_request=>trstatus-release_prot )
+                        ( low  = ycl_addict_transport_request=>trstatus-release_started ) ).
 
       flg->* = abap_true.
     ENDIF.
@@ -1010,11 +996,10 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
         CLEAR obj_name_tmp.
         SPLIT <obj>-obj_name AT space INTO TABLE obj_name_tmp.
 
-        APPEND VALUE #(
-            option = ycl_addict_toolkit=>option-cp
-            sign   = ycl_addict_toolkit=>sign-include
-            low    = |{ COND #( WHEN obj_name_tmp IS INITIAL THEN <obj>-obj_name ELSE obj_name_tmp[ 1 ] ) }*|
-          ) TO obj_name_rng.
+        APPEND VALUE #( option = ycl_addict_toolkit=>option-cp
+                        sign   = ycl_addict_toolkit=>sign-include
+                        low    = |{ COND #( WHEN obj_name_tmp IS INITIAL THEN <obj>-obj_name ELSE obj_name_tmp[ 1 ] ) }*|
+                      ) TO obj_name_rng.
       ENDLOOP.
 
       SORT obj_name_rng BY option sign low high.
@@ -1023,7 +1008,7 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
       IF obj_name_rng IS NOT INITIAL.
         SELECT trkorr, pgmid, object, obj_name
                FROM e071
-               WHERE trkorr   IN @ycl_addict_transport_request=>clazy_val-dev_req_rng AND
+               WHERE trkorr IN @ycl_addict_transport_request=>clazy_val-dev_req_rng AND
                      ( pgmid = @yif_addict_dol_obj=>pgmid-r3tr OR
                        pgmid = @yif_addict_dol_obj=>pgmid-limu ) AND
                      obj_name IN @obj_name_rng
@@ -1032,27 +1017,24 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     ENDIF.
 
     " Build a list of found requests """"""""""""""""""""""""""""""""
-
     SORT e071 BY trkorr pgmid object obj_name.
     DELETE ADJACENT DUPLICATES FROM e071 COMPARING trkorr pgmid object obj_name.
 
     LOOP AT e071 ASSIGNING FIELD-SYMBOL(<e071>).
 
       TRY.
-          DATA(found_request) = get_instance(
-              trkorr = <e071>-trkorr
-              top    = top ).
+          DATA(found_request) = get_instance( trkorr = <e071>-trkorr
+                                              top    = top ).
 
           DATA(head) = found_request->get_header( ).
 
-          APPEND VALUE #(
-              trkorr   = head-trkorr
-              as4text  = found_request->get_text( )
-              strkorr  = head-strkorr
-              pgmid    = <e071>-pgmid
-              object   = <e071>-object
-              obj_name = <e071>-obj_name
-            ) TO req.
+          APPEND VALUE #( trkorr   = head-trkorr
+                          as4text  = found_request->get_text( )
+                          strkorr  = head-strkorr
+                          pgmid    = <e071>-pgmid
+                          object   = <e071>-object
+                          obj_name = <e071>-obj_name
+                        ) TO req.
 
         CATCH cx_root ##no_Handler .
       ENDTRY.
@@ -1062,11 +1044,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     IF trfunction_rng IS NOT INITIAL.
       LOOP AT req ASSIGNING FIELD-SYMBOL(<req>).
         TRY.
-            CHECK get_instance(
-                trkorr = <req>-trkorr
-                top    = abap_true
-              )->get_header( )-trfunction NOT IN trfunction_rng.
-
+            CHECK get_instance( trkorr = <req>-trkorr
+                                top    = abap_true
+                              )->get_header( )-trfunction NOT IN trfunction_rng.
             DELETE req.
             CONTINUE.
 
@@ -1150,8 +1130,8 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
 
       LOOP AT output ASSIGNING FIELD-SYMBOL(<list>).
         READ TABLE task TRANSPORTING NO FIELDS
-             WITH KEY strkorr = <list>-trkorr
-             BINARY SEARCH.
+                        WITH KEY strkorr = <list>-trkorr
+                        BINARY SEARCH.
 
         CHECK sy-subrc <> 0.
         DELETE output.
@@ -1207,12 +1187,11 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     ENDIF.
 
     " Detect objects """"""""""""""""""""""""""""""""""""""""""""""""
-    DATA(active_pgmid_rng) = COND #(
-        WHEN pgmid_rng IS SUPPLIED
-        THEN pgmid_rng
-        ELSE VALUE #( ( option = ycl_addict_toolkit=>option-eq
-                        sign   = ycl_addict_toolkit=>sign-include
-                        low    = yif_addict_dol_obj=>pgmid-r3tr ) ) ).
+    DATA(active_pgmid_rng) = COND #( WHEN pgmid_rng IS SUPPLIED
+                                     THEN pgmid_rng
+                                     ELSE VALUE #( ( option = ycl_addict_toolkit=>option-eq
+                                                     sign   = ycl_addict_toolkit=>sign-include
+                                                     low    = yif_addict_dol_obj=>pgmid-r3tr ) ) ).
 
     SELECT DISTINCT
            e071~trkorr, e071~pgmid, e071~object, e071~obj_name,
@@ -1241,30 +1220,26 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
       ENDIF.
 
       TRY.
-          ycl_addict_dol_model=>get_dol_obj(
-              EXPORTING object = main_object
-              IMPORTING dol    = DATA(dol) ).
+          ycl_addict_dol_model=>get_dol_obj( EXPORTING object = main_object
+                                             IMPORTING dol    = DATA(dol) ).
         CATCH cx_root.
           CONTINUE.
       ENDTRY.
 
-      IF dol->is_deleted(
-          pgmid    = main_pgmid
-          object   = main_object
-          obj_name = main_obj_name ).
+      IF dol->is_deleted( pgmid    = main_pgmid
+                          object   = main_object
+                          obj_name = main_obj_name ).
 
         DELETE list_wr.
         CONTINUE.
       ENDIF.
 
-      <list>-object_txt = dol->get_object_txt(
-                 pgmid  = main_pgmid
-                 object = main_object ).
+      <list>-object_txt = dol->get_object_txt( pgmid  = main_pgmid
+                                               object = main_object ).
 
-      <list>-ddtext = dol->get_ddtext(
-           pgmid    = main_pgmid
-           object   = main_object
-           obj_name = main_obj_name ).
+      <list>-ddtext = dol->get_ddtext( pgmid    = main_pgmid
+                                       object   = main_object
+                                       obj_name = main_obj_name ).
     ENDLOOP.
 
     list = CORRESPONDING #( list_wr ).
@@ -1299,10 +1274,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                           obj_name = <wr>-obj_name
                         ] TO FIELD-SYMBOL(<history>).
 
-      <wr>-creation = xsdbool(
-          sy-subrc = 0 AND
-          ( <history>-trkorr  = <wr>-trkorr OR
-            <history>-strkorr = <wr>-trkorr ) ).
+      <wr>-creation = xsdbool( sy-subrc = 0 AND
+                               ( <history>-trkorr  = <wr>-trkorr OR
+                                 <history>-strkorr = <wr>-trkorr ) ).
     ENDLOOP.
   ENDMETHOD.
 
@@ -1423,12 +1397,11 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns a range of TR functions, which can be created by a user
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    func = VALUE #(
-        option = ycl_addict_toolkit=>option-eq
-        sign   = ycl_addict_toolkit=>sign-include
-        ( low = ycl_addict_transport_request=>trfunction-cust )
-        ( low = ycl_addict_transport_request=>trfunction-toc )
-        ( low = ycl_addict_transport_request=>trfunction-wb ) ).
+    func = VALUE #( option = ycl_addict_toolkit=>option-eq
+                    sign   = ycl_addict_toolkit=>sign-include
+                    ( low = ycl_addict_transport_request=>trfunction-cust )
+                    ( low = ycl_addict_transport_request=>trfunction-toc )
+                    ( low = ycl_addict_transport_request=>trfunction-wb ) ).
   ENDMETHOD.
 
 
@@ -1453,8 +1426,8 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
         DATA(content) = get_content( ).
 
         has = xsdbool( line_exists( content-objects[
-            pgmid  = 'CORR'
-            object = 'MERG' ] ) ).
+                                    pgmid  = 'CORR'
+                                    object = 'MERG' ] ) ).
 
       CATCH cx_root INTO DATA(diaper).
         RAISE EXCEPTION TYPE ycx_addict_data_read
@@ -1486,30 +1459,29 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     IF ycl_addict_transport_request=>clazy_flag-class_related_obj_tags = abap_false.
 
-      ycl_addict_transport_request=>clazy_val-class_related_obj_tag = VALUE #(
-          ( pgmid  = ycl_addict_transport_request=>pgmid-limu
-            object = ycl_addict_transport_request=>object-cinc )
-          ( pgmid  = ycl_addict_transport_request=>pgmid-limu
-            object = ycl_addict_transport_request=>object-clsd )
-          ( pgmid  = ycl_addict_transport_request=>pgmid-limu
-            object = ycl_addict_transport_request=>object-cpri )
-          ( pgmid  = ycl_addict_transport_request=>pgmid-limu
-            object = ycl_addict_transport_request=>object-cpub )
-          ( pgmid  = ycl_addict_transport_request=>pgmid-limu
-            object = ycl_addict_transport_request=>object-meth )
-          ( pgmid  = ycl_addict_transport_request=>pgmid-r3tr
-            object = ycl_addict_transport_request=>object-clas )
-          ( pgmid  = ycl_addict_transport_request=>pgmid-r3tr
-            object = ycl_addict_transport_request=>object-intf ) ).
+      ycl_addict_transport_request=>clazy_val-class_related_obj_tag =
+        VALUE #( ( pgmid  = ycl_addict_transport_request=>pgmid-limu
+                   object = ycl_addict_transport_request=>object-cinc )
+                 ( pgmid  = ycl_addict_transport_request=>pgmid-limu
+                   object = ycl_addict_transport_request=>object-clsd )
+                 ( pgmid  = ycl_addict_transport_request=>pgmid-limu
+                   object = ycl_addict_transport_request=>object-cpri )
+                 ( pgmid  = ycl_addict_transport_request=>pgmid-limu
+                   object = ycl_addict_transport_request=>object-cpub )
+                 ( pgmid  = ycl_addict_transport_request=>pgmid-limu
+                   object = ycl_addict_transport_request=>object-meth )
+                 ( pgmid  = ycl_addict_transport_request=>pgmid-r3tr
+                   object = ycl_addict_transport_request=>object-clas )
+                 ( pgmid  = ycl_addict_transport_request=>pgmid-r3tr
+                   object = ycl_addict_transport_request=>object-intf ) ).
 
       ycl_addict_transport_request=>clazy_flag-class_related_obj_tags = abap_true.
     ENDIF.
 
-    related = xsdbool( line_exists(
-        ycl_addict_transport_request=>clazy_val-class_related_obj_tag[
-          KEY primary_key COMPONENTS
-          pgmid  = obj_type-pgmid
-          object = obj_type-object ] ) ).
+    related = xsdbool( line_exists( ycl_addict_transport_request=>clazy_val-class_related_obj_tag[
+                                    KEY primary_key COMPONENTS
+                                    pgmid  = obj_type-pgmid
+                                    object = obj_type-object ] ) ).
   ENDMETHOD.
 
 
@@ -1549,22 +1521,20 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     ENDIF.
 
     " Release subtasks if wanted """"""""""""""""""""""""""""""""""""
-    DATA(max_wait) = COND i(
-      WHEN max_rel_wait IS NOT INITIAL
-      THEN max_rel_wait
-      ELSE ycl_addict_toolkit=>get_system_definitions( )-max_wait ).
+    DATA(max_wait) = COND i( WHEN max_rel_wait IS NOT INITIAL
+                             THEN max_rel_wait
+                             ELSE ycl_addict_toolkit=>get_system_definitions( )-max_wait ).
 
     IF rel_subtasks_too = abap_true.
       DATA(sub) = get_subtasks( ).
 
       LOOP AT sub ASSIGNING FIELD-SYMBOL(<sub>).
-        release_single(
-          EXPORTING trkorr              = <sub>-trkorr
-                    req                 = <sub>-obj
-                    wait_until_released = wait_until_released
-                    max_rel_wait        = max_wait
-                    compl_sh_piece_list = compl_sh_piece_list
-          IMPORTING rel_wait_success    = DATA(this_wait_success) ).
+        release_single( EXPORTING trkorr              = <sub>-trkorr
+                                  req                 = <sub>-obj
+                                  wait_until_released = wait_until_released
+                                  max_rel_wait        = max_wait
+                                  compl_sh_piece_list = compl_sh_piece_list
+                        IMPORTING rel_wait_success    = DATA(this_wait_success) ).
 
         APPEND this_wait_success TO wait_success.
         CLEAR this_wait_success.
@@ -1572,13 +1542,12 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     ENDIF.
 
     " Release the Request itself """"""""""""""""""""""""""""""""""""
-    release_single(
-      EXPORTING trkorr              = me->trkorr
-                req                 = me
-                wait_until_released = wait_until_released
-                max_rel_wait        = max_rel_wait
-                compl_sh_piece_list = compl_sh_piece_list
-      IMPORTING rel_wait_success    = this_wait_success ).
+    release_single( EXPORTING trkorr              = me->trkorr
+                              req                 = me
+                              wait_until_released = wait_until_released
+                              max_rel_wait        = max_rel_wait
+                              compl_sh_piece_list = compl_sh_piece_list
+                    IMPORTING rel_wait_success    = this_wait_success ).
 
     APPEND this_wait_success TO wait_success.
     CLEAR this_wait_success.
@@ -1587,10 +1556,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     SORT wait_success BY table_line.
     DELETE ADJACENT DUPLICATES FROM wait_success COMPARING table_line.
 
-    rel_wait_success = xsdbool(
-        wait_until_released = abap_true AND
-        wait_success IS NOT INITIAL AND
-        ( NOT line_exists( wait_success[ table_line = abap_false ] ) ) ).
+    rel_wait_success = xsdbool( wait_until_released = abap_true AND
+                                wait_success IS NOT INITIAL AND
+                                ( NOT line_exists( wait_success[ table_line = abap_false ] ) ) ).
   ENDMETHOD.
 
 
@@ -1603,7 +1571,6 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     CLEAR rel_wait_success.
 
     " Detect & check request """"""""""""""""""""""""""""""""""""""""
-
     request = COND #( WHEN req IS INITIAL
                       THEN get_instance( trkorr )
                       ELSE req ).
@@ -1651,11 +1618,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
 
     " Wait until released (if wanted) """""""""""""""""""""""""""""""
     IF wait_until_released = abap_true.
-      DATA(max_wait) = COND i(
-        WHEN max_rel_wait IS NOT INITIAL
-        THEN max_rel_wait
-        ELSE ycl_addict_toolkit=>get_system_definitions( )-max_wait ).
-
+      DATA(max_wait) = COND i( WHEN max_rel_wait IS NOT INITIAL
+                               THEN max_rel_wait
+                               ELSE ycl_addict_toolkit=>get_system_definitions( )-max_wait ).
       DATA(total_wait) = 0.
 
       DO.
