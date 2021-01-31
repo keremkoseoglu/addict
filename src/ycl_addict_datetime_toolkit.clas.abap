@@ -110,10 +110,10 @@ CLASS ycl_addict_datetime_toolkit IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     DATA low_date TYPE d VALUE '19000101'.
     DATA s(16) TYPE p.
-    s = ( idate - low_date ) * 86400 + itime.
-    s = s + stdaz * 3600.
-    edate = low_date + ( s DIV 86400 ).
-    etime = s MOD 86400.
+    s = ( idate - low_date ) * 86400 + itime ##NUMBER_OK.
+    s = s + stdaz * 3600 ##NUMBER_OK.
+    edate = low_date + ( s DIV 86400 ) ##NUMBER_OK.
+    etime = s MOD 86400 ##NUMBER_OK.
   ENDMETHOD.
 
 
