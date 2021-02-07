@@ -18,12 +18,13 @@ CLASS ycl_addict_def_system_rules IMPLEMENTATION.
     " Sample format:
     " VOL-12345 - Explanation
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA(request_details) = ycl_addict_transport_request=>get_request_list(
-        VALUE #( as4text_rng = VALUE #( FOR _ticket_key IN ticket_keys (
-                   option = ycl_addict_toolkit=>option-cp
-                   sign   = ycl_addict_toolkit=>sign-include
-                   low    = |{ _ticket_key-ticket_id } - *| ) )
-                 srch_strkorr = abap_true ) ).
+    DATA(request_details) =
+      ycl_addict_transport_request=>get_request_list(
+          VALUE #( as4text_rng  = VALUE #( FOR _ticket_key IN ticket_keys
+                                           ( option = ycl_addict_toolkit=>option-cp
+                                             sign   = ycl_addict_toolkit=>sign-include
+                                             low    = |{ _ticket_key-ticket_id } - *| ) )
+                   srch_strkorr = abap_true ) ).
 
     requests = VALUE #( FOR _rd IN request_details
                         WHERE ( strkorr IS INITIAL )
