@@ -21,6 +21,12 @@
     <TCODE>YTADDICT_SYDEF</TCODE>
     <PARAM>/*SM30 VIEWNAME=YTADDICT_SYDEF;UPDATE=X;</PARAM>
    </TSTCP>
+   <I18N_TPOOL>
+    <TSTCT>
+     <SPRSL>E</SPRSL>
+     <TTEXT>System definitions</TTEXT>
+    </TSTCT>
+   </I18N_TPOOL>
   </asx:values>
  </asx:abap>
 </abapGit>

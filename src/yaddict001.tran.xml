@@ -16,6 +16,12 @@
     <TCODE>YADDICT001</TCODE>
     <TTEXT>SHI3 / SHI6 tamamlama</TTEXT>
    </TSTCT>
+   <I18N_TPOOL>
+    <TSTCT>
+     <SPRSL>E</SPRSL>
+     <TTEXT>SHI3 / SHI6 completion</TTEXT>
+    </TSTCT>
+   </I18N_TPOOL>
   </asx:values>
  </asx:abap>
 </abapGit>

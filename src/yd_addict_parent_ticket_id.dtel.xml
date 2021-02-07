@@ -18,6 +18,19 @@
     <DTELMASTER>T</DTELMASTER>
     <REFKIND>D</REFKIND>
    </DD04V>
+   <I18N_LANGS>
+    <LANGU>E</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DDTEXT>Parent ticket ID</DDTEXT>
+     <REPTEXT>Parent ticket ID</REPTEXT>
+     <SCRTEXT_S>PrntTicket</SCRTEXT_S>
+     <SCRTEXT_M>Parent ticket ID</SCRTEXT_M>
+     <SCRTEXT_L>Parent ticket ID</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
   </asx:values>
  </asx:abap>
 </abapGit>

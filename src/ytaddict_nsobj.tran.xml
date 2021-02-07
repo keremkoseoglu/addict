@@ -21,6 +21,12 @@
     <TCODE>YTADDICT_NSOBJ</TCODE>
     <PARAM>/*SM30 VIEWNAME=YTADDICT_NSOBJ;UPDATE=X;</PARAM>
    </TSTCP>
+   <I18N_TPOOL>
+    <TSTCT>
+     <SPRSL>E</SPRSL>
+     <TTEXT>Locally changed object names</TTEXT>
+    </TSTCT>
+   </I18N_TPOOL>
   </asx:values>
  </asx:abap>
 </abapGit>

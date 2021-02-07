@@ -18,6 +18,19 @@
     <DTELMASTER>T</DTELMASTER>
     <REFKIND>D</REFKIND>
    </DD04V>
+   <I18N_LANGS>
+    <LANGU>E</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DDTEXT>Max wait time (seconds)</DDTEXT>
+     <REPTEXT>Max wait time (seconds)</REPTEXT>
+     <SCRTEXT_S>MaxWaitSec</SCRTEXT_S>
+     <SCRTEXT_M>Max wait (seconds)</SCRTEXT_M>
+     <SCRTEXT_L>Max wait time (seconds)</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
   </asx:values>
  </asx:abap>
 </abapGit>

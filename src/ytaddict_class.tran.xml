@@ -21,6 +21,12 @@
     <TCODE>YTADDICT_CLASS</TCODE>
     <PARAM>/*SM30 VIEWNAME=YTADDICT_CLASS;UPDATE=X;</PARAM>
    </TSTCP>
+   <I18N_TPOOL>
+    <TSTCT>
+     <SPRSL>E</SPRSL>
+     <TTEXT>Class based definitions</TTEXT>
+    </TSTCT>
+   </I18N_TPOOL>
   </asx:values>
  </asx:abap>
 </abapGit>

@@ -18,6 +18,19 @@
     <DTELMASTER>T</DTELMASTER>
     <REFKIND>D</REFKIND>
    </DD04V>
+   <I18N_LANGS>
+    <LANGU>E</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DDTEXT>Automatic created request prefix</DDTEXT>
+     <REPTEXT>Automatic created request prefix</REPTEXT>
+     <SCRTEXT_S>AutReqPfx</SCRTEXT_S>
+     <SCRTEXT_M>Auto request prefix</SCRTEXT_M>
+     <SCRTEXT_L>Automatic created request prefix</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
   </asx:values>
  </asx:abap>
 </abapGit>

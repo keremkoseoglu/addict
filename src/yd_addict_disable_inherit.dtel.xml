@@ -18,6 +18,19 @@
     <DTELMASTER>T</DTELMASTER>
     <REFKIND>D</REFKIND>
    </DD04V>
+   <I18N_LANGS>
+    <LANGU>E</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>E</DDLANGUAGE>
+     <DDTEXT>Flag: Ignore on inheritence search</DDTEXT>
+     <REPTEXT>Flag: Ignore on inheritence search</REPTEXT>
+     <SCRTEXT_S>IgnoreInh</SCRTEXT_S>
+     <SCRTEXT_M>Ignore inheritance</SCRTEXT_M>
+     <SCRTEXT_L>Ignore on inheritence search</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
   </asx:values>
  </asx:abap>
 </abapGit>
