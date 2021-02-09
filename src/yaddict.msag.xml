@@ -405,6 +405,348 @@
      <TEXT>&amp;1 &amp;2 yordamına gönderilen hiçbir malzeme, siparişe uygun değil</TEXT>
     </T100>
    </T100>
+   <I18N_LANGS>
+    <LANGU>E</LANGU>
+   </I18N_LANGS>
+   <T100T>
+    <T100T>
+     <SPRSL>E</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <STEXT>ABAP Dictionary</STEXT>
+    </T100T>
+   </T100T>
+   <T100_TEXTS>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>000</MSGNR>
+     <TEXT>Key &amp;2 doesn&apos;t have any correspondence in table &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>001</MSGNR>
+     <TEXT>Table &amp;1 entry &amp;2 : field &amp;3 is empty</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>002</MSGNR>
+     <TEXT>Couldn&apos;t create an object instance of class &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>003</MSGNR>
+     <TEXT>Table &amp;1 entry &amp;2 has an invalid value</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>004</MSGNR>
+     <TEXT>Class &amp;1 method &amp;2 is missing implementation &amp;3 (possible ABAP error)</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>005</MSGNR>
+     <TEXT>An ALV error occurred</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>006</MSGNR>
+     <TEXT>Couldn&apos;t create ALV field catalog</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>007</MSGNR>
+     <TEXT>ALV grid display error</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>008</MSGNR>
+     <TEXT>Expecting single entry in table &amp;1 , found multiple</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>010</MSGNR>
+     <TEXT>Clsas &amp;1 method &amp;2 has an invalid parameter (possible ABAP error)</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>011</MSGNR>
+     <TEXT>Ticketing system error</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>017</MSGNR>
+     <TEXT>Couldn&apos;t read integration data</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>024</MSGNR>
+     <TEXT>Table &amp;1 entry &amp;2 has an invalid value in field &amp;3</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>051</MSGNR>
+     <TEXT>Couldn&apos;t read queue data</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>077</MSGNR>
+     <TEXT>Couldn&apos;t read parcel data</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>090</MSGNR>
+     <TEXT>Domain &amp;1 doesn&apos;t have the value &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>120</MSGNR>
+     <TEXT>Operation cancelled by user</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>130</MSGNR>
+     <TEXT>Function &amp;1 returned error &amp;2 : &amp;3 - &amp;4</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>135</MSGNR>
+     <TEXT>Unexpected error in class &amp;1 method &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>147</MSGNR>
+     <TEXT>Class &amp;1 method &amp;2 can&apos;t be called post-operation</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>148</MSGNR>
+     <TEXT>Value &amp;3 not sent to class &amp;1 method &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>163</MSGNR>
+     <TEXT>No item selected</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>179</MSGNR>
+     <TEXT>Table &amp;1 is completely empty</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>180</MSGNR>
+     <TEXT>Value &amp;3 sent to class &amp;1 method &amp;2 is invalid</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>186</MSGNR>
+     <TEXT>Class &amp;1 method &amp;2 can&apos;t be called pre-operation</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>188</MSGNR>
+     <TEXT>Table &amp;1 has recurring values on field &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>205</MSGNR>
+     <TEXT>Date &amp;1 is invalid</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>207</MSGNR>
+     <TEXT>Date &amp;1 is before the &amp;2 factory calendar start</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>208</MSGNR>
+     <TEXT>Date &amp;1 is after factory calendar end</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>209</MSGNR>
+     <TEXT>Undefined factory calendar &amp;</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>214</MSGNR>
+     <TEXT>All selected items are locked</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>220</MSGNR>
+     <TEXT>Selected item is being processed by &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>233</MSGNR>
+     <TEXT>Format of text &amp;1 is invalid</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>247</MSGNR>
+     <TEXT>&amp;1 &amp;2 has already been called</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>254</MSGNR>
+     <TEXT>&amp;1 is being processed by &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>255</MSGNR>
+     <TEXT>&amp;1 is being processed</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>277</MSGNR>
+     <TEXT>Can&apos;t read TPALOG of system &amp;1 , no requests at hand</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>301</MSGNR>
+     <TEXT>There are invalid items, can&apos;t run &amp;1 &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>319</MSGNR>
+     <TEXT>Sort and Compress for &amp;1 returned an error</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>320</MSGNR>
+     <TEXT>Error reading TPALOG table of system &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>323</MSGNR>
+     <TEXT>Error reading TPALOG table</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>324</MSGNR>
+     <TEXT>Error &amp;2 occurred on function &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>327</MSGNR>
+     <TEXT>Mandantory fields missing on class &amp;1 method &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>328</MSGNR>
+     <TEXT>At least one parameter required for method execution</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>349</MSGNR>
+     <TEXT>Error occured on class &amp;1 observer &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>350</MSGNR>
+     <TEXT>Observer error occurred on class &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>358</MSGNR>
+     <TEXT>Authorization error on class &amp;1 method &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>382</MSGNR>
+     <TEXT>Function &amp;1 returned an error</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>385</MSGNR>
+     <TEXT>Class &amp;1 method &amp;2 : Range &amp;3 can contain only &amp;4</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>386</MSGNR>
+     <TEXT>Class &amp;1 method &amp;2 range &amp;3 : Include and exclude are together</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>387</MSGNR>
+     <TEXT>Class &amp;1 method &amp;2 : &amp;3 has an unexpected value; possible ABAP error</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>399</MSGNR>
+     <TEXT>&amp;1 &amp;2 : &amp;3 field is missing in &amp;4 (possible ABAP error)</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>421</MSGNR>
+     <TEXT>Class &amp;1 method &amp;2 : Paramter &amp;3 is empty</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>423</MSGNR>
+     <TEXT>Class &amp;1 method &amp;2 : Variables &amp;3 &amp;4 are contradicting</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>440</MSGNR>
+     <TEXT>Class &amp;1 method &amp;2 : &amp;3 is not cached yet (possible ABAP error)</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>456</MSGNR>
+     <TEXT>Function &amp;1 returned an error: &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>460</MSGNR>
+     <TEXT>No data found for key &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>470</MSGNR>
+     <TEXT>Can&apos;t read &amp;2 values for &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>526</MSGNR>
+     <TEXT>&amp;1 locked for a long time, giving up (locked by &amp;2 )</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>535</MSGNR>
+     <TEXT>Can&apos;t do that in read only mode</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>540</MSGNR>
+     <TEXT>&amp;1 &amp;2 method error: &amp;3</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>584</MSGNR>
+     <TEXT>&amp;1 returned no result for key &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>586</MSGNR>
+     <TEXT>Class &amp;1 method &amp;2 : Value &amp;3 is not present (possible ABAP error)</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>901</MSGNR>
+     <TEXT>Batch input error occurred</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>902</MSGNR>
+     <TEXT>Couldn&apos;t complete SHI3 / SHI6 piece list for &amp;1</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>915</MSGNR>
+     <TEXT>None of the materials sent to &amp;1 &amp;2 are eligible for the order</TEXT>
+    </item>
+   </T100_TEXTS>
   </asx:values>
  </asx:abap>
 </abapGit>
