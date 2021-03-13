@@ -83,6 +83,8 @@ CLASS ycl_addict_tpalog_reader DEFINITION
 
            trkorr_list TYPE STANDARD TABLE OF trkorr_dict WITH DEFAULT KEY.
 
+    CONSTANTS trkorr_size TYPE i VALUE 100.
+
     CONSTANTS: BEGIN OF trstep,
                  main_imp TYPE tpalog-trstep VALUE 'I',
                END OF trstep.
@@ -109,6 +111,10 @@ CLASS ycl_addict_tpalog_reader DEFINITION
     METHODS parse_tpalog.
     METHODS read_master.
     METHODS read_tpalog RAISING ycx_addict_tpalog_read.
+
+    METHODS read_tpalog_for_requests
+      IMPORTING !trkorr TYPE trkorr_list
+      RAISING   ycx_addict_function_subrc.
 
     METHODS req_has_retcode
       IMPORTING !trkorr    TYPE tpalog-trkorr
@@ -202,12 +208,12 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     SORT unique_trkorrs.
     DELETE ADJACENT DUPLICATES FROM unique_trkorrs.
 
-    me->list = VALUE #( FOR _tr IN unique_trkorrs (
-        trkorr = _tr-trkorr
-        status = get_req_status( _tr-trkorr )
-        trdate = get_req_date( _tr-trtime )
-        trtime = get_req_time( _tr-trtime )
-        admin  = _tr-admin ) ).
+    me->list = VALUE #( FOR _tr IN unique_trkorrs
+                        ( trkorr = _tr-trkorr
+                          status = get_req_status( _tr-trkorr )
+                          trdate = get_req_date( _tr-trtime )
+                          trtime = get_req_time( _tr-trtime )
+                          admin  = _tr-admin ) ).
   ENDMETHOD.
 
 
@@ -216,7 +222,6 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     " Read request master data
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     CHECK me->list IS NOT INITIAL.
-
     DATA(master) = VALUE master_set( ).
 
     SELECT e070~trkorr, e070~trfunction, e070~tarsystem,
@@ -235,9 +240,9 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
 
       CHECK sy-subrc = 0.
 
-      <list>-as4text = <master>-as4text.
+      <list>-as4text    = <master>-as4text.
       <list>-trfunction = <master>-trfunction.
-      <list>-tarsystem = <master>-tarsystem.
+      <list>-tarsystem  = <master>-tarsystem.
     ENDLOOP.
   ENDMETHOD.
 
@@ -246,11 +251,6 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Reads TPALOG from the target system
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-    DATA dat    TYPE STANDARD TABLE OF tab512.
-    DATA fld    TYPE STANDARD TABLE OF rfc_db_fld.
-    DATA opt    TYPE STANDARD TABLE OF rfc_db_opt.
-    DATA tpalog TYPE tpalog_list.
     DATA trkorr TYPE trkorr_list.
 
     TRY.
@@ -275,72 +275,25 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
                  APPENDING CORRESPONDING FIELDS OF TABLE @trkorr ##TOO_MANY_ITAB_FIELDS .
         ENDIF.
 
-        DATA(trkorr_appended) = abap_false.
-
-        LOOP AT trkorr ASSIGNING FIELD-SYMBOL(<trkorr>).
-
-          IF trkorr_appended = abap_false.
-            APPEND VALUE #( text = '(' ) TO opt.
-            trkorr_appended = abap_true.
-          ELSE.
-            APPEND VALUE #( text = 'OR' ) TO opt.
-          ENDIF.
-
-          APPEND VALUE #( text = |TRKORR = '{ <trkorr>-trkorr }'| ) TO opt.
-
-        ENDLOOP.
-
-        IF trkorr_appended = abap_true.
-          APPEND VALUE #( text = ')' ) TO opt.
+        IF trkorr IS INITIAL.
+          read_tpalog_for_requests( trkorr ).
+          RETURN.
         ENDIF.
 
-        " ______________________________
-        " Add date range to where condition
-        " ¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
-        IF me->date_range IS NOT INITIAL.
+        WHILE trkorr IS NOT INITIAL.
+          DATA(trkorr_subset) = VALUE trkorr_list( ).
 
-          ASSERT me->date_range-begda IS NOT INITIAL AND
-                 me->date_range-endda IS NOT INITIAL AND
-                 me->date_range-begda LE me->date_range-endda.
+          LOOP AT trkorr ASSIGNING FIELD-SYMBOL(<trkorr>).
+            APPEND <trkorr> TO trkorr_subset.
+            DELETE trkorr.
+            IF lines( trkorr_subset ) >= me->trkorr_size.
+              EXIT.
+            ENDIF.
+          ENDLOOP.
 
-          IF opt IS INITIAL.
-            APPEND VALUE #( text = '(' ) TO opt.
-          ELSE.
-            APPEND VALUE #( text = 'AND (' ) TO opt.
-          ENDIF.
-
-          APPEND VALUE #( text = |TRTIME >= { me->date_range-begda }000000| ) TO opt.
-          APPEND VALUE #( text = |AND TRTIME <= { me->date_range-endda }235959| ) TO opt.
-          APPEND VALUE #( text = ')' ) TO opt.
-        ENDIF.
-
-        " ______________________________
-        " Read
-        " ¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
-        CALL FUNCTION 'RFC_READ_TABLE' DESTINATION me->rfcdest
-          EXPORTING
-            query_table          = 'TPALOG'
-          TABLES
-            options              = opt
-            fields               = fld
-            data                 = dat
-          EXCEPTIONS
-            table_not_available  = 1
-            table_without_data   = 2
-            option_not_valid     = 3
-            field_not_valid      = 4
-            not_authorized       = 5
-            data_buffer_exceeded = 6
-            OTHERS               = 7 ##FM_SUBRC_OK.
-
-        ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'RFC_READ_TABLE' ).
-
-        tpalog = dat.
-
-        me->tpalog = VALUE #(
-            FOR _t IN tpalog
-            WHERE ( trstep = me->trstep-main_imp )
-            ( _t ) ).
+          read_tpalog_for_requests( trkorr_subset ).
+          CLEAR trkorr_subset.
+        ENDWHILE.
 
       CATCH ycx_addict_tpalog_read INTO DATA(lo_tr).
         RAISE EXCEPTION lo_tr.
@@ -351,6 +304,81 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
             previous = lo_diaper
             rfcdest  = me->rfcdest.
     ENDTRY.
+  ENDMETHOD.
+
+
+  METHOD read_tpalog_for_requests.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " TPALOG tablosunu iletilen Request'ler için okur
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    DATA dat    TYPE STANDARD TABLE OF tab512.
+    DATA fld    TYPE STANDARD TABLE OF rfc_db_fld.
+    DATA opt    TYPE STANDARD TABLE OF rfc_db_opt.
+    DATA tpalog TYPE tpalog_list.
+
+    DATA(trkorr_appended) = abap_false.
+
+    LOOP AT trkorr ASSIGNING FIELD-SYMBOL(<trkorr>).
+      IF trkorr_appended = abap_false.
+        APPEND VALUE #( text = '(' ) TO opt.
+        trkorr_appended = abap_true.
+      ELSE.
+        APPEND VALUE #( text = 'OR' ) TO opt.
+      ENDIF.
+
+      APPEND VALUE #( text = |TRKORR = '{ <trkorr>-trkorr }'| ) TO opt.
+    ENDLOOP.
+
+    IF trkorr_appended = abap_true.
+      APPEND VALUE #( text = ')' ) TO opt.
+    ENDIF.
+
+    " ______________________________
+    " Add date range to where condition
+    " ¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
+    IF me->date_range IS NOT INITIAL.
+      ASSERT me->date_range-begda IS NOT INITIAL AND
+             me->date_range-endda IS NOT INITIAL AND
+             me->date_range-begda <= me->date_range-endda.
+
+      IF opt IS INITIAL.
+        APPEND VALUE #( text = '(' ) TO opt.
+      ELSE.
+        APPEND VALUE #( text = 'AND (' ) TO opt.
+      ENDIF.
+
+      APPEND VALUE #( text = |TRTIME >= { me->date_range-begda }000000| ) TO opt.
+      APPEND VALUE #( text = |AND TRTIME <= { me->date_range-endda }235959| ) TO opt.
+      APPEND VALUE #( text = ')' ) TO opt.
+    ENDIF.
+
+    " ______________________________
+    " Read
+    " ¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
+    CALL FUNCTION 'RFC_READ_TABLE' DESTINATION me->rfcdest
+      EXPORTING
+        query_table          = 'TPALOG'
+      TABLES
+        options              = opt
+        fields               = fld
+        data                 = dat
+      EXCEPTIONS
+        table_not_available  = 1
+        table_without_data   = 2
+        option_not_valid     = 3
+        field_not_valid      = 4
+        not_authorized       = 5
+        data_buffer_exceeded = 6
+        OTHERS               = 7 ##FM_SUBRC_OK.
+
+    ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'RFC_READ_TABLE' ).
+
+    tpalog = dat.
+
+    APPEND LINES OF VALUE tpalog_s_list( FOR _t IN tpalog
+                                         WHERE ( trstep = me->trstep-main_imp )
+                                         ( _t )
+                                       ) TO me->tpalog.
   ENDMETHOD.
 
 
