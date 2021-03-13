@@ -80,7 +80,7 @@ CLASS ycl_addict_se01_reader IMPLEMENTATION.
           EXPORTING
             textid   = ycx_addict_class_method=>unexpected_error
             previous = diaper
-            class    = CONV #( cl_abap_classdescr=>get_class_name( me ) )
+            class    = CONV #( ycl_addict_class=>get_class_name( me ) )
             method   = method-execute.
     ENDTRY.
   ENDMETHOD.

@@ -1376,7 +1376,7 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
           EXPORTING
             textid   = ycx_addict_class_method=>unexpected_error
             previous = diaper
-            class    = CONV #( cl_abap_classdescr=>get_class_name( me ) )
+            class    = CONV #( ycl_addict_class=>get_class_name( me ) )
             method   = me->method-get_request_subtask_tree.
     ENDTRY.
   ENDMETHOD.

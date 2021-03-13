@@ -81,7 +81,7 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
           EXPORTING
             textid   = ycx_addict_class_method=>unexpected_error
             previous = diaper
-            class    = CONV #( cl_abap_classdescr=>get_class_name( me ) )
+            class    = CONV #( ycl_addict_class=>get_class_name( me ) )
             method   = me->method-execute.
     ENDTRY.
   ENDMETHOD.
@@ -136,7 +136,7 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
       RAISE EXCEPTION TYPE ycx_addict_method_parameter
         EXPORTING
           textid      = ycx_addict_method_parameter=>param_missing
-          class_name  = CONV #( cl_abap_classdescr=>get_class_name( me ) )
+          class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
           method_name = me->method-execute
           param_name  = me->field-sysnam.
     ENDIF.
@@ -145,7 +145,7 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
       RAISE EXCEPTION TYPE ycx_addict_method_parameter
         EXPORTING
           textid      = ycx_addict_method_parameter=>param_missing
-          class_name  = CONV #( cl_abap_classdescr=>get_class_name( me ) )
+          class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
           method_name = me->method-execute
           param_name  = me->field-trkorr.
     ENDIF.
