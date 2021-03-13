@@ -287,7 +287,7 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
             APPEND <trkorr> TO trkorr_subset.
             DELETE trkorr.
             IF lines( trkorr_subset ) >= me->trkorr_size.
-              EXIT.
+              EXIT. "#EC CI_NOORDER
             ENDIF.
           ENDLOOP.
 
@@ -386,9 +386,20 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Tells if the provided request has the return code
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    DATA(latest_trtime) =
+      REDUCE tpalog-trtime( INIT _tt TYPE tpalog-trtime
+                            FOR _tpalog IN me->tpalog
+                            USING KEY k1
+                            WHERE ( trkorr = trkorr )
+                            NEXT _tt = COND #( WHEN _tt IS INITIAL THEN _tpalog-trtime
+                                               WHEN _tt < _tpalog-trtime THEN _tpalog-trtime
+                                               ELSE _tt ) ).
+
+
     LOOP AT me->tpalog TRANSPORTING NO FIELDS
          USING KEY k1
-         WHERE trkorr  = trkorr AND
+         WHERE trtime  = latest_trtime AND
+               trkorr  = trkorr AND
                retcode = retcode.
 
       has = abap_true.
