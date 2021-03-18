@@ -65,6 +65,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>&amp;1 Ticket&apos;ı &amp;2 statüsüne getirilemez (veya tanım eksikliği var)</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>010</MSGNR>
      <TEXT>&amp;1 sınıfı &amp;2 Method&apos;unda hatalı parametre var (ABAP hatası)</TEXT>
     </T100>
@@ -460,6 +466,11 @@
      <SPRSL>E</SPRSL>
      <MSGNR>008</MSGNR>
      <TEXT>Expecting single entry in table &amp;1 , found multiple</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>009</MSGNR>
+     <TEXT>Ticket &amp;1 can&apos;t be set to status &amp;2 (or missing definition)</TEXT>
     </item>
     <item>
      <SPRSL>E</SPRSL>

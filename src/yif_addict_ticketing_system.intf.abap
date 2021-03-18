@@ -27,6 +27,12 @@ INTERFACE yif_addict_ticketing_system PUBLIC.
     RETURNING VALUE(output) TYPE abap_bool
     RAISING   ycx_addict_ticketing_system.
 
+  METHODS can_set_ticket_to_status DEFAULT IGNORE
+    IMPORTING !ticket_id    TYPE yd_addict_ticket_id
+              !status_id    TYPE yd_addict_ticket_status_id
+    RETURNING VALUE(result) TYPE abap_bool
+    RAISING   ycx_addict_ticketing_system.
+
   METHODS get_ticket_header DEFAULT IGNORE
     IMPORTING !ticket_id    TYPE yd_addict_ticket_id
     RETURNING VALUE(output) TYPE ysaddict_ticket_header
