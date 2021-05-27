@@ -135,7 +135,7 @@ CLASS ycl_addict_alv IMPLEMENTATION.
         ENDIF.
 
         IF input-hotspot_fields IS NOT INITIAL.
-          DATA(hotspot_rng) = conv_field_list_to_range( input-tech_fields ).
+          DATA(hotspot_rng) = conv_field_list_to_range( input-hotspot_fields ).
 
           MODIFY me->fcat FROM VALUE #( hotspot = abap_true )
                  TRANSPORTING hotspot
