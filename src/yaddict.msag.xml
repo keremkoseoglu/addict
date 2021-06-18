@@ -83,6 +83,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>&amp;1 Request&apos;i &amp;2 sistemine manuel taşınmalıdır</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>017</MSGNR>
      <TEXT>Entegrasyon verileri okunamadı</TEXT>
     </T100>
@@ -481,6 +487,11 @@
      <SPRSL>E</SPRSL>
      <MSGNR>011</MSGNR>
      <TEXT>Ticketing system error</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>012</MSGNR>
+     <TEXT>&amp;1 must be imported to &amp;2 manually</TEXT>
     </item>
     <item>
      <SPRSL>E</SPRSL>

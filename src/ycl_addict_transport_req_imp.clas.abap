@@ -28,13 +28,8 @@ CLASS ycl_addict_transport_req_imp DEFINITION
                  trkorr TYPE seocpdname VALUE 'TRKORR',
                END OF field.
 
-    CONSTANTS: BEGIN OF table,
-                 tmscdom TYPE tabname VALUE 'TMSCDOM',
-               END OF table.
-
     CONSTANTS: BEGIN OF method,
-                 execute          TYPE seocpdname VALUE 'EXECUTE',
-                 lazy_read_domnam TYPE seocpdname VALUE 'LAZY_READ_DOMNAM',
+                 execute TYPE seocpdname VALUE 'EXECUTE',
                END OF method.
 
     CONSTANTS: BEGIN OF class,
@@ -47,10 +42,7 @@ CLASS ycl_addict_transport_req_imp DEFINITION
 
     CONSTANTS: critical_message_types TYPE char3 VALUE 'EAX'.
 
-    CLASS-DATA domnam TYPE tmscdom-domnam.
     DATA state TYPE state_dict.
-
-    CLASS-METHODS lazy_read_domnam RAISING ycx_addict_class_method.
 
     METHODS validate_input RAISING ycx_addict_method_parameter.
     METHODS notify_users.
@@ -84,47 +76,6 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
             class    = CONV #( ycl_addict_class=>get_class_name( me ) )
             method   = me->method-execute.
     ENDTRY.
-  ENDMETHOD.
-
-
-  METHOD lazy_read_domnam.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Read the transport domain.
-    " This method assumes that TMSCDOM will have a single entry.
-    " If there are multiple entries, this method will generate
-    " an error. In that case, the method would need to be
-    " modified to return the accurate DOMNAM.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA(domnam) = REF #( ycl_addict_transport_req_imp=>domnam ).
-
-    IF domnam->* IS NOT INITIAL.
-      RETURN.
-    ENDIF.
-
-    SELECT domnam FROM tmscdom INTO TABLE @DATA(domnams).
-
-    CASE lines( domnams ).
-      WHEN 0.
-        RAISE EXCEPTION TYPE ycx_addict_class_method
-          EXPORTING
-            textid   = ycx_addict_class_method=>unimplemented_feature
-            class    = class-me
-            method   = method-lazy_read_domnam
-            previous = NEW ycx_addict_table_content(
-                       textid    = ycx_addict_table_content=>table_empty
-                       tabname   = table-tmscdom ).
-      WHEN 1.
-        domnam->* = domnams[ 1 ].
-      WHEN OTHERS.
-        RAISE EXCEPTION TYPE ycx_addict_class_method
-          EXPORTING
-            textid   = ycx_addict_class_method=>unimplemented_feature
-            class    = class-me
-            method   = method-lazy_read_domnam
-            previous = NEW ycx_addict_table_content(
-                       textid    = ycx_addict_table_content=>multiple_entries
-                       tabname   = table-tmscdom ).
-    ENDCASE.
   ENDMETHOD.
 
 
@@ -192,85 +143,15 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
 
 
   METHOD import_requests.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Actually import requests into the target system
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Transmit queue """"""""""""""""""""""""""""""""""""""""""""""""
+    NEW ycl_addict_transmit_tr_queue( )->execute(
+            VALUE #( sysnam     = me->state-input-sysnam
+                     show_popup = me->state-input-show_popup ) ).
 
-    " Transmit Queue """"""""""""""""""""""""""""""""""""""""""""""""
-    IF me->state-input-show_popup = abap_true.
-      CALL FUNCTION 'TMS_UI_TRANSMIT_TR_QUEUE'
-        EXPORTING
-          iv_system             = me->state-input-sysnam
-        EXCEPTIONS
-          cancelled_by_user     = 1
-          without_refresh       = 2
-          transmit_queue_failed = 3
-          OTHERS                = 4
-          ##FM_SUBRC_OK.
-
-      ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'TMS_UI_TRANSMIT_TR_QUEUE' ).
-
-    ELSE.
-      lazy_read_domnam( ).
-      DATA(tp_trque) = VALUE stms_tp_trque( ).
-
-      CALL FUNCTION 'TMS_MGR_TRANSMIT_TR_QUEUE'
-        EXPORTING
-          iv_tar_sys                = me->state-input-sysnam
-          iv_tar_dom                = me->domnam
-          iv_src_sys                = space
-          iv_src_dom                = me->domnam
-          iv_loc_grp                = abap_true
-          iv_ext_grp                = abap_true
-          iv_read_only              = abap_true
-          iv_monitor                = abap_true
-          iv_verbose                = abap_false
-        CHANGING
-          cs_tp_trque               = tp_trque
-        EXCEPTIONS
-          read_config_failed        = 1
-          system_not_found          = 2
-          group_not_found           = 3
-          no_source_systems_found   = 4
-          feature_not_available     = 5
-          identical_groups          = 6
-          check_group_config_failed = 7
-          invalid_group_config      = 8
-          OTHERS                    = 9 ##FM_SUBRC_OK.
-
-      ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'TMS_MGR_TRANSMIT_TR_QUEUE' ).
-
-      CALL FUNCTION 'TMS_MGR_TRANSMIT_TR_QUEUE'
-        EXPORTING
-          iv_tar_sys                = me->state-input-sysnam
-          iv_tar_dom                = me->domnam
-          iv_read_only              = abap_false
-          iv_use_list               = abap_true
-          iv_without_ftp            = abap_false
-          iv_monitor                = abap_true
-          iv_verbose                = abap_false
-        CHANGING
-          cs_tp_trque               = tp_trque
-        EXCEPTIONS
-          read_config_failed        = 1
-          system_not_found          = 2
-          group_not_found           = 3
-          no_source_systems_found   = 4
-          feature_not_available     = 5
-          identical_groups          = 6
-          check_group_config_failed = 7
-          invalid_group_config      = 8
-          OTHERS                    = 9
-          ##FM_SUBRC_OK.
-
-      ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'TMS_MGR_TRANSMIT_TR_QUEUE' ).
-
-    ENDIF.
-
-    " Import """"""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA(requests) = VALUE stms_tr_requests(
-        FOR _trkorr IN me->state-input-trkorr (
-            trkorr = _trkorr ) ).
+    " Import requests """""""""""""""""""""""""""""""""""""""""""""""
+    DATA(requests) =
+      VALUE stms_tr_requests( FOR _trkorr IN me->state-input-trkorr (
+                              trkorr = _trkorr ) ).
 
     IF me->state-input-show_popup = abap_true.
       CALL FUNCTION 'TMS_UI_IMPORT_TR_REQUEST'

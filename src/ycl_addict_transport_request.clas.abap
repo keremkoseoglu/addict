@@ -191,6 +191,10 @@ CLASS ycl_addict_transport_request DEFINITION
       IMPORTING !obj_type      TYPE request_type_dict
       RETURNING VALUE(related) TYPE abap_bool .
 
+    CLASS-METHODS is_request_external
+      IMPORTING !trkorr       TYPE e070-trkorr
+      RETURNING VALUE(result) TYPE abap_bool.
+
     METHODS add_objects
       IMPORTING !obj               TYPE ytt_addict_e071_obj_key
                 !sort_and_compress TYPE abap_bool DEFAULT abap_false
@@ -275,6 +279,8 @@ CLASS ycl_addict_transport_request DEFINITION
       RAISING   ycx_addict_class_method.
 
     METHODS is_released RETURNING VALUE(result) TYPE abap_bool.
+
+    METHODS is_external RETURNING VALUE(result) TYPE abap_bool.
 
     METHODS release
       IMPORTING !rel_subtasks_too    TYPE abap_bool
@@ -1485,6 +1491,12 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD is_request_external.
+    " Is the given request external? """"""""""""""""""""""""""""""""
+    result = xsdbool( trkorr+0(3) <> sy-sysid ).
+  ENDMETHOD.
+
+
   METHOD is_toc_safe.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Is this Request safe enough to be included in a ToC?
@@ -1505,6 +1517,12 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     DATA(header) = me->get_header( ).
     result = xsdbool( header-trstatus IN get_released_status_rng( ) ).
+  ENDMETHOD.
+
+
+  METHOD is_external.
+    " Is Request external? """"""""""""""""""""""""""""""""""""""""""
+    result = is_request_external( me->trkorr ).
   ENDMETHOD.
 
 
