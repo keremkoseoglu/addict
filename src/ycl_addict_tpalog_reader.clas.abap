@@ -85,10 +85,6 @@ CLASS ycl_addict_tpalog_reader DEFINITION
 
     CONSTANTS trkorr_size TYPE i VALUE 100.
 
-    CONSTANTS: BEGIN OF trstep,
-                 main_imp TYPE tpalog-trstep VALUE 'I',
-               END OF trstep.
-
     DATA date_range TYPE date_range_dict.
     DATA list       TYPE output_list.
     DATA sys_data   TYPE sys_data_set.
@@ -171,20 +167,20 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     status = COND #(
         WHEN req_has_retcode( trkorr  = trkorr
-                              retcode = '0000' )
-        THEN me->status-imported
-
-        WHEN req_has_retcode( trkorr  = trkorr
-                              retcode = '0004' )
-        THEN me->status-imported
+                              retcode = '0012' )
+        THEN me->status-error
 
         WHEN req_has_retcode( trkorr  = trkorr
                               retcode = '0008' )
         THEN me->status-error
 
         WHEN req_has_retcode( trkorr  = trkorr
-                              retcode = '0012' )
-        THEN me->status-error
+                              retcode = '0004' )
+        THEN me->status-imported
+
+        WHEN req_has_retcode( trkorr  = trkorr
+                              retcode = '0000' )
+        THEN me->status-imported
 
         ELSE me->status-unknown ).
   ENDMETHOD.
@@ -287,7 +283,7 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
             APPEND <trkorr> TO trkorr_subset.
             DELETE trkorr.
             IF lines( trkorr_subset ) >= me->trkorr_size.
-              EXIT. "#EC CI_NOORDER
+              EXIT.                                     "#EC CI_NOORDER
             ENDIF.
           ENDLOOP.
 
@@ -375,9 +371,7 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
 
     tpalog = dat.
 
-    APPEND LINES OF VALUE tpalog_s_list( FOR _t IN tpalog
-                                         WHERE ( trstep = me->trstep-main_imp )
-                                         ( _t )
+    APPEND LINES OF VALUE tpalog_s_list( FOR _t IN tpalog ( _t )
                                        ) TO me->tpalog.
   ENDMETHOD.
 
@@ -386,21 +380,21 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Tells if the provided request has the return code
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA(latest_trtime) =
-      REDUCE tpalog-trtime( INIT _tt TYPE tpalog-trtime
-                            FOR _tpalog IN me->tpalog
-                            USING KEY k1
-                            WHERE ( trkorr = trkorr )
-                            NEXT _tt = COND #( WHEN _tt IS INITIAL THEN _tpalog-trtime
-                                               WHEN _tt < _tpalog-trtime THEN _tpalog-trtime
-                                               ELSE _tt ) ).
+    DATA(latest_tpstat_key) =
+      REDUCE tpalog-tpstat_key( INIT _tt TYPE tpalog-tpstat_key
+                                FOR _tpalog IN me->tpalog
+                                USING KEY k1
+                                WHERE ( trkorr = trkorr )
+                                NEXT _tt = COND #( WHEN _tt IS INITIAL THEN _tpalog-tpstat_key
+                                                   WHEN _tt < _tpalog-tpstat_key THEN _tpalog-tpstat_key
+                                                   ELSE _tt ) ).
 
 
     LOOP AT me->tpalog TRANSPORTING NO FIELDS
          USING KEY k1
-         WHERE trtime  = latest_trtime AND
-               trkorr  = trkorr AND
-               retcode = retcode.
+         WHERE tpstat_key = latest_tpstat_key AND
+               trkorr     = trkorr AND
+               retcode    = retcode.
 
       has = abap_true.
       RETURN.
