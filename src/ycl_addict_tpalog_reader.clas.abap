@@ -373,6 +373,10 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
 
     APPEND LINES OF VALUE tpalog_s_list( FOR _t IN tpalog ( _t )
                                        ) TO me->tpalog.
+
+    IF 1 = 0. " Where Used List
+      SELECT SINGLE trkorr FROM tpalog INTO @data(dummy).
+    ENDIF.
   ENDMETHOD.
 
 

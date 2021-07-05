@@ -159,5 +159,9 @@ CLASS ycl_addict_tadir_reader IMPLEMENTATION.
       tadir = dat.
       state-tadir_keys = CORRESPONDING #( tadir ).
     ENDIF.
+
+    IF 1 = 0. " Where Used List
+      SELECT SINGLE pgmid FROM tadir INTO @data(dummy).
+    ENDIF.
   ENDMETHOD.
 ENDCLASS.
