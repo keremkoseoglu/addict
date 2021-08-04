@@ -73,6 +73,7 @@ CLASS ycl_addict_transport_request DEFINITION
                  clsd TYPE e071-object VALUE 'CLSD',
                  cpub TYPE e071-object VALUE 'CPUB',
                  cpri TYPE e071-object VALUE 'CPRI',
+                 ddls TYPE e071-object VALUE 'DDLS',
                  doma TYPE e071-object VALUE 'DOMA',
                  domd TYPE e071-object VALUE 'DOMD',
                  dted TYPE e071-object VALUE 'DTED',
