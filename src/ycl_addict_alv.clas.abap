@@ -169,7 +169,7 @@ CLASS ycl_addict_alv IMPLEMENTATION.
 
     TRY.
         ASSIGN me->itab->* TO <itab>.
-        DATA(grid_settings) = VALUE lvc_s_glay( edt_cll_cb = abap_true ).
+        DATA(grid_settings) = VALUE lvc_s_glay( edt_cll_cb = ycl_addict_gui_toolkit=>is_gui_on( ) ).
 
         CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
           EXPORTING

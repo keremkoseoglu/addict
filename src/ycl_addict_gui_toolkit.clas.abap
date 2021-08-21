@@ -11,10 +11,13 @@ CLASS ycl_addict_gui_toolkit DEFINITION
     CLASS-METHODS display_transport_requests
       IMPORTING !requests TYPE ycl_addict_transport_request=>trkorr_list.
 
+    CLASS-METHODS is_gui_on RETURNING VALUE(result) TYPE abap_bool.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
     CONSTANTS: BEGIN OF answer,
-                 yes          TYPE char1 VALUE 'J',
+                 german_yes   TYPE char1 VALUE 'J',
+                 english_yes  TYPE char1 VALUE 'Y',
                  first_button TYPE char1 VALUE '1',
                END OF answer.
 
@@ -93,5 +96,16 @@ CLASS ycl_addict_gui_toolkit IMPLEMENTATION.
       EXPORTING
         it_requests        = wd_requests
         iv_first_node_text = TEXT-013.
+  ENDMETHOD.
+
+
+  METHOD is_gui_on.
+    DATA gui_on TYPE answer.
+
+    CALL FUNCTION 'RFC_IS_GUI_ON'
+      IMPORTING
+        on = gui_on.
+
+    result = xsdbool( gui_on = answer-english_yes ).
   ENDMETHOD.
 ENDCLASS.
