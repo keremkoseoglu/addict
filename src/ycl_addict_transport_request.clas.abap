@@ -85,6 +85,7 @@ CLASS ycl_addict_transport_request DEFINITION
                  meth TYPE e071-object VALUE 'METH',
                  prog TYPE e071-object VALUE 'PROG',
                  vdat TYPE e071-object VALUE 'VDAT',
+                 view TYPE e071-object VALUE 'VIEW',
                END OF object.
 
     CONSTANTS: BEGIN OF pgmid,

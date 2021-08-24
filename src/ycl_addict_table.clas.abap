@@ -7,6 +7,7 @@ CLASS ycl_addict_table DEFINITION
     TYPES dd03l_list TYPE STANDARD TABLE OF dd03l WITH EMPTY KEY.
     TYPES tabname_list TYPE STANDARD TABLE OF tabname WITH EMPTY KEY.
     TYPES tabname_range TYPE RANGE OF tabname.
+    TYPES tabclass_range TYPE RANGE OF dd02l-tabclass.
 
     TYPES: BEGIN OF tabfld_dict,
              tabname   TYPE dd03l-tabname,
@@ -23,6 +24,12 @@ CLASS ycl_addict_table DEFINITION
            END OF fldroll_dict,
 
            fldroll_list TYPE STANDARD TABLE OF fldroll_dict WITH EMPTY KEY.
+
+    CONSTANTS: BEGIN OF tabclass,
+                 transparent TYPE dd02l-tabclass VALUE 'TRANSP',
+                 cluster     TYPE dd02l-tabclass VALUE 'CLUSTER',
+                 pooled      TYPE dd02l-tabclass VALUE 'POOL',
+               END OF tabclass.
 
     DATA def TYPE dd02l READ-ONLY.
 
@@ -49,6 +56,9 @@ CLASS ycl_addict_table DEFINITION
       IMPORTING !tabname_rng  TYPE tabname_range
                 !fldroll      TYPE fldroll_list
       RETURNING VALUE(output) TYPE tabname_list.
+
+    CLASS-METHODS get_data_storage_tabclass_rng
+      RETURNING VALUE(result) TYPE tabclass_range.
 
     METHODS check_table_has_flds_of_tab
       IMPORTING !tabname TYPE tabname
@@ -466,6 +476,15 @@ CLASS ycl_addict_table IMPLEMENTATION.
       DELETE output.
       CONTINUE.
     ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD get_data_storage_tabclass_rng.
+    result = VALUE #( sign    = ycl_addict_toolkit=>sign-include
+                      option  = ycl_addict_toolkit=>option-eq
+                      ( low   = tabclass-transparent )
+                      ( low   = tabclass-cluster )
+                      ( low   = tabclass-pooled ) ).
   ENDMETHOD.
 
 
