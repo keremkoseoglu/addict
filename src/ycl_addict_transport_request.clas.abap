@@ -62,6 +62,8 @@ CLASS ycl_addict_transport_request DEFINITION
 
            request_obj_list TYPE STANDARD TABLE OF request_obj_dict WITH EMPTY KEY.
 
+    TYPES tmsbuffer_list TYPE STANDARD TABLE OF tmsbuffer WITH EMPTY KEY.
+
     CONSTANTS: BEGIN OF domain,
                  trfunction TYPE domname VALUE 'TRFUNCTION',
                END OF domain.
@@ -112,7 +114,12 @@ CLASS ycl_addict_transport_request DEFINITION
 
     CONSTANTS: BEGIN OF method,
                  get_request_subtask_tree TYPE seocpdname VALUE 'GET_REQUEST_SUBTASK_TREE',
+                 read_tmsbuffer           TYPE seocpdname VALUE 'READ_TMSBUFFER',
                END OF method.
+
+    CONSTANTS: BEGIN OF class,
+                 me TYPE seoclsname VALUE 'YCL_ADDICT_TRANSPORT_REQUEST',
+               END OF class.
 
     DATA trkorr TYPE trkorr READ-ONLY .
 
@@ -196,6 +203,12 @@ CLASS ycl_addict_transport_request DEFINITION
     CLASS-METHODS is_request_external
       IMPORTING !trkorr       TYPE e070-trkorr
       RETURNING VALUE(result) TYPE abap_bool.
+
+    CLASS-METHODS read_tmsbuffer
+      IMPORTING !trkorr       TYPE trkorr
+                !sysid        TYPE yd_safetms_sysid
+      RETURNING VALUE(result) TYPE tmsbuffer_list
+      RAISING   ycx_addict_class_method.
 
     METHODS add_objects
       IMPORTING !obj               TYPE ytt_addict_e071_obj_key
@@ -1496,6 +1509,47 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
   METHOD is_request_external.
     " Is the given request external? """"""""""""""""""""""""""""""""
     result = xsdbool( trkorr+0(3) <> sy-sysid ).
+  ENDMETHOD.
+
+
+  METHOD read_tmsbuffer.
+    TRY.
+        DATA(dat)         = VALUE esh_t_co_rfcrt_data( ).
+        DATA(fld)         = VALUE esh_t_co_rfcrt_fields( ).
+        DATA(opt)         = VALUE esh_t_co_rfcrt_options( ( text = |SYSNAM = '{ sysid }' AND TRKORR = '{ trkorr }'| ) ).
+        DATA(sap_system)  = ycl_safetms_sap_system=>get_instance( VALUE #( sysid = sysid ) ).
+
+        CALL FUNCTION 'RFC_READ_TABLE' DESTINATION sap_system->def-rfcdest
+          EXPORTING
+            query_table          = 'TMSBUFFER'
+          TABLES
+            options              = opt
+            fields               = fld
+            data                 = dat
+          EXCEPTIONS
+            table_not_available  = 1
+            table_without_data   = 2
+            option_not_valid     = 3
+            field_not_valid      = 4
+            not_authorized       = 5
+            data_buffer_exceeded = 6
+            OTHERS               = 7 ##FM_SUBRC_OK.
+
+        ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'RFC_READ_TABLE' ).
+        result = dat.
+
+        IF 1 = 0. " Where Used List
+          SELECT SINGLE trkorr FROM tmsbuffer INTO @data(dummy).
+        ENDIF.
+
+      CATCH cx_root INTO DATA(diaper).
+        RAISE EXCEPTION TYPE ycx_addict_class_method
+          EXPORTING
+            textid   = ycx_addict_class_method=>unexpected_error
+            previous = diaper
+            class    = class-me
+            method   = method-read_tmsbuffer.
+    ENDTRY.
   ENDMETHOD.
 
 

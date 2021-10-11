@@ -5,10 +5,11 @@ CLASS ycl_addict_transport_req_fwd DEFINITION
 
   PUBLIC SECTION.
     TYPES: BEGIN OF input_dict,
-             trkorr     TYPE ytt_addict_trkorr_det,
-             sysnam     TYPE tmscsys-sysnam,
-             mandt      TYPE symandt,
-             show_popup TYPE abap_bool,
+             trkorr                    TYPE ytt_addict_trkorr_det,
+             sysnam                    TYPE tmscsys-sysnam,
+             mandt                     TYPE symandt,
+             show_popup                TYPE abap_bool,
+             pass_if_already_forwarded TYPE abap_bool,
            END OF input_dict.
 
     METHODS execute
@@ -39,8 +40,9 @@ CLASS ycl_addict_transport_req_fwd DEFINITION
     DATA state TYPE state_dict.
 
     METHODS validate_input RAISING ycx_addict_method_parameter.
-    METHODS forward_requests raising ycx_addict_function_subrc.
+    METHODS forward_requests RAISING ycx_addict_function_subrc.
     METHODS transmit_queue RAISING ycx_addict_class_method.
+    METHODS pass_already_forwarded RAISING ycx_addict_class_method.
 ENDCLASS.
 
 
@@ -51,6 +53,16 @@ CLASS ycl_addict_transport_req_fwd IMPLEMENTATION.
     TRY.
         me->state = VALUE #( input = input ).
         validate_input( ).
+
+        IF me->state-input-pass_if_already_forwarded = abap_true.
+          transmit_queue( ).
+          pass_already_forwarded( ).
+
+          IF me->state-input-trkorr IS INITIAL.
+            RETURN.
+          ENDIF.
+        ENDIF.
+
         forward_requests( ).
         transmit_queue( ).
 
@@ -158,5 +170,18 @@ CLASS ycl_addict_transport_req_fwd IMPLEMENTATION.
     NEW ycl_addict_transmit_tr_queue( )->execute(
             VALUE #( sysnam     = me->state-input-sysnam
                      show_popup = me->state-input-show_popup ) ).
+  ENDMETHOD.
+
+
+  METHOD pass_already_forwarded.
+    LOOP AT me->state-input-trkorr ASSIGNING FIELD-SYMBOL(<trkorr>).
+      DATA(tmsbuffer) = ycl_addict_transport_request=>read_tmsbuffer(
+                            trkorr = <trkorr>-trkorr
+                            sysid  = CONV #( <trkorr>-tarsystem ) ).
+
+      CHECK tmsbuffer IS NOT INITIAL.
+      DELETE me->state-input-trkorr.
+      CONTINUE.
+    ENDLOOP.
   ENDMETHOD.
 ENDCLASS.
