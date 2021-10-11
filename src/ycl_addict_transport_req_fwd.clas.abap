@@ -177,7 +177,7 @@ CLASS ycl_addict_transport_req_fwd IMPLEMENTATION.
     LOOP AT me->state-input-trkorr ASSIGNING FIELD-SYMBOL(<trkorr>).
       DATA(tmsbuffer) = ycl_addict_transport_request=>read_tmsbuffer(
                             trkorr = <trkorr>-trkorr
-                            sysid  = CONV #( <trkorr>-tarsystem ) ).
+                            sysid  = CONV #( me->state-input-sysnam ) ).
 
       CHECK tmsbuffer IS NOT INITIAL.
       DELETE me->state-input-trkorr.
