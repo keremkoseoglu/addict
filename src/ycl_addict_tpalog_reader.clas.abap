@@ -48,6 +48,8 @@ CLASS ycl_addict_tpalog_reader DEFINITION
                  waiting_txt  TYPE iconname VALUE 'ICON_TIME',
                END OF status.
 
+    CLASS-METHODS class_constructor.
+
     CLASS-METHODS format_ticket_id_input
       CHANGING !ticket_ids TYPE yif_addict_system_rules=>ticket_id_list.
 
@@ -85,6 +87,15 @@ CLASS ycl_addict_tpalog_reader DEFINITION
 
     CONSTANTS trkorr_size TYPE i VALUE 100.
 
+    CONSTANTS: BEGIN OF trstep,
+                 main_import TYPE tpalog-trstep VALUE 'I',
+                 activation  TYPE tpalog-trstep VALUE 'A',
+                 xpras       TYPE tpalog-trstep VALUE 'R',
+                 generation  TYPE tpalog-trstep VALUE 'G',
+               END OF trstep.
+
+    CLASS-DATA major_trstep_rng TYPE RANGE OF tpalog-trstep.
+
     DATA date_range TYPE date_range_dict.
     DATA list       TYPE output_list.
     DATA sys_data   TYPE sys_data_set.
@@ -121,6 +132,17 @@ ENDCLASS.
 
 
 CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
+  METHOD class_constructor.
+    ycl_addict_tpalog_reader=>major_trstep_rng =
+      VALUE #( sign   = ycl_addict_toolkit=>sign-include
+               option = ycl_addict_toolkit=>option-eq
+               ( low  = ycl_addict_tpalog_reader=>trstep-main_import )
+               ( low  = ycl_addict_tpalog_reader=>trstep-activation )
+               ( low  = ycl_addict_tpalog_reader=>trstep-xpras )
+               ( low  = ycl_addict_tpalog_reader=>trstep-generation ) ).
+  ENDMETHOD.
+
+
   METHOD format_ticket_id_input.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " String-format ticket ID's
@@ -375,7 +397,7 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
                                        ) TO me->tpalog.
 
     IF 1 = 0. " Where Used List
-      SELECT SINGLE trkorr FROM tpalog INTO @data(dummy).
+      SELECT SINGLE trkorr FROM tpalog INTO @data(dummy). "#EC CI_GENBUFF
     ENDIF.
   ENDMETHOD.
 
@@ -388,7 +410,8 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
       REDUCE tpalog-tpstat_key( INIT _tt TYPE tpalog-tpstat_key
                                 FOR _tpalog IN me->tpalog
                                 USING KEY k1
-                                WHERE ( trkorr = trkorr )
+                                WHERE ( trkorr =  trkorr AND
+                                        trstep IN me->major_trstep_rng )
                                 NEXT _tt = COND #( WHEN _tt IS INITIAL THEN _tpalog-tpstat_key
                                                    WHEN _tt < _tpalog-tpstat_key THEN _tpalog-tpstat_key
                                                    ELSE _tt ) ).
@@ -396,9 +419,10 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
 
     LOOP AT me->tpalog TRANSPORTING NO FIELDS
          USING KEY k1
-         WHERE tpstat_key = latest_tpstat_key AND
-               trkorr     = trkorr AND
-               retcode    = retcode.
+         WHERE tpstat_key =  latest_tpstat_key     AND
+               trkorr     =  trkorr                AND
+               trstep     IN me->major_trstep_rng  AND
+               retcode    =  retcode.
 
       has = abap_true.
       RETURN.
