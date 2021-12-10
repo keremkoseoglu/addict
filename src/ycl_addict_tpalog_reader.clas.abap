@@ -90,7 +90,6 @@ CLASS ycl_addict_tpalog_reader DEFINITION
     CONSTANTS: BEGIN OF trstep,
                  main_import TYPE tpalog-trstep VALUE 'I',
                  activation  TYPE tpalog-trstep VALUE 'A',
-                 xpras       TYPE tpalog-trstep VALUE 'R',
                  generation  TYPE tpalog-trstep VALUE 'G',
                END OF trstep.
 
@@ -138,7 +137,6 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
                option = ycl_addict_toolkit=>option-eq
                ( low  = ycl_addict_tpalog_reader=>trstep-main_import )
                ( low  = ycl_addict_tpalog_reader=>trstep-activation )
-               ( low  = ycl_addict_tpalog_reader=>trstep-xpras )
                ( low  = ycl_addict_tpalog_reader=>trstep-generation ) ).
   ENDMETHOD.
 
