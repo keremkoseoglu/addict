@@ -221,8 +221,9 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     CLEAR me->list.
 
     DATA(unique_trkorrs) = CORRESPONDING trkorr_list( me->tpalog ).
-    SORT unique_trkorrs.
-    DELETE ADJACENT DUPLICATES FROM unique_trkorrs.
+    SORT unique_trkorrs BY trkorr ASCENDING
+                           trtime DESCENDING.
+    DELETE ADJACENT DUPLICATES FROM unique_trkorrs COMPARING trkorr.
 
     me->list = VALUE #( FOR _tr IN unique_trkorrs
                         ( trkorr = _tr-trkorr
