@@ -253,7 +253,7 @@ CLASS ycl_addict_class IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     result = COND #( WHEN cx->previous IS INITIAL
                      THEN cx
-                     ELSE get_deepest_exception( cx ) ).
+                     ELSE get_deepest_exception( cx->previous ) ).
   ENDMETHOD.
 
 
