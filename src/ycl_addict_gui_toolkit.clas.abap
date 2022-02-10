@@ -12,6 +12,7 @@ CLASS ycl_addict_gui_toolkit DEFINITION
       IMPORTING !requests TYPE ycl_addict_transport_request=>trkorr_list.
 
     CLASS-METHODS is_gui_on RETURNING VALUE(result) TYPE abap_bool.
+    CLASS-METHODS report_fatal_error IMPORTING !error TYPE REF TO cx_root.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -107,5 +108,16 @@ CLASS ycl_addict_gui_toolkit IMPLEMENTATION.
         on = gui_on.
 
     result = xsdbool( gui_on = answer-english_yes ).
+  ENDMETHOD.
+
+
+  METHOD report_fatal_error.
+    CASE sy-batch.
+      WHEN abap_true.
+        DATA(deep_error) = ycl_addict_class=>get_deepest_exception( error ).
+        MESSAGE deep_error TYPE ycl_simbal=>msgty-abort.
+      WHEN abap_false.
+        ycl_simbal_gui=>display_cx_msg_popup( error ).
+    ENDCASE.
   ENDMETHOD.
 ENDCLASS.
