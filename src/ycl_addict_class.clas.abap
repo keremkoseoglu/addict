@@ -59,6 +59,10 @@ CLASS ycl_addict_class DEFINITION
       IMPORTING !obj          TYPE REF TO object
       RETURNING VALUE(result) TYPE seoclsname.
 
+    CLASS-METHODS get_deepest_exception
+      IMPORTING !cx           TYPE REF TO cx_root
+      RETURNING VALUE(result) TYPE REF TO cx_root.
+
     CLASS-METHODS get_instance
       IMPORTING !clsname   TYPE seoclsname
       RETURNING VALUE(obj) TYPE REF TO ycl_addict_class
@@ -240,6 +244,16 @@ CLASS ycl_addict_class IMPLEMENTATION.
     DATA(long_class_name) = cl_abap_classdescr=>get_class_name( obj ).
     REPLACE ALL OCCURRENCES OF '\CLASS=' IN long_class_name WITH space.
     result = long_class_name.
+  ENDMETHOD.
+
+
+  METHOD get_deepest_exception.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Returns the deepest exception object
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    result = COND #( WHEN cx->previous IS INITIAL
+                     THEN cx
+                     ELSE get_deepest_exception( cx ) ).
   ENDMETHOD.
 
 
