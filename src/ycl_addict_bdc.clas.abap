@@ -45,7 +45,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_bdc IMPLEMENTATION.
+CLASS YCL_ADDICT_BDC IMPLEMENTATION.
+
+
   METHOD add_fld.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Append new field for batch input
@@ -153,5 +155,4 @@ CLASS ycl_addict_bdc IMPLEMENTATION.
       ENDLOOP.
     ENDIF.
   ENDMETHOD.
-
 ENDCLASS.

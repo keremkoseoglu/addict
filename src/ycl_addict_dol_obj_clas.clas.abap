@@ -10,7 +10,7 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dol_obj_clas IMPLEMENTATION.
+CLASS YCL_ADDICT_DOL_OBJ_CLAS IMPLEMENTATION.
 
 
   METHOD yif_addict_dol_obj~get_ddtext.

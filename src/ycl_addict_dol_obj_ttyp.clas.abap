@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dol_obj_ttyp IMPLEMENTATION.
+CLASS YCL_ADDICT_DOL_OBJ_TTYP IMPLEMENTATION.
+
+
   METHOD yif_addict_dol_obj~get_ddtext.
     SELECT SINGLE ddtext FROM dd40t                     "#EC CI_NOORDER
            WHERE typename   = @obj_name AND

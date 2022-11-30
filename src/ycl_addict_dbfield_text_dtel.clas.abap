@@ -12,7 +12,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dbfield_text_dtel IMPLEMENTATION.
+CLASS YCL_ADDICT_DBFIELD_TEXT_DTEL IMPLEMENTATION.
+
+
   METHOD get_text.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns data element text

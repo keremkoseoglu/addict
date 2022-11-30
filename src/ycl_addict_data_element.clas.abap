@@ -79,27 +79,8 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_data_element IMPLEMENTATION.
-  METHOD get_instance.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Returns a new instance
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    ASSIGN ycl_addict_data_element=>multitons[
-             KEY primary_key COMPONENTS
-             rollname = rollname
-          ] TO FIELD-SYMBOL(<multiton>).
+CLASS YCL_ADDICT_DATA_ELEMENT IMPLEMENTATION.
 
-    IF sy-subrc <> 0.
-      DATA(multiton) = VALUE multiton_dict(
-          rollname = rollname
-          obj      = NEW #( rollname ) ).
-
-      INSERT multiton INTO TABLE ycl_addict_data_element=>multitons
-             ASSIGNING <multiton>.
-    ENDIF.
-
-    output = <multiton>-obj.
-  ENDMETHOD.
 
   METHOD constructor.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -139,6 +120,28 @@ CLASS ycl_addict_data_element IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD get_instance.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Returns a new instance
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    ASSIGN ycl_addict_data_element=>multitons[
+             KEY primary_key COMPONENTS
+             rollname = rollname
+          ] TO FIELD-SYMBOL(<multiton>).
+
+    IF sy-subrc <> 0.
+      DATA(multiton) = VALUE multiton_dict(
+          rollname = rollname
+          obj      = NEW #( rollname ) ).
+
+      INSERT multiton INTO TABLE ycl_addict_data_element=>multitons
+             ASSIGNING <multiton>.
+    ENDIF.
+
+    output = <multiton>-obj.
+  ENDMETHOD.
+
+
   METHOD get_shortest_text.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns shortest text of data element
@@ -165,6 +168,19 @@ CLASS ycl_addict_data_element IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD get_shortest_text_safe.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Returns shortext text without raising an exception
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    TRY.
+        text = ycl_addict_data_element=>get_instance( rollname )->get_shortest_text( ).
+      CATCH cx_root.
+        text = rollname.
+    ENDTRY.
+
+  ENDMETHOD.
+
+
   METHOD get_text.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns data element text
@@ -176,19 +192,6 @@ CLASS ycl_addict_data_element IMPLEMENTATION.
         WHEN me->txt-scrtext_m IS NOT INITIAL THEN me->txt-scrtext_m
         WHEN me->txt-scrtext_s IS NOT INITIAL THEN me->txt-scrtext_s
         WHEN worst_case_rollname = abap_true  THEN me->def-rollname ).
-  ENDMETHOD.
-
-
-  METHOD get_shortest_text_safe.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Returns shortext text without raising an exception
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    TRY.
-        text = ycl_addict_data_element=>get_instance( rollname )->get_shortest_text( ).
-      CATCH cx_root.
-        text = rollname.
-    ENDTRY.
-
   ENDMETHOD.
 
 
@@ -210,5 +213,4 @@ CLASS ycl_addict_data_element IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     get_domain( )->validate_value( value ).
   ENDMETHOD.
-
 ENDCLASS.

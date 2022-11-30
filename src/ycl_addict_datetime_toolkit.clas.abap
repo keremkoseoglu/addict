@@ -47,7 +47,49 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_datetime_toolkit IMPLEMENTATION.
+CLASS YCL_ADDICT_DATETIME_TOOLKIT IMPLEMENTATION.
+
+
+  METHOD add_to_time.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Add time to a date + time.
+    " This method has been shamelessly copied from CATT_ADD_TO_TIME
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    DATA low_date TYPE d VALUE '19000101'.
+    DATA s(16) TYPE p.
+    s = ( idate - low_date ) * 86400 + itime ##NUMBER_OK.
+    s = s + stdaz * 3600 ##NUMBER_OK.
+    edate = low_date + ( s DIV 86400 ) ##NUMBER_OK.
+    etime = s MOD 86400 ##NUMBER_OK.
+  ENDMETHOD.
+
+
+  METHOD get_day_in_week.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Returns the day in week
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    DATA day TYPE scal-indicator.
+
+    ASSIGN day_in_week_cache[ datum = date ]
+           TO FIELD-SYMBOL(<day_in_week>).
+
+    IF sy-subrc <> 0.
+      DATA(cache) = VALUE day_in_week_dict( datum = date ).
+
+      CALL FUNCTION 'DATE_COMPUTE_DAY'
+        EXPORTING
+          date = cache-datum
+        IMPORTING
+          day  = day.
+
+      cache-day = day.
+      INSERT cache INTO TABLE day_in_week_cache ASSIGNING <day_in_week>.
+    ENDIF.
+
+    result = <day_in_week>-day.
+  ENDMETHOD.
+
+
   METHOD is_factory_workday.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Tells if the date is a workday or not
@@ -100,45 +142,5 @@ CLASS ycl_addict_datetime_toolkit IMPLEMENTATION.
     ENDIF.
 
     workday = <fwd>-workday.
-  ENDMETHOD.
-
-
-  METHOD add_to_time.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Add time to a date + time.
-    " This method has been shamelessly copied from CATT_ADD_TO_TIME
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA low_date TYPE d VALUE '19000101'.
-    DATA s(16) TYPE p.
-    s = ( idate - low_date ) * 86400 + itime ##NUMBER_OK.
-    s = s + stdaz * 3600 ##NUMBER_OK.
-    edate = low_date + ( s DIV 86400 ) ##NUMBER_OK.
-    etime = s MOD 86400 ##NUMBER_OK.
-  ENDMETHOD.
-
-
-  METHOD get_day_in_week.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Returns the day in week
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA day TYPE scal-indicator.
-
-    ASSIGN day_in_week_cache[ datum = date ]
-           TO FIELD-SYMBOL(<day_in_week>).
-
-    IF sy-subrc <> 0.
-      DATA(cache) = VALUE day_in_week_dict( datum = date ).
-
-      CALL FUNCTION 'DATE_COMPUTE_DAY'
-        EXPORTING
-          date = cache-datum
-        IMPORTING
-          day  = day.
-
-      cache-day = day.
-      INSERT cache INTO TABLE day_in_week_cache ASSIGNING <day_in_week>.
-    ENDIF.
-
-    result = <day_in_week>-day.
   ENDMETHOD.
 ENDCLASS.

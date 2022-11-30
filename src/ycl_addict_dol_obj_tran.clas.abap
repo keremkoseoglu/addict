@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dol_obj_tran IMPLEMENTATION.
+CLASS YCL_ADDICT_DOL_OBJ_TRAN IMPLEMENTATION.
+
+
   METHOD yif_addict_dol_obj~get_ddtext.
     SELECT SINGLE ttext FROM tstct
            WHERE tcode = @obj_name AND

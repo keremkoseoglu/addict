@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dol_obj_ddls IMPLEMENTATION.
+CLASS YCL_ADDICT_DOL_OBJ_DDLS IMPLEMENTATION.
+
+
   METHOD yif_addict_dol_obj~get_ddtext.
     SELECT SINGLE ddtext FROM DDDDLSRCT                     "#EC CI_NOORDER
            WHERE ddlname    = @obj_name

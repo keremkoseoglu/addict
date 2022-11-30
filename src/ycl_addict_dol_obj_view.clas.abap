@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dol_obj_view IMPLEMENTATION.
+CLASS YCL_ADDICT_DOL_OBJ_VIEW IMPLEMENTATION.
+
+
   METHOD yif_addict_dol_obj~get_ddtext.
     SELECT SINGLE ddtext FROM dd25t                     "#EC CI_NOORDER
            WHERE viewname   = @obj_name AND

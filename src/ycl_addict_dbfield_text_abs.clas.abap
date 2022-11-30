@@ -36,7 +36,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dbfield_text_abs IMPLEMENTATION.
+CLASS YCL_ADDICT_DBFIELD_TEXT_ABS IMPLEMENTATION.
+
+
   METHOD build_cor.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Builds the chain of responsibility

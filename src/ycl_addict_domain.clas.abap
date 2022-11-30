@@ -73,7 +73,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_domain IMPLEMENTATION.
+CLASS YCL_ADDICT_DOMAIN IMPLEMENTATION.
+
+
   METHOD ensure_text_read.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Lazy reads texts

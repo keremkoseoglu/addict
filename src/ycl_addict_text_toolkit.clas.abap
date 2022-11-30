@@ -25,7 +25,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_text_toolkit IMPLEMENTATION.
+CLASS YCL_ADDICT_TEXT_TOOLKIT IMPLEMENTATION.
+
+
   METHOD get_shortest_text.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns the shortest text among candidates

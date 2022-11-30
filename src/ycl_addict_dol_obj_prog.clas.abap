@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dol_obj_prog IMPLEMENTATION.
+CLASS YCL_ADDICT_DOL_OBJ_PROG IMPLEMENTATION.
+
+
   METHOD yif_addict_dol_obj~get_ddtext.
     SELECT SINGLE text FROM trdirt
            WHERE name  = @obj_name AND

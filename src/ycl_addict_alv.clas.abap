@@ -73,31 +73,7 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_alv IMPLEMENTATION.
-  METHOD constructor.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Object creation
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    me->cprog = cprog.
-    me->itab  = itab.
-    me->forms = forms.
-
-    IF fcat IS NOT INITIAL.
-      me->fcat = fcat.
-    ELSEIF fcat_param IS NOT INITIAL.
-      build_fcat( fcat_param ).
-    ELSE.
-      TRY.
-          set_fcat_from_itab( ).
-        CATCH cx_root ##no_handler .
-      ENDTRY.
-    ENDIF.
-
-    me->layout = COND #(
-        WHEN layout IS SUPPLIED THEN layout
-        ELSE VALUE #( zebra = abap_true
-                      colwidth_optimize = abap_true ) ).
-  ENDMETHOD.
+CLASS YCL_ADDICT_ALV IMPLEMENTATION.
 
 
   METHOD build_fcat.
@@ -158,6 +134,88 @@ CLASS ycl_addict_alv IMPLEMENTATION.
             textid   = ycx_addict_alv=>fcat_creation_error
             previous = diaper.
     ENDTRY.
+  ENDMETHOD.
+
+
+  METHOD constructor.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Object creation
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    me->cprog = cprog.
+    me->itab  = itab.
+    me->forms = forms.
+
+    IF fcat IS NOT INITIAL.
+      me->fcat = fcat.
+    ELSEIF fcat_param IS NOT INITIAL.
+      build_fcat( fcat_param ).
+    ELSE.
+      TRY.
+          set_fcat_from_itab( ).
+        CATCH cx_root ##no_handler .
+      ENDTRY.
+    ENDIF.
+
+    me->layout = COND #(
+        WHEN layout IS SUPPLIED THEN layout
+        ELSE VALUE #( zebra = abap_true
+                      colwidth_optimize = abap_true ) ).
+  ENDMETHOD.
+
+
+  METHOD conv_field_list_to_range.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Convert field list to field range
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    range = VALUE #(
+        FOR _field IN list (
+          sign   = ycl_addict_toolkit=>sign-include
+          option = ycl_addict_toolkit=>option-eq
+          low    = _field ) ).
+  ENDMETHOD.
+
+
+  METHOD set_fcat_from_itab.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Sets the field catalog from the passed internal table
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    FIELD-SYMBOLS <itab> TYPE STANDARD TABLE.
+
+    ASSIGN me->itab->* TO <itab>.
+
+    IF <itab> IS INITIAL.
+      DATA(itab_was_initial) = abap_true.
+      APPEND INITIAL LINE TO <itab>.
+    ENDIF.
+
+    ASSIGN <itab>[ 1 ] TO FIELD-SYMBOL(<line>).
+    set_fcat_from_itab_line( REF #( <line> ) ).
+
+    IF itab_was_initial = abap_true.
+      CLEAR <itab>.
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD set_fcat_from_itab_line.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Sets the field catalog from the passed internal table line
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    DATA(dscr) = cl_abap_typedescr=>describe_by_data_ref( line ).
+    DATA(name) = dscr->get_relative_name( ).
+    build_fcat( VALUE #( structure = name ) ).
+  ENDMETHOD.
+
+
+  METHOD show.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Display grid or list, depending on SY-BATCH
+    " Why? Grid produces an error in case the program is in the background
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    CASE sy-batch.
+      WHEN abap_true . show_list( ).
+      WHEN abap_false. show_grid( ).
+    ENDCASE.
   ENDMETHOD.
 
 
@@ -233,61 +291,5 @@ CLASS ycl_addict_alv IMPLEMENTATION.
             textid   = ycx_addict_alv=>grid_error
             previous = diaper.
     ENDTRY.
-  ENDMETHOD.
-
-
-  METHOD show.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Display grid or list, depending on SY-BATCH
-    " Why? Grid produces an error in case the program is in the background
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    CASE sy-batch.
-      WHEN abap_true . show_list( ).
-      WHEN abap_false. show_grid( ).
-    ENDCASE.
-  ENDMETHOD.
-
-
-  METHOD conv_field_list_to_range.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Convert field list to field range
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    range = VALUE #(
-        FOR _field IN list (
-          sign   = ycl_addict_toolkit=>sign-include
-          option = ycl_addict_toolkit=>option-eq
-          low    = _field ) ).
-  ENDMETHOD.
-
-
-  METHOD set_fcat_from_itab.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Sets the field catalog from the passed internal table
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    FIELD-SYMBOLS <itab> TYPE STANDARD TABLE.
-
-    ASSIGN me->itab->* TO <itab>.
-
-    IF <itab> IS INITIAL.
-      DATA(itab_was_initial) = abap_true.
-      APPEND INITIAL LINE TO <itab>.
-    ENDIF.
-
-    ASSIGN <itab>[ 1 ] TO FIELD-SYMBOL(<line>).
-    set_fcat_from_itab_line( REF #( <line> ) ).
-
-    IF itab_was_initial = abap_true.
-      CLEAR <itab>.
-    ENDIF.
-  ENDMETHOD.
-
-
-  METHOD set_fcat_from_itab_line.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Sets the field catalog from the passed internal table line
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA(dscr) = cl_abap_typedescr=>describe_by_data_ref( line ).
-    DATA(name) = dscr->get_relative_name( ).
-    build_fcat( VALUE #( structure = name ) ).
   ENDMETHOD.
 ENDCLASS.

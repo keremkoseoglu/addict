@@ -41,7 +41,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_toolkit IMPLEMENTATION.
+CLASS YCL_ADDICT_TOOLKIT IMPLEMENTATION.
+
+
   METHOD get_system_definitions.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Reads system definitions and returns default values if

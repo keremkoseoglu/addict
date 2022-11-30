@@ -45,7 +45,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_tadir_reader IMPLEMENTATION.
+CLASS YCL_ADDICT_TADIR_READER IMPLEMENTATION.
+
+
   METHOD does_object_exist.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Checks object existence in TADIR

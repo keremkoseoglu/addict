@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dol_obj_ssfo IMPLEMENTATION.
+CLASS YCL_ADDICT_DOL_OBJ_SSFO IMPLEMENTATION.
+
+
   METHOD yif_addict_dol_obj~get_ddtext.
     SELECT SINGLE caption FROM stxfadmt
            WHERE formname   = @obj_name AND

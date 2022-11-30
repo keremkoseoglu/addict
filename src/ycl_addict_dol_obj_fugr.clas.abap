@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dol_obj_fugr IMPLEMENTATION.
+CLASS YCL_ADDICT_DOL_OBJ_FUGR IMPLEMENTATION.
+
+
   METHOD yif_addict_dol_obj~get_ddtext.
     SELECT SINGLE areat FROM tlibt
            WHERE area  = @obj_name AND

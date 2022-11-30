@@ -86,6 +86,7 @@ CLASS ycl_addict_transport_request DEFINITION
                  intf TYPE e071-object VALUE 'INTF',
                  meth TYPE e071-object VALUE 'METH',
                  prog TYPE e071-object VALUE 'PROG',
+                 reps type e071-object value 'REPS',
                  vdat TYPE e071-object VALUE 'VDAT',
                  view TYPE e071-object VALUE 'VIEW',
                END OF object.
@@ -381,7 +382,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_transport_request IMPLEMENTATION.
+CLASS YCL_ADDICT_TRANSPORT_REQUEST IMPLEMENTATION.
+
+
   METHOD add_objects.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Appends the given objects to the transport request
@@ -1295,6 +1298,41 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD get_request_subtask_tree.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Returns the entire request structure as a list
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    TRY.
+        DATA(flag) = REF #( me->lazy_flag-request_subtask_tree ).
+        DATA(val)  = REF #( me->lazy_val-request_subtask_tree ).
+
+        IF flag->* = abap_false.
+          DATA(header) = get_header( ).
+
+          DATA(parent_request) = COND trkorr( WHEN header-strkorr IS NOT INITIAL
+                                              THEN header-strkorr
+                                              ELSE header-trkorr ).
+
+          DATA(subtasks) = get_instance( parent_request )->get_subtasks( ).
+
+          val->* = VALUE #( ( parent_request ) ).
+          APPEND LINES OF VALUE trkorr_list( FOR _subtask IN subtasks ( _subtask-trkorr ) ) TO val->*.
+          flag->* = abap_true.
+        ENDIF.
+
+        result = val->*.
+
+      CATCH cx_root INTO DATA(diaper).
+        RAISE EXCEPTION TYPE ycx_addict_class_method
+          EXPORTING
+            textid   = ycx_addict_class_method=>unexpected_error
+            previous = diaper
+            class    = CONV #( ycl_addict_class=>get_class_name( me ) )
+            method   = me->method-get_request_subtask_tree.
+    ENDTRY.
+  ENDMETHOD.
+
+
   METHOD get_source_client.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns the source client of the request
@@ -1358,41 +1396,6 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     ENDIF.
 
     as4text = me->lazy_val-as4text.
-  ENDMETHOD.
-
-
-  METHOD get_request_subtask_tree.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Returns the entire request structure as a list
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    TRY.
-        DATA(flag) = REF #( me->lazy_flag-request_subtask_tree ).
-        DATA(val)  = REF #( me->lazy_val-request_subtask_tree ).
-
-        IF flag->* = abap_false.
-          DATA(header) = get_header( ).
-
-          DATA(parent_request) = COND trkorr( WHEN header-strkorr IS NOT INITIAL
-                                              THEN header-strkorr
-                                              ELSE header-trkorr ).
-
-          DATA(subtasks) = get_instance( parent_request )->get_subtasks( ).
-
-          val->* = VALUE #( ( parent_request ) ).
-          APPEND LINES OF VALUE trkorr_list( FOR _subtask IN subtasks ( _subtask-trkorr ) ) TO val->*.
-          flag->* = abap_true.
-        ENDIF.
-
-        result = val->*.
-
-      CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION TYPE ycx_addict_class_method
-          EXPORTING
-            textid   = ycx_addict_class_method=>unexpected_error
-            previous = diaper
-            class    = CONV #( ycl_addict_class=>get_class_name( me ) )
-            method   = me->method-get_request_subtask_tree.
-    ENDTRY.
   ENDMETHOD.
 
 
@@ -1467,6 +1470,12 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD is_external.
+    " Is Request external? """"""""""""""""""""""""""""""""""""""""""
+    result = is_request_external( me->trkorr ).
+  ENDMETHOD.
+
+
   METHOD is_obj_type_class_related.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Is the provided object type related to a class?
@@ -1499,6 +1508,15 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD is_released.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Is this Request released
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    DATA(header) = me->get_header( ).
+    result = xsdbool( header-trstatus IN get_released_status_rng( ) ).
+  ENDMETHOD.
+
+
   METHOD is_request_external.
     " Is the given request external? """"""""""""""""""""""""""""""""
     result = xsdbool( trkorr+0(3) <> sy-sysid ).
@@ -1516,21 +1534,6 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     ENDIF.
 
     safe = me->lazy_val-toc_safe.
-  ENDMETHOD.
-
-
-  METHOD is_released.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Is this Request released
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA(header) = me->get_header( ).
-    result = xsdbool( header-trstatus IN get_released_status_rng( ) ).
-  ENDMETHOD.
-
-
-  METHOD is_external.
-    " Is Request external? """"""""""""""""""""""""""""""""""""""""""
-    result = is_request_external( me->trkorr ).
   ENDMETHOD.
 
 

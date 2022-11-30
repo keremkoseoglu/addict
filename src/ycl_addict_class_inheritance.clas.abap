@@ -48,16 +48,22 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_class_inheritance IMPLEMENTATION.
-  METHOD get_instance.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Singleton design pattern
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    result = ycl_addict_class_inheritance=>singleton.
+CLASS YCL_ADDICT_CLASS_INHERITANCE IMPLEMENTATION.
 
-    IF result IS INITIAL.
-      result = NEW #( ).
-    ENDIF.
+
+  METHOD get_cache.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Creates / reads cache entry
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    TRY.
+        result = REF #( me->cache[ KEY primary_key COMPONENTS
+                                   clsname = clsname ] ).
+
+      CATCH cx_sy_itab_line_not_found.
+        INSERT VALUE #( clsname = clsname )
+               INTO TABLE me->cache
+               REFERENCE INTO result.
+    ENDTRY.
   ENDMETHOD.
 
 
@@ -82,22 +88,15 @@ CLASS ycl_addict_class_inheritance IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD get_recursive_subclasses.
+  METHOD get_instance.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Returns subclass names in a recursive manner
+    " Singleton design pattern
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA(cache) = get_cache( parent ).
+    result = ycl_addict_class_inheritance=>singleton.
 
-    IF cache->recur_subcnam_read = abap_false.
-      get_recursive_subclass_names_p(
-        EXPORTING refclsname = parent
-                  rec        = abap_false
-        CHANGING  result     = cache->recur_subcnam ).
-
-      cache->recur_subcnam_read = abap_true.
+    IF result IS INITIAL.
+      result = NEW #( ).
     ENDIF.
-
-    result = cache->recur_subcnam.
   ENDMETHOD.
 
 
@@ -146,19 +145,22 @@ CLASS ycl_addict_class_inheritance IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD get_cache.
+  METHOD get_recursive_subclasses.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Creates / reads cache entry
+    " Returns subclass names in a recursive manner
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    TRY.
-        result = REF #( me->cache[ KEY primary_key COMPONENTS
-                                   clsname = clsname ] ).
+    DATA(cache) = get_cache( parent ).
 
-      CATCH cx_sy_itab_line_not_found.
-        INSERT VALUE #( clsname = clsname )
-               INTO TABLE me->cache
-               REFERENCE INTO result.
-    ENDTRY.
+    IF cache->recur_subcnam_read = abap_false.
+      get_recursive_subclass_names_p(
+        EXPORTING refclsname = parent
+                  rec        = abap_false
+        CHANGING  result     = cache->recur_subcnam ).
+
+      cache->recur_subcnam_read = abap_true.
+    ENDIF.
+
+    result = cache->recur_subcnam.
   ENDMETHOD.
 
 

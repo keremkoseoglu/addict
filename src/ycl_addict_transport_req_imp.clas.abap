@@ -55,7 +55,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
+CLASS YCL_ADDICT_TRANSPORT_REQ_IMP IMPLEMENTATION.
+
+
   METHOD execute.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Execute request import
@@ -76,69 +78,6 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
             class    = CONV #( ycl_addict_class=>get_class_name( me ) )
             method   = me->method-execute.
     ENDTRY.
-  ENDMETHOD.
-
-
-  METHOD validate_input.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Validate input parameters
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    IF me->state-input-sysnam IS INITIAL.
-      RAISE EXCEPTION TYPE ycx_addict_method_parameter
-        EXPORTING
-          textid      = ycx_addict_method_parameter=>param_missing
-          class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
-          method_name = me->method-execute
-          param_name  = me->field-sysnam.
-    ENDIF.
-
-    IF me->state-input-trkorr IS INITIAL.
-      RAISE EXCEPTION TYPE ycx_addict_method_parameter
-        EXPORTING
-          textid      = ycx_addict_method_parameter=>param_missing
-          class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
-          method_name = me->method-execute
-          param_name  = me->field-trkorr.
-    ENDIF.
-  ENDMETHOD.
-
-
-  METHOD notify_users.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Notify users in the target system about the transport in progress.
-    " Why?
-    " Some ABAP programs may produce errors due to the active import.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    CHECK me->state-input-notify_users = abap_true.
-
-    DATA(expire_date) = sy-datum.
-    DATA(expire_time) = sy-uzeit.
-    DATA(thour)       = CONV yd_addict_thour( 1 / 10 ).
-
-    ycl_addict_datetime_toolkit=>add_to_time(
-      EXPORTING idate = sy-datum
-                itime = sy-uzeit
-                stdaz = thour
-      IMPORTING edate = expire_date
-                etime = expire_time ).
-
-    CALL FUNCTION 'SM02_ADD_MESSAGE'
-      DESTINATION me->state-input-rfcdest
-      EXPORTING
-        message              = TEXT-505
-        message2             = TEXT-506
-        message3             = TEXT-507
-        expiration_date      = expire_date
-        expiration_time      = expire_time
-        delete_date          = expire_date
-        delete_time          = expire_time
-      EXCEPTIONS
-        empty_message        = 1
-        server_not_available = 2
-        client_not_available = 3
-        not_authorized       = 4
-        langu_not_available  = 5
-        OTHERS               = 6 ##FM_SUBRC_OK.
   ENDMETHOD.
 
 
@@ -216,6 +155,69 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
             textid   = ycx_addict_function_subrc=>function_returned_error
             funcname = 'TMS_MGR_IMPORT_TR_REQUEST'.
       ENDIF.
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD notify_users.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Notify users in the target system about the transport in progress.
+    " Why?
+    " Some ABAP programs may produce errors due to the active import.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    CHECK me->state-input-notify_users = abap_true.
+
+    DATA(expire_date) = sy-datum.
+    DATA(expire_time) = sy-uzeit.
+    DATA(thour)       = CONV yd_addict_thour( 1 / 10 ).
+
+    ycl_addict_datetime_toolkit=>add_to_time(
+      EXPORTING idate = sy-datum
+                itime = sy-uzeit
+                stdaz = thour
+      IMPORTING edate = expire_date
+                etime = expire_time ).
+
+    CALL FUNCTION 'SM02_ADD_MESSAGE'
+      DESTINATION me->state-input-rfcdest
+      EXPORTING
+        message              = TEXT-505
+        message2             = TEXT-506
+        message3             = TEXT-507
+        expiration_date      = expire_date
+        expiration_time      = expire_time
+        delete_date          = expire_date
+        delete_time          = expire_time
+      EXCEPTIONS
+        empty_message        = 1
+        server_not_available = 2
+        client_not_available = 3
+        not_authorized       = 4
+        langu_not_available  = 5
+        OTHERS               = 6 ##FM_SUBRC_OK.
+  ENDMETHOD.
+
+
+  METHOD validate_input.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Validate input parameters
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    IF me->state-input-sysnam IS INITIAL.
+      RAISE EXCEPTION TYPE ycx_addict_method_parameter
+        EXPORTING
+          textid      = ycx_addict_method_parameter=>param_missing
+          class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
+          method_name = me->method-execute
+          param_name  = me->field-sysnam.
+    ENDIF.
+
+    IF me->state-input-trkorr IS INITIAL.
+      RAISE EXCEPTION TYPE ycx_addict_method_parameter
+        EXPORTING
+          textid      = ycx_addict_method_parameter=>param_missing
+          class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
+          method_name = me->method-execute
+          param_name  = me->field-trkorr.
     ENDIF.
   ENDMETHOD.
 ENDCLASS.

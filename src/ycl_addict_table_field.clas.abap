@@ -56,7 +56,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_table_field IMPLEMENTATION.
+CLASS YCL_ADDICT_TABLE_FIELD IMPLEMENTATION.
+
+
   METHOD get_instance.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Factory

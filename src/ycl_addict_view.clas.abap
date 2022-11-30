@@ -48,21 +48,42 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_view IMPLEMENTATION.
-  METHOD get_instance.
-    DATA(mts) = REF #( ycl_addict_view=>multitons ).
+CLASS YCL_ADDICT_VIEW IMPLEMENTATION.
 
-    ASSIGN mts->*[ KEY primary_key COMPONENTS
-                   viewname = viewname
-                 ] TO FIELD-SYMBOL(<mt>).
+
+  METHOD constructor.
+    SELECT SINGLE * FROM dd25l
+           WHERE viewname = @viewname
+           INTO CORRESPONDING FIELDS OF @me->def.
 
     IF sy-subrc <> 0.
-      INSERT VALUE #( viewname  = viewname
-                      obj       = NEW #( viewname ) )
-             INTO TABLE mts->* ASSIGNING <mt>.
+      RAISE EXCEPTION TYPE ycx_addict_table_content
+        EXPORTING
+          textid   = ycx_addict_table_content=>no_entry_for_objectid
+          objectid = CONV #( viewname )
+          tabname  = me->table-def.
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD get_child_tables.
+    IF me->child_tables_built = abap_false.
+      DATA(tabclass_rng) = ycl_addict_table=>get_data_storage_tabclass_rng( ).
+
+      SELECT DISTINCT dd26s~tabname
+             FROM dd26s
+                  INNER JOIN dd02l ON dd02l~tabname = dd26s~tabname
+             WHERE dd26s~viewname =   @me->def-viewname AND
+                   dd02l~tabclass IN  @tabclass_rng
+             INTO TABLE @me->child_tables.
+
+      SORT me->child_tables BY table_line.
+      DELETE ADJACENT DUPLICATES FROM me->child_tables COMPARING table_line.
+
+      me->child_tables_built = abap_true.
     ENDIF.
 
-    result = <mt>-obj.
+    result = me->child_tables.
   ENDMETHOD.
 
 
@@ -81,6 +102,23 @@ CLASS ycl_addict_view IMPLEMENTATION.
     ENDIF.
 
     result = me->child_views.
+  ENDMETHOD.
+
+
+  METHOD get_instance.
+    DATA(mts) = REF #( ycl_addict_view=>multitons ).
+
+    ASSIGN mts->*[ KEY primary_key COMPONENTS
+                   viewname = viewname
+                 ] TO FIELD-SYMBOL(<mt>).
+
+    IF sy-subrc <> 0.
+      INSERT VALUE #( viewname  = viewname
+                      obj       = NEW #( viewname ) )
+             INTO TABLE mts->* ASSIGNING <mt>.
+    ENDIF.
+
+    result = <mt>-obj.
   ENDMETHOD.
 
 
@@ -116,41 +154,5 @@ CLASS ycl_addict_view IMPLEMENTATION.
     ENDIF.
 
     result = me->view_family.
-  ENDMETHOD.
-
-
-  METHOD get_child_tables.
-    IF me->child_tables_built = abap_false.
-      DATA(tabclass_rng) = ycl_addict_table=>get_data_storage_tabclass_rng( ).
-
-      SELECT DISTINCT dd26s~tabname
-             FROM dd26s
-                  INNER JOIN dd02l ON dd02l~tabname = dd26s~tabname
-             WHERE dd26s~viewname =   @me->def-viewname AND
-                   dd02l~tabclass IN  @tabclass_rng
-             INTO TABLE @me->child_tables.
-
-      SORT me->child_tables BY table_line.
-      DELETE ADJACENT DUPLICATES FROM me->child_tables COMPARING table_line.
-
-      me->child_tables_built = abap_true.
-    ENDIF.
-
-    result = me->child_tables.
-  ENDMETHOD.
-
-
-  METHOD constructor.
-    SELECT SINGLE * FROM dd25l
-           WHERE viewname = @viewname
-           INTO CORRESPONDING FIELDS OF @me->def.
-
-    IF sy-subrc <> 0.
-      RAISE EXCEPTION TYPE ycx_addict_table_content
-        EXPORTING
-          textid   = ycx_addict_table_content=>no_entry_for_objectid
-          objectid = CONV #( viewname )
-          tabname  = me->table-def.
-    ENDIF.
   ENDMETHOD.
 ENDCLASS.

@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dol_obj_doma IMPLEMENTATION.
+CLASS YCL_ADDICT_DOL_OBJ_DOMA IMPLEMENTATION.
+
+
   METHOD yif_addict_dol_obj~get_ddtext.
     TRY.
         output = ycl_addict_domain=>get_instance( CONV #( obj_name ) )->get_text( ).

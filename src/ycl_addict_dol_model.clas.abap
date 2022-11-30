@@ -55,7 +55,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dol_model IMPLEMENTATION.
+CLASS YCL_ADDICT_DOL_MODEL IMPLEMENTATION.
+
+
   METHOD build_request_list.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Builds transport request list of provided tickets

@@ -6,6 +6,7 @@
     <DDLNAME>YV_ADDICT_SYSTEM_DEFINITIONS</DDLNAME>
     <DDLANGUAGE>T</DDLANGUAGE>
     <DDTEXT>Sistem tanımları</DDTEXT>
+    <SOURCE_TYPE>V</SOURCE_TYPE>
    </DDLS>
   </asx:values>
  </asx:abap>

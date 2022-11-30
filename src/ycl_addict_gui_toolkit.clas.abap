@@ -30,7 +30,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_gui_toolkit IMPLEMENTATION.
+CLASS YCL_ADDICT_GUI_TOOLKIT IMPLEMENTATION.
+
+
   METHOD are_you_sure.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Asks the user if he/she wants to continue

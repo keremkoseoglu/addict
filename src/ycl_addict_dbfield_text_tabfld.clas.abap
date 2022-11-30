@@ -12,7 +12,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dbfield_text_tabfld IMPLEMENTATION.
+CLASS YCL_ADDICT_DBFIELD_TEXT_TABFLD IMPLEMENTATION.
+
+
   METHOD get_text.
     TRY.
         output = ycl_addict_table_field=>get_instance_by_fullname( dbfield )->get_text( ).

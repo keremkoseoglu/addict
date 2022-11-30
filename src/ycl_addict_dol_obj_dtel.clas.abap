@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dol_obj_dtel IMPLEMENTATION.
+CLASS YCL_ADDICT_DOL_OBJ_DTEL IMPLEMENTATION.
+
+
   METHOD yif_addict_dol_obj~get_ddtext.
     SELECT SINGLE ddtext FROM dd04t                     "#EC CI_NOORDER
            WHERE rollname   = @obj_name

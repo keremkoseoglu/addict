@@ -126,7 +126,10 @@ CLASS ycl_addict_class DEFINITION
 ENDCLASS.
 
 
-CLASS ycl_addict_class IMPLEMENTATION.
+
+CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
+
+
   METHOD accept.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Accepts a visitor
@@ -199,6 +202,17 @@ CLASS ycl_addict_class IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD get_class_name.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Returns class name of the given object
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    CHECK obj IS NOT INITIAL.
+    DATA(long_class_name) = cl_abap_classdescr=>get_class_name( obj ).
+    REPLACE ALL OCCURRENCES OF '\CLASS=' IN long_class_name WITH space.
+    result = long_class_name.
+  ENDMETHOD.
+
+
   METHOD get_components.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns components of class
@@ -228,25 +242,6 @@ CLASS ycl_addict_class IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD get_immediate_subclass_names.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Returns immediate children classes
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    output = ycl_addict_class_inheritance=>get_instance( )->get_immediate_subclasses( def-clsname ).
-  ENDMETHOD.
-
-
-  METHOD get_class_name.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Returns class name of the given object
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    CHECK obj IS NOT INITIAL.
-    DATA(long_class_name) = cl_abap_classdescr=>get_class_name( obj ).
-    REPLACE ALL OCCURRENCES OF '\CLASS=' IN long_class_name WITH space.
-    result = long_class_name.
-  ENDMETHOD.
-
-
   METHOD get_deepest_exception.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns the deepest exception object
@@ -254,6 +249,14 @@ CLASS ycl_addict_class IMPLEMENTATION.
     result = COND #( WHEN cx->previous IS INITIAL
                      THEN cx
                      ELSE get_deepest_exception( cx->previous ) ).
+  ENDMETHOD.
+
+
+  METHOD get_immediate_subclass_names.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Returns immediate children classes
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    output = ycl_addict_class_inheritance=>get_instance( )->get_immediate_subclasses( def-clsname ).
   ENDMETHOD.
 
 

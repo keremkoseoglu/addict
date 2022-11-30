@@ -35,7 +35,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_transmit_tr_queue IMPLEMENTATION.
+CLASS YCL_ADDICT_TRANSMIT_TR_QUEUE IMPLEMENTATION.
+
+
   METHOD execute.
     " Transmit queue """"""""""""""""""""""""""""""""""""""""""""""""
     TRY.

@@ -80,7 +80,27 @@ ENDCLASS.
 
 
 
-CLASS ycx_addict_function_subrc IMPLEMENTATION.
+CLASS YCX_ADDICT_FUNCTION_SUBRC IMPLEMENTATION.
+
+
+  METHOD constructor ##ADT_SUPPRESS_GENERATION.
+    CALL METHOD super->constructor
+      EXPORTING
+        previous = previous.
+    me->funcname = funcname .
+    me->subrc = subrc .
+    me->param = param .
+    me->stext = stext .
+    me->error_text = error_text .
+    CLEAR me->textid.
+    IF textid IS INITIAL.
+      if_t100_message~t100key = ycx_addict_function_subrc .
+    ELSE.
+      if_t100_message~t100key = textid.
+    ENDIF.
+  ENDMETHOD.
+
+
   METHOD raise_if_sysubrc_not_initial.
 
     CHECK sy-subrc IS NOT INITIAL.
@@ -115,23 +135,5 @@ CLASS ycx_addict_function_subrc IMPLEMENTATION.
         stext    = stext
         subrc    = subrc_bak
         textid   = ycx_addict_function_subrc=>subrc_error.
-  ENDMETHOD.
-
-
-  METHOD constructor ##ADT_SUPPRESS_GENERATION.
-    CALL METHOD super->constructor
-      EXPORTING
-        previous = previous.
-    me->funcname = funcname .
-    me->subrc = subrc .
-    me->param = param .
-    me->stext = stext .
-    me->error_text = error_text .
-    CLEAR me->textid.
-    IF textid IS INITIAL.
-      if_t100_message~t100key = ycx_addict_function_subrc .
-    ELSE.
-      if_t100_message~t100key = textid.
-    ENDIF.
   ENDMETHOD.
 ENDCLASS.

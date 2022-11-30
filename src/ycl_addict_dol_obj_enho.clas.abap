@@ -10,7 +10,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_dol_obj_enho IMPLEMENTATION.
+CLASS YCL_ADDICT_DOL_OBJ_ENHO IMPLEMENTATION.
+
+
   METHOD yif_addict_dol_obj~get_ddtext.
     SELECT SINGLE shorttext_id FROM enhheader           "#EC CI_NOORDER
            WHERE enhname = @obj_name

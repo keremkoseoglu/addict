@@ -54,21 +54,21 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_cds_view IMPLEMENTATION.
-  METHOD get_instance.
-    DATA(mts) = REF #( ycl_addict_cds_view=>multitons ).
+CLASS YCL_ADDICT_CDS_VIEW IMPLEMENTATION.
 
-    ASSIGN mts->*[ KEY primary_key COMPONENTS
-                   ddlname = ddlname
-                 ] TO FIELD-SYMBOL(<mt>).
+
+  METHOD constructor.
+    SELECT SINGLE * FROM ddddlsrc
+           WHERE ddlname = @ddlname
+           INTO CORRESPONDING FIELDS OF @me->def.
 
     IF sy-subrc <> 0.
-      INSERT VALUE #( ddlname  = ddlname
-                      obj       = NEW #( ddlname ) )
-             INTO TABLE mts->* ASSIGNING <mt>.
+      RAISE EXCEPTION TYPE ycx_addict_table_content
+        EXPORTING
+          textid   = ycx_addict_table_content=>no_entry_for_objectid
+          objectid = CONV #( ddlname )
+          tabname  = me->table-def.
     ENDIF.
-
-    result = <mt>-obj.
   ENDMETHOD.
 
 
@@ -109,6 +109,23 @@ CLASS ycl_addict_cds_view IMPLEMENTATION.
     ENDIF.
 
     result = me->child_views.
+  ENDMETHOD.
+
+
+  METHOD get_instance.
+    DATA(mts) = REF #( ycl_addict_cds_view=>multitons ).
+
+    ASSIGN mts->*[ KEY primary_key COMPONENTS
+                   ddlname = ddlname
+                 ] TO FIELD-SYMBOL(<mt>).
+
+    IF sy-subrc <> 0.
+      INSERT VALUE #( ddlname  = ddlname
+                      obj       = NEW #( ddlname ) )
+             INTO TABLE mts->* ASSIGNING <mt>.
+    ENDIF.
+
+    result = <mt>-obj.
   ENDMETHOD.
 
 
@@ -167,20 +184,5 @@ CLASS ycl_addict_cds_view IMPLEMENTATION.
     ENDIF.
 
     result = me->view_family.
-  ENDMETHOD.
-
-
-  METHOD constructor.
-    SELECT SINGLE * FROM ddddlsrc
-           WHERE ddlname = @ddlname
-           INTO CORRESPONDING FIELDS OF @me->def.
-
-    IF sy-subrc <> 0.
-      RAISE EXCEPTION TYPE ycx_addict_table_content
-        EXPORTING
-          textid   = ycx_addict_table_content=>no_entry_for_objectid
-          objectid = CONV #( ddlname )
-          tabname  = me->table-def.
-    ENDIF.
   ENDMETHOD.
 ENDCLASS.

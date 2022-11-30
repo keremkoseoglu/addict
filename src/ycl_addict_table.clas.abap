@@ -158,7 +158,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_table IMPLEMENTATION.
+CLASS YCL_ADDICT_TABLE IMPLEMENTATION.
+
+
   METHOD check_table_has_field.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Ensures that the table has the given field
@@ -212,6 +214,15 @@ CLASS ycl_addict_table IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD get_data_storage_tabclass_rng.
+    result = VALUE #( sign    = ycl_addict_toolkit=>sign-include
+                      option  = ycl_addict_toolkit=>option-eq
+                      ( low   = tabclass-transparent )
+                      ( low   = tabclass-cluster )
+                      ( low   = tabclass-pooled ) ).
+  ENDMETHOD.
+
+
   METHOD get_dbfield_text.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns text of the given database field
@@ -239,21 +250,21 @@ CLASS ycl_addict_table IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD get_field_count.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Returns number of fields
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    read_fields_lazy( ).
-    output = lines( me->lazy-val-field ).
-  ENDMETHOD.
-
-
   METHOD get_fields.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns all fields of table
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     read_fields_lazy( ).
     output = me->lazy-val-field.
+  ENDMETHOD.
+
+
+  METHOD get_field_count.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Returns number of fields
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    read_fields_lazy( ).
+    output = lines( me->lazy-val-field ).
   ENDMETHOD.
 
 
@@ -476,15 +487,6 @@ CLASS ycl_addict_table IMPLEMENTATION.
       DELETE output.
       CONTINUE.
     ENDLOOP.
-  ENDMETHOD.
-
-
-  METHOD get_data_storage_tabclass_rng.
-    result = VALUE #( sign    = ycl_addict_toolkit=>sign-include
-                      option  = ycl_addict_toolkit=>option-eq
-                      ( low   = tabclass-transparent )
-                      ( low   = tabclass-cluster )
-                      ( low   = tabclass-pooled ) ).
   ENDMETHOD.
 
 

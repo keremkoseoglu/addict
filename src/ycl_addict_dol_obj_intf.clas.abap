@@ -11,7 +11,10 @@ CLASS ycl_addict_dol_obj_intf DEFINITION
 ENDCLASS.
 
 
-CLASS ycl_addict_dol_obj_intf IMPLEMENTATION.
+
+CLASS YCL_ADDICT_DOL_OBJ_INTF IMPLEMENTATION.
+
+
   METHOD yif_addict_dol_obj~get_object_txt.
     output = TEXT-452.
   ENDMETHOD.

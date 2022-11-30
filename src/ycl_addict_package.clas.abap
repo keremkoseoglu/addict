@@ -58,7 +58,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_package IMPLEMENTATION.
+CLASS YCL_ADDICT_PACKAGE IMPLEMENTATION.
+
+
   METHOD get_nonsap_objname_rng.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns object name pattern for objects not provided by SAP

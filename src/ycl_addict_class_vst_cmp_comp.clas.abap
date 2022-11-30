@@ -31,7 +31,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_class_vst_cmp_comp IMPLEMENTATION.
+CLASS YCL_ADDICT_CLASS_VST_CMP_COMP IMPLEMENTATION.
+
+
   METHOD constructor.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Object creation

@@ -31,7 +31,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_domain_line IMPLEMENTATION.
+CLASS YCL_ADDICT_DOMAIN_LINE IMPLEMENTATION.
+
+
   METHOD get_instance.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Factory

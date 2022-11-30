@@ -20,7 +20,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_se01_reader IMPLEMENTATION.
+CLASS YCL_ADDICT_SE01_READER IMPLEMENTATION.
+
+
   METHOD execute.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns a list of requests and their statuses

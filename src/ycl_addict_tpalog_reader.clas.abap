@@ -130,7 +130,9 @@ ENDCLASS.
 
 
 
-CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
+CLASS YCL_ADDICT_TPALOG_READER IMPLEMENTATION.
+
+
   METHOD class_constructor.
     ycl_addict_tpalog_reader=>major_trstep_rng =
       VALUE #( sign   = ycl_addict_toolkit=>sign-include

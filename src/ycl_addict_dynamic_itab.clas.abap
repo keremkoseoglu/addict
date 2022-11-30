@@ -41,6 +41,10 @@ CLASS ycl_addict_dynamic_itab DEFINITION
     METHODS get_itab_ref RETURNING VALUE(ref) TYPE REF TO data.
     METHODS get_wa_ref RETURNING VALUE(ref) TYPE REF TO data.
 
+    METHODS set_fcat_text
+      IMPORTING !fieldname TYPE fieldname
+                !text      TYPE clike.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
     CONSTANTS: BEGIN OF class,
@@ -74,6 +78,8 @@ ENDCLASS.
 
 
 CLASS ycl_addict_dynamic_itab IMPLEMENTATION.
+
+
   METHOD create_range.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Creates a dynamic range
@@ -180,8 +186,16 @@ CLASS ycl_addict_dynamic_itab IMPLEMENTATION.
         APPEND VALUE #( fieldname = <fld>-fnam
                         intlen    = doma->def-leng
                         rollname  = <fld>-dtel
-                        lowercase = doma->def-lowercase
-                      ) TO me->fcat.
+                        lowercase = doma->def-lowercase )
+               TO me->fcat.
+
+        DATA(title) = ycl_addict_data_element=>get_text_safe( <fld>-dtel ).
+        IF title IS INITIAL.
+          title = <fld>-fnam.
+        ENDIF.
+
+        set_fcat_text( fieldname = <fld>-fnam
+                       text      = title ).
       ENDLOOP.
     ENDIF.
 
@@ -246,6 +260,21 @@ CLASS ycl_addict_dynamic_itab IMPLEMENTATION.
     ENDIF.
 
     ref = me->wref.
+  ENDMETHOD.
+
+
+  METHOD set_fcat_text.
+    TRY.
+        get_alv_fcat( ).
+        DATA(fcat_entry) = REF #( me->fcat[ fieldname = fieldname ] ).
+
+      CATCH cx_sy_itab_line_not_found.
+        RETURN.
+    ENDTRY.
+
+    fcat_entry->seltext_l =
+    fcat_entry->seltext_m =
+    fcat_entry->seltext_s = text.
   ENDMETHOD.
 
 

@@ -10,7 +10,10 @@ CLASS ycl_addict_def_system_rules DEFINITION
 ENDCLASS.
 
 
-CLASS ycl_addict_def_system_rules IMPLEMENTATION.
+
+CLASS YCL_ADDICT_DEF_SYSTEM_RULES IMPLEMENTATION.
+
+
   METHOD yif_addict_system_rules~get_requests_of_tickets.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns the requests of the given ticket.
@@ -66,5 +69,4 @@ CLASS ycl_addict_def_system_rules IMPLEMENTATION.
           trf = ycl_addict_transport_request=>trfunction-cust_task ) AND
         ( request->get_source_client( ) <> sy-mandt ) ) ).
   ENDMETHOD.
-
 ENDCLASS.
