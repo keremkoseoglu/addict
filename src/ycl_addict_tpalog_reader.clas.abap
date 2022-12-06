@@ -54,13 +54,14 @@ CLASS ycl_addict_tpalog_reader DEFINITION
       CHANGING !ticket_ids TYPE yif_addict_system_rules=>ticket_id_list.
 
     METHODS get_list
-      IMPORTING !rfcdest     TYPE rfcdest
-                !trkorr_rng  TYPE cts_organizer_tt_wd_request OPTIONAL
-                !ticket_ids  TYPE yif_addict_system_rules=>ticket_id_list OPTIONAL
-                !sys_data    TYPE sys_data_set OPTIONAL
-                !date_range  TYPE date_range_dict OPTIONAL
-                !read_master TYPE abap_bool DEFAULT abap_false
-      RETURNING VALUE(list)  TYPE output_list
+      IMPORTING !rfcdest          TYPE rfcdest
+                !trkorr_rng       TYPE cts_organizer_tt_wd_request OPTIONAL
+                !ticket_ids       TYPE yif_addict_system_rules=>ticket_id_list OPTIONAL
+                !sys_data         TYPE sys_data_set OPTIONAL
+                !date_range       TYPE date_range_dict OPTIONAL
+                !read_master      TYPE abap_bool DEFAULT abap_false
+                !only_major_steps TYPE abap_bool DEFAULT abap_false
+      RETURNING VALUE(list)       TYPE output_list
       RAISING   ycx_addict_tpalog_read.
 
   PROTECTED SECTION.
@@ -95,12 +96,13 @@ CLASS ycl_addict_tpalog_reader DEFINITION
 
     CLASS-DATA major_trstep_rng TYPE RANGE OF tpalog-trstep.
 
-    DATA date_range TYPE date_range_dict.
-    DATA list       TYPE output_list.
-    DATA sys_data   TYPE sys_data_set.
-    DATA tpalog     TYPE tpalog_s_list.
-    DATA trkorr_rng TYPE cts_organizer_tt_wd_request.
-    DATA rfcdest    TYPE rfcdest.
+    DATA date_range          TYPE date_range_dict.
+    DATA list                TYPE output_list.
+    DATA sys_data            TYPE sys_data_set.
+    DATA tpalog              TYPE tpalog_s_list.
+    DATA trkorr_rng          TYPE cts_organizer_tt_wd_request.
+    DATA rfcdest             TYPE rfcdest.
+    DATA readable_trstep_rng TYPE RANGE OF tpalog-trstep.
 
     METHODS get_req_date
       IMPORTING !trtime     TYPE tpalog-trtime
@@ -130,7 +132,7 @@ ENDCLASS.
 
 
 
-CLASS YCL_ADDICT_TPALOG_READER IMPLEMENTATION.
+CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
 
 
   METHOD class_constructor.
@@ -159,10 +161,14 @@ CLASS YCL_ADDICT_TPALOG_READER IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     CLEAR me->list.
 
-    me->date_range = date_range.
-    me->sys_data   = sys_data.
-    me->trkorr_rng = trkorr_rng.
-    me->rfcdest     = rfcdest.
+    me->date_range          = date_range.
+    me->sys_data            = sys_data.
+    me->trkorr_rng          = trkorr_rng.
+    me->rfcdest             = rfcdest.
+    me->readable_trstep_rng = SWITCH #( only_major_steps
+                                        WHEN abap_true
+                                        THEN me->major_trstep_rng
+                                        ELSE VALUE #( ) ).
 
     read_tpalog( ).
     parse_tpalog( ).
@@ -394,11 +400,13 @@ CLASS YCL_ADDICT_TPALOG_READER IMPLEMENTATION.
 
     tpalog = dat.
 
-    APPEND LINES OF VALUE tpalog_s_list( FOR _t IN tpalog ( _t )
-                                       ) TO me->tpalog.
+    APPEND LINES OF VALUE tpalog_s_list( FOR _t IN tpalog
+                                         WHERE ( trstep IN me->readable_trstep_rng )
+                                         ( _t ) )
+           TO me->tpalog.
 
     IF 1 = 0. " Where Used List
-      SELECT SINGLE trkorr FROM tpalog INTO @data(dummy). "#EC CI_GENBUFF
+      SELECT SINGLE trkorr FROM tpalog INTO @DATA(dummy). "#EC CI_GENBUFF
     ENDIF.
   ENDMETHOD.
 
