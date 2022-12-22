@@ -83,7 +83,7 @@ CLASS YCL_ADDICT_TRANSPORT_REQ_IMP IMPLEMENTATION.
 
   METHOD import_requests.
     " Transmit queue """"""""""""""""""""""""""""""""""""""""""""""""
-    NEW ycl_addict_transmit_tr_queue( )->execute(
+    ycl_addict_transmit_tr_queue=>get_instance( )->execute(
             VALUE #( sysnam     = me->state-input-sysnam
                      show_popup = me->state-input-show_popup ) ).
 

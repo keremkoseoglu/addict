@@ -1,13 +1,15 @@
 CLASS ycl_addict_transmit_tr_queue DEFINITION
   PUBLIC
   FINAL
-  CREATE PUBLIC .
+  CREATE PRIVATE .
 
   PUBLIC SECTION.
     TYPES: BEGIN OF input_dict,
              sysnam     TYPE tmssysnam,
              show_popup TYPE abap_bool,
            END OF input_dict.
+
+    CLASS-METHODS get_instance RETURNING VALUE(result) TYPE REF TO ycl_addict_transmit_tr_queue.
 
     METHODS execute
       IMPORTING !input TYPE input_dict
@@ -28,14 +30,21 @@ CLASS ycl_addict_transmit_tr_queue DEFINITION
                  tmscdom TYPE tabname VALUE 'TMSCDOM',
                END OF table.
 
-    CLASS-DATA domnam TYPE tmscdom-domnam.
-    CLASS-METHODS lazy_read_domnam RAISING ycx_addict_class_method.
+    CLASS-DATA singleton TYPE REF TO ycl_addict_transmit_tr_queue.
+    DATA domnam TYPE tmscdom-domnam.
+    METHODS lazy_read_domnam RAISING ycx_addict_class_method.
 
 ENDCLASS.
 
 
 
-CLASS YCL_ADDICT_TRANSMIT_TR_QUEUE IMPLEMENTATION.
+CLASS ycl_addict_transmit_tr_queue IMPLEMENTATION.
+  METHOD get_instance.
+    IF ycl_addict_transmit_tr_queue=>singleton IS INITIAL.
+      ycl_addict_transmit_tr_queue=>singleton = NEW #( ).
+    ENDIF.
+    result = ycl_addict_transmit_tr_queue=>singleton.
+  ENDMETHOD.
 
 
   METHOD execute.
@@ -132,9 +141,7 @@ CLASS YCL_ADDICT_TRANSMIT_TR_QUEUE IMPLEMENTATION.
     " an error. In that case, the method would need to be
     " modified to return the accurate DOMNAM.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA(domnam) = REF #( ycl_addict_transmit_tr_queue=>domnam ).
-
-    IF domnam->* IS NOT INITIAL.
+    IF me->domnam IS NOT INITIAL.
       RETURN.
     ENDIF.
 
@@ -151,7 +158,7 @@ CLASS YCL_ADDICT_TRANSMIT_TR_QUEUE IMPLEMENTATION.
                        textid    = ycx_addict_table_content=>table_empty
                        tabname   = table-tmscdom ).
       WHEN 1.
-        domnam->* = domnams[ 1 ].
+        me->domnam = domnams[ 1 ].
       WHEN OTHERS.
         RAISE EXCEPTION TYPE ycx_addict_class_method
           EXPORTING
