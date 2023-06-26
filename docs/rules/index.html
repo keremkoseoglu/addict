@@ -56,10 +56,6 @@
                 <li class="toctree-l1"><a class="reference internal" href="../config/">Configuration</a>
                 </li>
               </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../ticket/">Ticketing system integration</a>
-                </li>
-              </ul>
       </div>
     </div>
     </nav>
@@ -121,18 +117,6 @@
 <h2 id="yif_addict_system_rules"><code>YIF_ADDICT_SYSTEM_RULES</code></h2>
 <p>You can see the interface <a href="https://github.com/keremkoseoglu/addict/blob/main/src/yif_addict_system_rules.intf.abap">here</a>. </p>
 <p>A sample implementation can be seen <a href="https://github.com/keremkoseoglu/addict/blob/main/src/ycl_addict_def_system_rules.clas.abap">here</a>.</p>
-<pre><code class="language-abap">METHODS get_requests_of_tickets
-    IMPORTING !ticket_keys    TYPE ticket_key_list
-    RETURNING VALUE(requests) TYPE trkorr_list
-    RAISING   ycx_addict_class_method.
-</code></pre>
-<p>This method should return a list of transport requests which belong to the given ticket ID's. </p>
-<p>Hint: A suggested best practice is to put the ticket ID into the transport request description. Preferably as the first "n" characters. You can also put the request numbers into tickets, or use a Z-table - but those are less convenient.</p>
-<ul>
-<li>If you are entering ticket ID's into transport request descriptions, you can query E7* tables.</li>
-<li>If you are entering request numbers into tickets, you should call a ticketing system API and query tickets to build the request list.</li>
-<li>If you are mapping requests - tickets through a Z-table, you should query the Z-table.</li>
-</ul>
 <pre><code class="language-abap">METHODS is_request_toc_safe
     IMPORTING !trkorr     TYPE trkorr
     RETURNING VALUE(safe) TYPE abap_bool
