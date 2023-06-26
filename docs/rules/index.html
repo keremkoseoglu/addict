@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>System rules - Addict</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "System rules";
+        var mkdocs_page_input_path = "rules.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Addict
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../object/">Object Index</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../install/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../config/">Configuration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ticket/">Ticketing system integration</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Addict</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+      <li>System rules</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="system-rules">System rules</h1>
+<p>Each system has its own rules. If you need to change the behavior of <strong>ADDICT</strong> according to the rules of your own system, you have two options.</p>
+<p>Rules, which can be represented with a single value, are stored in the table <strong>YTADDICT_SYDEF</strong> (SM30). You can add a new entry to the table <strong>YTADDICT_SYDEF</strong> (SM30) with the following values:</p>
+<table>
+  <tr>
+    <td><b>Field</b></td>
+    <td><b>Description</b></td>
+    <td><b>Default value</b></td>
+  </tr>
+  <tr>
+    <td><b>SYSID</b></td>
+    <td>ID of your system, found in SY-SYSID</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>MAX_WAIT</b></td>
+    <td>Max wait time before timeout (in seconds)</td>
+    <td>30</td>
+  </tr>
+  <tr>
+    <td><b>AUTO_REQUEST_PREFIX</b></td>
+    <td>The default text prefix of an automatically created request</td>
+    <td>Auto</td>
+  </tr>
+  <tr>
+    <td><b>RULE_CLASS</b></td>
+    <td>Your rule class implementing complex behavior - see below for details</td>
+    <td>YCL_ADDICT_DEF_SYSTEM_RULES</td>
+  </tr>
+</table>
+
+<p>Default values are coded into <strong>YV_ADDICT_SYSTEM_DEFINITIONS</strong>.</p>
+<p>However, some rules correspond to complex behavior, which need to be coded as ABAP methods.</p>
+<p>For such rules, <strong>ADDICT</strong> provides an interface: <strong>YIF_ADDICT_SYSTEM_RULES</strong> . You can create your own Z-Class, implement this interface and fill its methods.</p>
+<p>If you implement your own <strong>YIF_ADDICT_SYSTEM_RULES</strong> class, you need to register it into the table <strong>YTADDICT_SYDEF</strong>. Otherwise; <strong>ADDICT</strong> will use the default rule class.</p>
+<h2 id="yif_addict_system_rules"><code>YIF_ADDICT_SYSTEM_RULES</code></h2>
+<p>You can see the interface <a href="https://github.com/keremkoseoglu/addict/blob/main/src/yif_addict_system_rules.intf.abap">here</a>. </p>
+<p>A sample implementation can be seen <a href="https://github.com/keremkoseoglu/addict/blob/main/src/ycl_addict_def_system_rules.clas.abap">here</a>.</p>
+<pre><code class="language-abap">METHODS get_requests_of_tickets
+    IMPORTING !ticket_keys    TYPE ticket_key_list
+    RETURNING VALUE(requests) TYPE trkorr_list
+    RAISING   ycx_addict_class_method.
+</code></pre>
+<p>This method should return a list of transport requests which belong to the given ticket ID's. </p>
+<p>Hint: A suggested best practice is to put the ticket ID into the transport request description. Preferably as the first "n" characters. You can also put the request numbers into tickets, or use a Z-table - but those are less convenient.</p>
+<ul>
+<li>If you are entering ticket ID's into transport request descriptions, you can query E7* tables.</li>
+<li>If you are entering request numbers into tickets, you should call a ticketing system API and query tickets to build the request list.</li>
+<li>If you are mapping requests - tickets through a Z-table, you should query the Z-table.</li>
+</ul>
+<pre><code class="language-abap">METHODS is_request_toc_safe
+    IMPORTING !trkorr     TYPE trkorr
+    RETURNING VALUE(safe) TYPE abap_bool
+    RAISING   ycx_addict_class_method.
+</code></pre>
+<p>Determines if the request is ToC-Safe or not (Transport of Copies). Generally, you should return ABAP_TRUE here. </p>
+<p>Case: You might have multiple clients on your development system. Client 100 is the main client used for development + customizing, while client 220 is used by the basis team for authorization. In that case, requests belonging to client 220 are not ToC-Safe. You shouldn't build a ToC on client 100 and include a request from client 220 - if you do that, you will transport an empty authorization schema and delete the authorizations on the target system.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
