@@ -90,7 +90,32 @@
                 <h1 id="configuration">Configuration</h1>
 <p><strong>ADDICT</strong> needs zero configuration. It will run with its default configuration out of the box. So everything below is optional.</p>
 <h2 id="system-rules">System rules</h2>
-<p>Check the details of system rules <a href="../rules/">here</a>.</p>
+<p>Each system has its own rules. If you need to change the behavior of <strong>ADDICT</strong> according to the rules of your own system, you have two options.</p>
+<p>Rules, which can be represented with a single value, are stored in the table <strong>YTADDICT_SYDEF</strong> (SM30). You can add a new entry to the table <strong>YTADDICT_SYDEF</strong> (SM30) with the following values:</p>
+<table>
+  <tr>
+    <td><b>Field</b></td>
+    <td><b>Description</b></td>
+    <td><b>Default value</b></td>
+  </tr>
+  <tr>
+    <td><b>SYSID</b></td>
+    <td>ID of your system, found in SY-SYSID</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>MAX_WAIT</b></td>
+    <td>Max wait time before timeout (in seconds)</td>
+    <td>30</td>
+  </tr>
+  <tr>
+    <td><b>AUTO_REQUEST_PREFIX</b></td>
+    <td>The default text prefix of an automatically created request</td>
+    <td>Auto</td>
+  </tr>
+</table>
+
+<p>Default values are coded into <strong>YV_ADDICT_SYSTEM_DEFINITIONS</strong>.</p>
 <h2 id="customer-development-objects">Customer development objects</h2>
 <p><strong>ADDICT</strong> needs to know which ABAP objects are developed by you. By default, <strong>ADDICT</strong> will assume that Y- and Z- objects are developed by yourself. However, if you have custom namespaces or something, you should register those (along Y<em> Z</em>) into the table <strong>YTADDICT_NSOBJ</strong> .</p>
 <h2 id="class-definitions">Class definitions</h2>
