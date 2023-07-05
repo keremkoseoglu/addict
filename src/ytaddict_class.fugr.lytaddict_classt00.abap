@@ -1,7 +1,5 @@
 *---------------------------------------------------------------------*
 *    view related data declarations
-*   generation date: 06.12.2020 at 12:24:20
-*   view maintenance generator version: #001407#
 *---------------------------------------------------------------------*
 *...processing: YTADDICT_CLASS..................................*
 DATA:  BEGIN OF STATUS_YTADDICT_CLASS                .   "state vector

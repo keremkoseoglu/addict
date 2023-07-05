@@ -1,19 +1,21 @@
 CLASS ycl_addict_text_toolkit DEFINITION
   PUBLIC
   ABSTRACT
-  CREATE PUBLIC .
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
     TYPES string_list TYPE STANDARD TABLE OF string WITH EMPTY KEY.
 
     CLASS-METHODS get_shortest_text
-      IMPORTING
-        !candidates     TYPE string_list
-        ignore_if_empty TYPE abap_bool DEFAULT abap_true
-      RETURNING
-        VALUE(shortest) TYPE string.
+      IMPORTING candidates      TYPE string_list
+                ignore_if_empty TYPE abap_bool DEFAULT abap_true
+      RETURNING VALUE(shortest) TYPE string.
+
+    CLASS-METHODS replace_turkish_characters
+      CHANGING !text TYPE clike.
 
   PROTECTED SECTION.
+
   PRIVATE SECTION.
     TYPES: BEGIN OF text_and_len_dict,
              text TYPE string,
@@ -24,20 +26,16 @@ CLASS ycl_addict_text_toolkit DEFINITION
 ENDCLASS.
 
 
-
-CLASS YCL_ADDICT_TEXT_TOOLKIT IMPLEMENTATION.
-
-
+CLASS ycl_addict_text_toolkit IMPLEMENTATION.
   METHOD get_shortest_text.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns the shortest text among candidates
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA(tl) = VALUE text_and_len_list(
-        FOR _candidate IN candidates
-        ( text = _candidate
-          len  = strlen( _candidate ) ) ).
+    DATA(tl) = VALUE text_and_len_list( FOR _candidate IN candidates
+                                        ( text = _candidate
+                                          len  = strlen( _candidate ) ) ).
 
-    IF ignore_if_empty EQ abap_true.
+    IF ignore_if_empty = abap_true.
       DELETE tl WHERE text IS INITIAL.
     ENDIF.
 
@@ -45,5 +43,24 @@ CLASS YCL_ADDICT_TEXT_TOOLKIT IMPLEMENTATION.
       SORT tl BY len.
       shortest = tl[ 1 ]-text.
     ENDIF.
+  ENDMETHOD.
+
+  METHOD replace_turkish_characters.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Replaces Turkish characters with closest alternative
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    REPLACE ALL OCCURRENCES OF:
+      'ı' IN text WITH 'i',
+      'ğ' IN text WITH 'g',
+      'Ğ' IN text WITH 'G',
+      'ü' IN text WITH 'u',
+      'Ü' IN text WITH 'U',
+      'ş' IN text WITH 's',
+      'Ş' IN text WITH 'S',
+      'İ' IN text WITH 'I',
+      'ö' IN text WITH 'o',
+      'Ö' IN text WITH 'O',
+      'ç' IN text WITH 'c',
+      'Ç' IN text WITH 'C'.
   ENDMETHOD.
 ENDCLASS.

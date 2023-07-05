@@ -1,23 +1,22 @@
 CLASS ycl_addict_view DEFINITION
   PUBLIC
   FINAL
-  CREATE PRIVATE .
+  CREATE PRIVATE.
 
   PUBLIC SECTION.
     DATA def TYPE dd25l READ-ONLY.
 
     CLASS-METHODS get_instance
-      IMPORTING !viewname     TYPE dd25l-viewname
+      IMPORTING viewname      TYPE dd25l-viewname
       RETURNING VALUE(result) TYPE REF TO ycl_addict_view
       RAISING   ycx_addict_table_content.
 
-    METHODS get_child_views RETURNING VALUE(result) TYPE viewnames.
+    METHODS get_child_views  RETURNING VALUE(result) TYPE viewnames.
     METHODS get_parent_views RETURNING VALUE(result) TYPE viewnames.
-    METHODS get_view_family RETURNING VALUE(result) TYPE viewnames.
+    METHODS get_view_family  RETURNING VALUE(result) TYPE viewnames.
 
     METHODS get_child_tables RETURNING VALUE(result) TYPE tr_tabnames.
 
-  PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF multiton_dict,
              viewname TYPE dd25l-viewname,
@@ -42,29 +41,23 @@ CLASS ycl_addict_view DEFINITION
     CLASS-DATA multitons TYPE multiton_set.
 
     METHODS constructor
-      IMPORTING !viewname TYPE dd25l-viewname
+      IMPORTING viewname TYPE dd25l-viewname
       RAISING   ycx_addict_table_content.
 ENDCLASS.
 
 
-
-CLASS YCL_ADDICT_VIEW IMPLEMENTATION.
-
-
+CLASS ycl_addict_view IMPLEMENTATION.
   METHOD constructor.
-    SELECT SINGLE * FROM dd25l
+    SELECT SINGLE * FROM dd25l "#EC CI_NOORDER
            WHERE viewname = @viewname
            INTO CORRESPONDING FIELDS OF @me->def.
 
     IF sy-subrc <> 0.
-      RAISE EXCEPTION TYPE ycx_addict_table_content
-        EXPORTING
-          textid   = ycx_addict_table_content=>no_entry_for_objectid
-          objectid = CONV #( viewname )
-          tabname  = me->table-def.
+      RAISE EXCEPTION NEW ycx_addict_table_content( textid   = ycx_addict_table_content=>no_entry_for_objectid
+                                                    objectid = CONV #( viewname )
+                                                    tabname  = me->table-def ).
     ENDIF.
   ENDMETHOD.
-
 
   METHOD get_child_tables.
     IF me->child_tables_built = abap_false.
@@ -86,7 +79,6 @@ CLASS YCL_ADDICT_VIEW IMPLEMENTATION.
     result = me->child_tables.
   ENDMETHOD.
 
-
   METHOD get_child_views.
     IF me->child_views_built = abap_false.
       SELECT DISTINCT tabname
@@ -104,23 +96,20 @@ CLASS YCL_ADDICT_VIEW IMPLEMENTATION.
     result = me->child_views.
   ENDMETHOD.
 
-
   METHOD get_instance.
     DATA(mts) = REF #( ycl_addict_view=>multitons ).
 
-    ASSIGN mts->*[ KEY primary_key COMPONENTS
-                   viewname = viewname
-                 ] TO FIELD-SYMBOL(<mt>).
+    ASSIGN mts->*[ KEY primary_key COMPONENTS viewname = viewname ]
+           TO FIELD-SYMBOL(<mt>).
 
     IF sy-subrc <> 0.
-      INSERT VALUE #( viewname  = viewname
-                      obj       = NEW #( viewname ) )
+      INSERT VALUE #( viewname = viewname
+                      obj      = NEW #( viewname ) )
              INTO TABLE mts->* ASSIGNING <mt>.
     ENDIF.
 
     result = <mt>-obj.
   ENDMETHOD.
-
 
   METHOD get_parent_views.
     IF me->parent_views_built = abap_false.
@@ -138,14 +127,13 @@ CLASS YCL_ADDICT_VIEW IMPLEMENTATION.
     result = me->parent_views.
   ENDMETHOD.
 
-
   METHOD get_view_family.
     IF me->view_family_built = abap_false.
       DATA(children) = get_child_views( ).
       DATA(parents)  = get_parent_views( ).
 
-      APPEND LINES OF:  children TO me->view_family,
-                        parents  TO me->view_family.
+      APPEND LINES OF: children TO me->view_family,
+                       parents  TO me->view_family.
 
       SORT view_family BY table_line.
       DELETE ADJACENT DUPLICATES FROM view_family COMPARING table_line.

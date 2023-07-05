@@ -1,7 +1,5 @@
 *---------------------------------------------------------------------*
 *    view related data declarations
-*   generation date: 29.10.2020 at 16:39:56
-*   view maintenance generator version: #001407#
 *---------------------------------------------------------------------*
 *...processing: YTADDICT_NSOBJ..................................*
 DATA:  BEGIN OF STATUS_YTADDICT_NSOBJ                .   "state vector

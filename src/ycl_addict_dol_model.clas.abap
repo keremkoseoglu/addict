@@ -1,15 +1,14 @@
 CLASS ycl_addict_dol_model DEFINITION
   PUBLIC
   FINAL
-  CREATE PUBLIC .
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
-    TYPES dol_list       TYPE STANDARD TABLE OF ysaddict_dol_list WITH EMPTY KEY.
-    TYPES dol_list_wr    TYPE STANDARD TABLE OF ysaddict_dol_list_with_req WITH EMPTY KEY.
+    TYPES dol_list    TYPE STANDARD TABLE OF ysaddict_dol_list WITH EMPTY KEY.
+    TYPES dol_list_wr TYPE STANDARD TABLE OF ysaddict_dol_list_with_req WITH EMPTY KEY.
 
     TYPES: BEGIN OF param_dict,
-             ticket_keys TYPE yif_addict_system_rules=>ticket_key_list,
-             trkorr_rng  TYPE ytt_addict_trkorr_rng,
+             trkorr_rng TYPE ytt_addict_trkorr_rng,
            END OF param_dict.
 
     CONSTANTS: BEGIN OF field,
@@ -23,15 +22,14 @@ CLASS ycl_addict_dol_model DEFINITION
 
     CLASS-METHODS get_dol_obj
       IMPORTING !object TYPE trobjtype
-      EXPORTING !dol    TYPE REF TO yif_addict_dol_obj
+      EXPORTING dol     TYPE REF TO yif_addict_dol_obj
       RAISING   ycx_addict_table_content.
 
     METHODS get_list
-      IMPORTING !param      TYPE param_dict
+      IMPORTING param       TYPE param_dict
       RETURNING VALUE(list) TYPE dol_list
       RAISING   ycx_addict_class_method.
 
-  PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF dol_obj_dict,
              object TYPE trobjtype,
@@ -41,38 +39,26 @@ CLASS ycl_addict_dol_model DEFINITION
 
            dol_obj_set TYPE HASHED TABLE OF dol_obj_dict WITH UNIQUE KEY primary_key COMPONENTS object.
 
-    CONSTANTS clsname_obj_pfx  TYPE seoclsname VALUE 'YCL_ADDICT_DOL_OBJ_'.
+    CONSTANTS clsname_obj_pfx TYPE seoclsname VALUE 'YCL_ADDICT_DOL_OBJ_'.
 
     CLASS-DATA dol_objects TYPE dol_obj_set.
 
     DATA list    TYPE dol_list.
-    DATA trkorrs TYPE yif_addict_system_rules=>trkorr_list.
+    DATA trkorrs TYPE ycl_addict_transport_request=>trkorr_list.
     DATA param   TYPE param_dict.
 
-    METHODS build_request_list RAISING ycx_addict_class_method.
     METHODS read_request_contents.
 ENDCLASS.
 
 
-
-CLASS YCL_ADDICT_DOL_MODEL IMPLEMENTATION.
-
-
-  METHOD build_request_list.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Builds transport request list of provided tickets
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA(rules) = ycl_addict_toolkit=>get_system_rules( ).
-    me->trkorrs = rules->get_requests_of_tickets( me->param-ticket_keys ).
-  ENDMETHOD.
-
-
+CLASS ycl_addict_dol_model IMPLEMENTATION.
   METHOD get_dol_obj.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns a data object list object
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA obj     TYPE REF TO object.
+
     DATA clsname TYPE seoclsname.
+    DATA obj     TYPE REF TO object.
 
     READ TABLE ycl_addict_dol_model=>dol_objects
          ASSIGNING FIELD-SYMBOL(<dol_obj>)
@@ -107,7 +93,6 @@ CLASS YCL_ADDICT_DOL_MODEL IMPLEMENTATION.
     dol = <dol_obj>-obj.
   ENDMETHOD.
 
-
   METHOD get_list.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Main method
@@ -115,7 +100,10 @@ CLASS YCL_ADDICT_DOL_MODEL IMPLEMENTATION.
     me->param = param.
     CLEAR me->list.
 
-    build_request_list( ).
+    SELECT trkorr FROM e070
+           WHERE  trkorr IN @me->param-trkorr_rng
+           INTO   TABLE @me->trkorrs.
+
     IF me->trkorrs IS INITIAL.
       RETURN.
     ENDIF.
@@ -128,7 +116,6 @@ CLASS YCL_ADDICT_DOL_MODEL IMPLEMENTATION.
     list = me->list.
   ENDMETHOD.
 
-
   METHOD read_request_contents.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Reads the contents of the given transport request
@@ -136,10 +123,10 @@ CLASS YCL_ADDICT_DOL_MODEL IMPLEMENTATION.
     CHECK me->trkorrs IS NOT INITIAL.
 
     ycl_addict_transport_request=>get_request_objects(
-      EXPORTING trkorr_rng = VALUE #( FOR _trkorr IN me->trkorrs (
-                               option = ycl_addict_toolkit=>option-eq
-                               sign   = ycl_addict_toolkit=>sign-include
-                               low    = _trkorr ) )
+      EXPORTING trkorr_rng = VALUE #( FOR _trkorr IN me->trkorrs
+                                      ( option = ycl_addict_toolkit=>option-eq
+                                        sign   = ycl_addict_toolkit=>sign-include
+                                        low    = _trkorr ) )
       IMPORTING list       = me->list ).
   ENDMETHOD.
 ENDCLASS.

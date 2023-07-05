@@ -1,7 +1,7 @@
 CLASS ycl_addict_cds_view DEFINITION
   PUBLIC
   FINAL
-  CREATE PRIVATE .
+  CREATE PRIVATE.
 
   PUBLIC SECTION.
     TYPES ddlname_list TYPE STANDARD TABLE OF ddlname WITH KEY table_line.
@@ -9,15 +9,14 @@ CLASS ycl_addict_cds_view DEFINITION
     DATA def TYPE ddddlsrc READ-ONLY.
 
     CLASS-METHODS get_instance
-      IMPORTING !ddlname      TYPE ddddlsrc-ddlname
+      IMPORTING ddlname       TYPE ddddlsrc-ddlname
       RETURNING VALUE(result) TYPE REF TO ycl_addict_cds_view
       RAISING   ycx_addict_table_content.
 
-    METHODS get_child_views RETURNING VALUE(result) TYPE ddlname_list.
+    METHODS get_child_views  RETURNING VALUE(result) TYPE ddlname_list.
     METHODS get_parent_views RETURNING VALUE(result) TYPE ddlname_list.
-    METHODS get_view_family RETURNING VALUE(result) TYPE ddlname_list.
+    METHODS get_view_family  RETURNING VALUE(result) TYPE ddlname_list.
 
-  PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF multiton_dict,
              ddlname TYPE ddddlsrc-ddlname,
@@ -48,29 +47,23 @@ CLASS ycl_addict_cds_view DEFINITION
     CLASS-DATA multitons TYPE multiton_set.
 
     METHODS constructor
-      IMPORTING !ddlname TYPE ddddlsrc-ddlname
+      IMPORTING ddlname TYPE ddddlsrc-ddlname
       RAISING   ycx_addict_table_content.
 ENDCLASS.
 
 
-
-CLASS YCL_ADDICT_CDS_VIEW IMPLEMENTATION.
-
-
+CLASS ycl_addict_cds_view IMPLEMENTATION.
   METHOD constructor.
-    SELECT SINGLE * FROM ddddlsrc
+    SELECT SINGLE * FROM ddddlsrc "#EC CI_NOORDER
            WHERE ddlname = @ddlname
            INTO CORRESPONDING FIELDS OF @me->def.
 
     IF sy-subrc <> 0.
-      RAISE EXCEPTION TYPE ycx_addict_table_content
-        EXPORTING
-          textid   = ycx_addict_table_content=>no_entry_for_objectid
-          objectid = CONV #( ddlname )
-          tabname  = me->table-def.
+      RAISE EXCEPTION NEW ycx_addict_table_content( textid   = ycx_addict_table_content=>no_entry_for_objectid
+                                                    objectid = CONV #( ddlname )
+                                                    tabname  = me->table-def ).
     ENDIF.
   ENDMETHOD.
-
 
   METHOD get_child_views.
     DATA objectnames TYPE objectname_list.
@@ -111,23 +104,20 @@ CLASS YCL_ADDICT_CDS_VIEW IMPLEMENTATION.
     result = me->child_views.
   ENDMETHOD.
 
-
   METHOD get_instance.
     DATA(mts) = REF #( ycl_addict_cds_view=>multitons ).
 
-    ASSIGN mts->*[ KEY primary_key COMPONENTS
-                   ddlname = ddlname
-                 ] TO FIELD-SYMBOL(<mt>).
+    ASSIGN mts->*[ KEY primary_key COMPONENTS ddlname = ddlname ]
+           TO FIELD-SYMBOL(<mt>).
 
     IF sy-subrc <> 0.
-      INSERT VALUE #( ddlname  = ddlname
-                      obj       = NEW #( ddlname ) )
+      INSERT VALUE #( ddlname = ddlname
+                      obj     = NEW #( ddlname ) )
              INTO TABLE mts->* ASSIGNING <mt>.
     ENDIF.
 
     result = <mt>-obj.
   ENDMETHOD.
-
 
   METHOD get_parent_views.
     DATA objectnames TYPE objectname_list.
@@ -146,7 +136,7 @@ CLASS YCL_ADDICT_CDS_VIEW IMPLEMENTATION.
         ENDTRY.
 
         DATA(view_parents) = view->get_parent_views( ).
-        objectnames         = view_parents.
+        objectnames = view_parents.
         CHECK objectnames IS NOT INITIAL.
 
         SELECT DISTINCT ddlname FROM ddldependency
@@ -168,14 +158,13 @@ CLASS YCL_ADDICT_CDS_VIEW IMPLEMENTATION.
     result = me->parent_views.
   ENDMETHOD.
 
-
   METHOD get_view_family.
     IF me->view_family_built = abap_false.
       DATA(children) = get_child_views( ).
       DATA(parents)  = get_parent_views( ).
 
-      APPEND LINES OF:  children TO me->view_family,
-                        parents  TO me->view_family.
+      APPEND LINES OF: children TO me->view_family,
+                       parents  TO me->view_family.
 
       SORT view_family BY table_line.
       DELETE ADJACENT DUPLICATES FROM view_family COMPARING table_line.

@@ -17,6 +17,15 @@ public section.
       attr3 type scx_attrname value '',
       attr4 type scx_attrname value '',
     end of MUST_BE_MANUALLY_IMPORTED .
+  constants:
+    begin of IMPORT_TEST_FAILED,
+      msgid type symsgid value 'YADDICT',
+      msgno type symsgno value '009',
+      attr1 type scx_attrname value '',
+      attr2 type scx_attrname value '',
+      attr3 type scx_attrname value '',
+      attr4 type scx_attrname value '',
+    end of IMPORT_TEST_FAILED .
   data TRKORR type TRKORR .
   data SYSID type SYSYSID .
 

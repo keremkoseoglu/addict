@@ -50,13 +50,9 @@ CLASS ycl_addict_tpalog_reader DEFINITION
 
     CLASS-METHODS class_constructor.
 
-    CLASS-METHODS format_ticket_id_input
-      CHANGING !ticket_ids TYPE yif_addict_system_rules=>ticket_id_list.
-
     METHODS get_list
       IMPORTING !rfcdest          TYPE rfcdest
                 !trkorr_rng       TYPE cts_organizer_tt_wd_request OPTIONAL
-                !ticket_ids       TYPE yif_addict_system_rules=>ticket_id_list OPTIONAL
                 !sys_data         TYPE sys_data_set OPTIONAL
                 !date_range       TYPE date_range_dict OPTIONAL
                 !read_master      TYPE abap_bool DEFAULT abap_false
@@ -142,16 +138,6 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
                ( low  = ycl_addict_tpalog_reader=>trstep-main_import )
                ( low  = ycl_addict_tpalog_reader=>trstep-activation )
                ( low  = ycl_addict_tpalog_reader=>trstep-generation ) ).
-  ENDMETHOD.
-
-
-  METHOD format_ticket_id_input.
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " String-format ticket ID's
-    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    LOOP AT ticket_ids ASSIGNING FIELD-SYMBOL(<ticket_id>).
-      CONDENSE <ticket_id>.
-    ENDLOOP.
   ENDMETHOD.
 
 

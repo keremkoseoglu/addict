@@ -71,6 +71,15 @@ public section.
       attr3 type scx_attrname value '',
       attr4 type scx_attrname value '',
     end of MULTIPLE_ENTRIES .
+  constants:
+    begin of MULTIPLE_ENTRIES_FOR_OBJECTID,
+      msgid type symsgid value 'YADDICT',
+      msgno type symsgno value '011',
+      attr1 type scx_attrname value 'TABNAME',
+      attr2 type scx_attrname value 'OBJECTID',
+      attr3 type scx_attrname value '',
+      attr4 type scx_attrname value '',
+    end of MULTIPLE_ENTRIES_FOR_OBJECTID .
   data TABNAME type TABNAME .
   data OBJECTID type CDOBJECTV .
   data FIELDNAME type FIELDNAME .

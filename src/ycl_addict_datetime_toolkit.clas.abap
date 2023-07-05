@@ -1,27 +1,30 @@
 CLASS ycl_addict_datetime_toolkit DEFINITION
   PUBLIC
   FINAL
-  CREATE PUBLIC .
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
+    CONSTANTS: BEGIN OF date,
+                 forever TYPE dats VALUE '99991231',
+               END OF date.
+
     CLASS-METHODS is_factory_workday
       IMPORTING !datum         TYPE sydatum
-                !calid         TYPE scal-fcalid DEFAULT 'TR'
+                calid          TYPE scal-fcalid DEFAULT 'TR'
       RETURNING VALUE(workday) TYPE abap_bool
       RAISING   ycx_addict_function_subrc.
 
     CLASS-METHODS add_to_time
-      IMPORTING !idate TYPE dats
-                !itime TYPE tims
-                !stdaz TYPE yd_addict_thour
-      EXPORTING !edate TYPE dats
-                !etime TYPE tims.
+      IMPORTING idate TYPE dats
+                itime TYPE tims
+                stdaz TYPE yd_addict_thour
+      EXPORTING edate TYPE dats
+                etime TYPE tims.
 
     CLASS-METHODS get_day_in_week
       IMPORTING !date         TYPE sydatum
       RETURNING VALUE(result) TYPE i.
 
-  PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF factory_workday_cache_dict,
              datum   TYPE sydatum,
@@ -42,32 +45,31 @@ CLASS ycl_addict_datetime_toolkit DEFINITION
                            WITH UNIQUE KEY primary_key COMPONENTS datum.
 
     CLASS-DATA factory_workday_cache TYPE factory_workday_cache_set.
-    CLASS-DATA day_in_week_cache TYPE day_in_week_set.
+    CLASS-DATA day_in_week_cache     TYPE day_in_week_set.
 ENDCLASS.
 
 
-
-CLASS YCL_ADDICT_DATETIME_TOOLKIT IMPLEMENTATION.
-
-
+CLASS ycl_addict_datetime_toolkit IMPLEMENTATION.
   METHOD add_to_time.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Add time to a date + time.
     " This method has been shamelessly copied from CATT_ADD_TO_TIME
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    DATA s        TYPE p LENGTH 16 DECIMALS 0.
     DATA low_date TYPE d VALUE '19000101'.
-    DATA s(16) TYPE p.
+
     s = ( idate - low_date ) * 86400 + itime ##NUMBER_OK.
     s = s + stdaz * 3600 ##NUMBER_OK.
     edate = low_date + ( s DIV 86400 ) ##NUMBER_OK.
     etime = s MOD 86400 ##NUMBER_OK.
   ENDMETHOD.
 
-
   METHOD get_day_in_week.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns the day in week
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
     DATA day TYPE scal-indicator.
 
     ASSIGN day_in_week_cache[ datum = date ]
@@ -77,10 +79,8 @@ CLASS YCL_ADDICT_DATETIME_TOOLKIT IMPLEMENTATION.
       DATA(cache) = VALUE day_in_week_dict( datum = date ).
 
       CALL FUNCTION 'DATE_COMPUTE_DAY'
-        EXPORTING
-          date = cache-datum
-        IMPORTING
-          day  = day.
+        EXPORTING date = cache-datum
+        IMPORTING day  = day.
 
       cache-day = day.
       INSERT cache INTO TABLE day_in_week_cache ASSIGNING <day_in_week>.
@@ -89,36 +89,30 @@ CLASS YCL_ADDICT_DATETIME_TOOLKIT IMPLEMENTATION.
     result = <day_in_week>-day.
   ENDMETHOD.
 
-
   METHOD is_factory_workday.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Tells if the date is a workday or not
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    ASSIGN ycl_addict_datetime_toolkit=>factory_workday_cache[
-             KEY primary_key COMPONENTS
-             datum = datum
-             calid = calid
-           ] TO FIELD-SYMBOL(<fwd>).
+    ASSIGN ycl_addict_datetime_toolkit=>factory_workday_cache[ KEY primary_key COMPONENTS datum = datum
+                                                                                          calid = calid ]
+           TO FIELD-SYMBOL(<fwd>).
 
     IF sy-subrc <> 0.
-      DATA(fwd) = VALUE factory_workday_cache_dict(
-                    datum = datum
-                    calid = calid ).
+      DATA(fwd) = VALUE factory_workday_cache_dict( datum = datum
+                                                    calid = calid ).
 
       TRY.
           CALL FUNCTION 'YF_ADDICT_DATE_CHECK_WORKDAY'
-            EXPORTING
-              date                       = fwd-datum
-              factory_calendar_id        = fwd-calid
-              message_type               = ycl_simbal=>msgty-status
-            EXCEPTIONS
-              date_after_range           = 1
-              date_before_range          = 2
-              date_invalid               = 3
-              date_no_workingday         = 4
-              factory_calendar_not_found = 5
-              message_type_invalid       = 6
-              OTHERS                     = 7.
+            EXPORTING  date                       = fwd-datum
+                       factory_calendar_id        = fwd-calid
+                       message_type               = ycl_simbal=>msgty-status
+            EXCEPTIONS date_after_range           = 1
+                       date_before_range          = 2
+                       date_invalid               = 3
+                       date_no_workingday         = 4
+                       factory_calendar_not_found = 5
+                       message_type_invalid       = 6
+                       OTHERS                     = 7.
 
           CASE sy-subrc.
             WHEN 0.

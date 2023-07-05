@@ -1,7 +1,7 @@
 CLASS ycl_addict_tadir_reader DEFINITION
   PUBLIC
   FINAL
-  CREATE PUBLIC .
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
     CLASS-METHODS does_object_exist_facade
@@ -14,12 +14,11 @@ CLASS ycl_addict_tadir_reader DEFINITION
       RETURNING VALUE(exist) TYPE abap_bool.
 
     METHODS read_tadir
-      IMPORTING !sysnam          TYPE tmscsys-sysnam OPTIONAL
-                !tadir_key       TYPE ycl_addict_package=>tadir_key_list
-                !exclude_deleted TYPE abap_bool DEFAULT abap_false
+      IMPORTING sysnam          TYPE tmscsys-sysnam OPTIONAL
+                tadir_key       TYPE ycl_addict_package=>tadir_key_list
+                exclude_deleted TYPE abap_bool      DEFAULT abap_false
       RAISING   ycx_addict_function_subrc.
 
-  PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF doef_cache_dict,
              tadir_key TYPE ycl_addict_package=>tadir_key_dict,
@@ -44,29 +43,22 @@ CLASS ycl_addict_tadir_reader DEFINITION
 ENDCLASS.
 
 
-
-CLASS YCL_ADDICT_TADIR_READER IMPLEMENTATION.
-
-
+CLASS ycl_addict_tadir_reader IMPLEMENTATION.
   METHOD does_object_exist.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Checks object existence in TADIR
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    exist = xsdbool( line_exists( me->state-tadir_keys[ KEY primary_key COMPONENTS
-        pgmid    = key-pgmid
-        object   = key-object
-        obj_name = key-obj_name ] ) ).
+    exist = xsdbool( line_exists( me->state-tadir_keys[ KEY primary_key COMPONENTS pgmid    = key-pgmid
+                                                                                   object   = key-object
+                                                                                   obj_name = key-obj_name ] ) ).
   ENDMETHOD.
-
 
   METHOD does_object_exist_facade.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " FAÇADE entry point
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    ASSIGN ycl_addict_tadir_reader=>doef_cache[
-             KEY primary_key COMPONENTS
-             tadir_key = key
-           ] TO FIELD-SYMBOL(<cache>).
+    ASSIGN ycl_addict_tadir_reader=>doef_cache[ KEY primary_key COMPONENTS tadir_key = key ]
+           TO FIELD-SYMBOL(<cache>).
 
     IF sy-subrc <> 0.
       DATA(cache) = VALUE doef_cache_dict( tadir_key = key ).
@@ -79,16 +71,16 @@ CLASS YCL_ADDICT_TADIR_READER IMPLEMENTATION.
     exist = <cache>-exists.
   ENDMETHOD.
 
-
   METHOD read_tadir.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Primary method, reads TADIR
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA dat     TYPE STANDARD TABLE OF tab512.
+
     DATA del_rng TYPE RANGE OF tadir-delflag.
-    DATA fld     TYPE STANDARD TABLE OF rfc_db_fld.
-    DATA opt     TYPE STANDARD TABLE OF rfc_db_opt.
     DATA tadir   TYPE tadir_list.
+    DATA opt     TYPE STANDARD TABLE OF rfc_db_opt.
+    DATA fld     TYPE STANDARD TABLE OF rfc_db_fld.
+    DATA dat     TYPE STANDARD TABLE OF tab512.
 
     " Prepare """""""""""""""""""""""""""""""""""""""""""""""""""""""
     me->state = VALUE #( ).
@@ -110,9 +102,9 @@ CLASS YCL_ADDICT_TADIR_READER IMPLEMENTATION.
 
       SELECT pgmid, object, obj_name FROM tadir
              FOR ALL ENTRIES IN @tadir_key
-             WHERE pgmid    EQ @tadir_key-pgmid    AND
-                   object   EQ @tadir_key-object   AND
-                   obj_name EQ @tadir_key-obj_name AND
+             WHERE pgmid    = @tadir_key-pgmid    AND
+                   object   = @tadir_key-object   AND
+                   obj_name = @tadir_key-obj_name AND
                    delflag  IN @del_rng
               INTO CORRESPONDING FIELDS OF TABLE @me->state-tadir_keys.
 
@@ -141,20 +133,17 @@ CLASS YCL_ADDICT_TADIR_READER IMPLEMENTATION.
       ENDIF.
 
       CALL FUNCTION 'RFC_READ_TABLE' DESTINATION sysnam
-        EXPORTING
-          query_table          = 'TADIR'
-        TABLES
-          options              = opt
-          fields               = fld
-          data                 = dat
-        EXCEPTIONS
-          table_not_available  = 1
-          table_without_data   = 2
-          option_not_valid     = 3
-          field_not_valid      = 4
-          not_authorized       = 5
-          data_buffer_exceeded = 6
-          OTHERS               = 7 ##FM_SUBRC_OK.
+        EXPORTING  query_table          = 'TADIR'
+        TABLES     options              = opt
+                   fields               = fld
+                   data                 = dat
+        EXCEPTIONS table_not_available  = 1
+                   table_without_data   = 2
+                   option_not_valid     = 3
+                   field_not_valid      = 4
+                   not_authorized       = 5
+                   data_buffer_exceeded = 6
+                   OTHERS               = 7 ##FM_SUBRC_OK.
 
       ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'RFC_READ_TABLE' ).
 
@@ -163,7 +152,7 @@ CLASS YCL_ADDICT_TADIR_READER IMPLEMENTATION.
     ENDIF.
 
     IF 1 = 0. " Where Used List
-      SELECT SINGLE pgmid FROM tadir INTO @data(dummy).
+      SELECT SINGLE pgmid FROM tadir INTO @DATA(dummy). "#EC CI_GENBUFF
     ENDIF.
   ENDMETHOD.
 ENDCLASS.

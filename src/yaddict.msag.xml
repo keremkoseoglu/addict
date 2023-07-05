@@ -66,7 +66,7 @@
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>009</MSGNR>
-     <TEXT>&amp;1 Ticket&apos;ı &amp;2 statüsüne getirilemez (veya tanım eksikliği var)</TEXT>
+     <TEXT>Request Import testi sırasında bir hata oluştu (gerçek Import edilmedi)</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
@@ -78,7 +78,7 @@
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>011</MSGNR>
-     <TEXT>Ticketing sistemi hatası</TEXT>
+     <TEXT>&amp;1 tablosunda &amp;2 anahtarı için birden fazla kayıt bulundu</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
@@ -95,6 +95,18 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>020</MSGNR>
+     <TEXT>E-Posta gönderilemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>021</MSGNR>
+     <TEXT>&amp;1 kullanıcısının ana verisinde E-Posta adresi eksik</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>024</MSGNR>
      <TEXT>&amp;1 tablosunun &amp;2 kaydının &amp;3 alanında hatalı bir değer var</TEXT>
     </T100>
@@ -103,6 +115,12 @@
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>051</MSGNR>
      <TEXT>Kuyruk verileri okunamadı</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>052</MSGNR>
+     <TEXT>Kolon sayısı uyumsuz!</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
@@ -119,8 +137,32 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>095</MSGNR>
+     <TEXT>&amp;1 kullanıcısı sistemde mevcut değil</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>096</MSGNR>
+     <TEXT>&amp;1 kullanıcısı var, ancak etkin değil</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>105</MSGNR>
+     <TEXT>Spool&apos;daki &amp;1 &amp;2 talebi PDF&apos;e dönüştürülemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>120</MSGNR>
      <TEXT>İşlem kullanıcı tarafından iptal edildi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>125</MSGNR>
+     <TEXT>&amp;1 Maili herhangi bir kullanıcıya atanmamış</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
@@ -192,7 +234,7 @@
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>208</MSGNR>
-     <TEXT>Tarih &amp;1, fabrika takvimi bitişinden sonra</TEXT>
+     <TEXT>Tarih &amp;1, &amp;2 fabrika takvimi bitişinden sonra</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
@@ -287,6 +329,12 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>334</MSGNR>
+     <TEXT>Mail gönderiminde hata!(Gönderilecek kalem bulunamadı!)</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>349</MSGNR>
      <TEXT>&amp;1 sınıfında &amp;2 Observer&apos;ının işlenmesi sırasında bir hata oluştu</TEXT>
     </T100>
@@ -331,6 +379,12 @@
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>399</MSGNR>
      <TEXT>&amp;1 &amp;2 &apos;ye gönderilen &amp;3 alanı &amp;4 içerisinde yok (ABAP hatası olabilir)</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>407</MSGNR>
+     <TEXT>&amp;1 kullanıcısının ana verisinde cep numarası eksik</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
@@ -397,6 +451,30 @@
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>586</MSGNR>
      <TEXT>&amp;1 &amp;2 yordamında &amp;3 değeri oluşturulmamış, ABAP hatası olabilir</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>607</MSGNR>
+     <TEXT>&amp;1 geçerli bir E-Posta adresi değil</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>608</MSGNR>
+     <TEXT>E-Posta alıcıları tespit edilemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>639</MSGNR>
+     <TEXT>E-Posta gönderim hatası, maillerin tamamı gönderilemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>647</MSGNR>
+     <TEXT>&amp;1 kullanıcısının Spool ayarları Job&apos;a uygun değil</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
@@ -476,17 +554,17 @@
     <item>
      <SPRSL>E</SPRSL>
      <MSGNR>009</MSGNR>
-     <TEXT>Ticket &amp;1 can&apos;t be set to status &amp;2 (or missing definition)</TEXT>
+     <TEXT>Request Import test failed (no actual Import executed)</TEXT>
     </item>
     <item>
      <SPRSL>E</SPRSL>
      <MSGNR>010</MSGNR>
-     <TEXT>Clsas &amp;1 method &amp;2 has an invalid parameter (possible ABAP error)</TEXT>
+     <TEXT>Class &amp;1 method &amp;2 has an invalid parameter (possible ABAP error)</TEXT>
     </item>
     <item>
      <SPRSL>E</SPRSL>
      <MSGNR>011</MSGNR>
-     <TEXT>Ticketing system error</TEXT>
+     <TEXT>Found multiple records in table &amp;1 for key &amp;2</TEXT>
     </item>
     <item>
      <SPRSL>E</SPRSL>
@@ -500,6 +578,16 @@
     </item>
     <item>
      <SPRSL>E</SPRSL>
+     <MSGNR>020</MSGNR>
+     <TEXT>Couldn&apos;t send E-Mail</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>021</MSGNR>
+     <TEXT>User &amp;1 has no E-Mail in master data</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
      <MSGNR>024</MSGNR>
      <TEXT>Table &amp;1 entry &amp;2 has an invalid value in field &amp;3</TEXT>
     </item>
@@ -507,6 +595,11 @@
      <SPRSL>E</SPRSL>
      <MSGNR>051</MSGNR>
      <TEXT>Couldn&apos;t read queue data</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>052</MSGNR>
+     <TEXT>Invalid column count!</TEXT>
     </item>
     <item>
      <SPRSL>E</SPRSL>
@@ -520,8 +613,28 @@
     </item>
     <item>
      <SPRSL>E</SPRSL>
+     <MSGNR>095</MSGNR>
+     <TEXT>User &amp;1 not found in system</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>096</MSGNR>
+     <TEXT>User &amp;1 exists, but is not active</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>105</MSGNR>
+     <TEXT>Couldn&apos;t convert spool request &amp;1 &amp;2 to PDF</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
      <MSGNR>120</MSGNR>
      <TEXT>Operation cancelled by user</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>125</MSGNR>
+     <TEXT>&amp;1 e-mail address is not assigned to any user</TEXT>
     </item>
     <item>
      <SPRSL>E</SPRSL>
@@ -660,6 +773,11 @@
     </item>
     <item>
      <SPRSL>E</SPRSL>
+     <MSGNR>334</MSGNR>
+     <TEXT>Mail send error! (No sendable item found!)</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
      <MSGNR>349</MSGNR>
      <TEXT>Error occured on class &amp;1 observer &amp;2</TEXT>
     </item>
@@ -697,6 +815,11 @@
      <SPRSL>E</SPRSL>
      <MSGNR>399</MSGNR>
      <TEXT>&amp;1 &amp;2 : &amp;3 field is missing in &amp;4 (possible ABAP error)</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>407</MSGNR>
+     <TEXT>User &amp;1 lacks mobile number in master data</TEXT>
     </item>
     <item>
      <SPRSL>E</SPRSL>
@@ -752,6 +875,26 @@
      <SPRSL>E</SPRSL>
      <MSGNR>586</MSGNR>
      <TEXT>Class &amp;1 method &amp;2 : Value &amp;3 is not present (possible ABAP error)</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>607</MSGNR>
+     <TEXT>&amp;1 is not a valid e-mail address</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>608</MSGNR>
+     <TEXT>Couldn&apos;t detect e-mail recipients</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>639</MSGNR>
+     <TEXT>E-mail send error, couldn&apos;t send all e-mails</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>647</MSGNR>
+     <TEXT>Spool settings of user &amp;1 is not suitable for a job</TEXT>
     </item>
     <item>
      <SPRSL>E</SPRSL>
