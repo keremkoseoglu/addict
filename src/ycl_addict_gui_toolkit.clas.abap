@@ -57,7 +57,8 @@ CLASS ycl_addict_gui_toolkit IMPLEMENTATION.
     ASSERT sy-subrc = 0.
 
     IF user_answer <> ycl_addict_gui_toolkit=>answer-first_button.
-      RAISE EXCEPTION NEW ycx_addict_user_input( textid = ycx_addict_user_input=>user_cancelled ).
+      RAISE EXCEPTION TYPE ycx_addict_user_input
+        EXPORTING textid = ycx_addict_user_input=>user_cancelled.
     ENDIF.
   ENDMETHOD.
 

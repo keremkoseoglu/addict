@@ -73,10 +73,11 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
     TRY.
         validate_input( ).
       CATCH cx_root INTO DATA(validation_error).
-        RAISE EXCEPTION NEW ycx_addict_class_method( textid   = ycx_addict_class_method=>unexpected_error
-                                                     previous = validation_error
-                                                     class    = CONV #( ycl_addict_class=>get_class_name( me ) )
-                                                     method   = me->method-execute ).
+        RAISE EXCEPTION TYPE ycx_addict_class_method
+          EXPORTING textid   = ycx_addict_class_method=>unexpected_error
+                    previous = validation_error
+                    class    = CONV #( ycl_addict_class=>get_class_name( me ) )
+                    method   = me->method-execute.
     ENDTRY.
 
     IF input-notify_users = abap_true.
@@ -101,12 +102,13 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
           import_requests( test_import = test_import_flag->* ).
         CATCH cx_root INTO DATA(import_error).
           IF test_import_flag->* = abap_true.
-            RAISE EXCEPTION NEW ycx_addict_class_method( textid   = ycx_addict_class_method=>unexpected_error
-                                                         previous = NEW ycx_addict_transport_request(
-                                                             textid   = ycx_addict_transport_request=>import_test_failed
-                                                             previous = import_error )
-                                                         class    = CONV #( ycl_addict_class=>get_class_name( me ) )
-                                                         method   = me->method-execute ).
+            RAISE EXCEPTION TYPE ycx_addict_class_method
+              EXPORTING textid   = ycx_addict_class_method=>unexpected_error
+                        previous = NEW ycx_addict_transport_request(
+                                           textid   = ycx_addict_transport_request=>import_test_failed
+                                           previous = import_error )
+                        class    = CONV #( ycl_addict_class=>get_class_name( me ) )
+                        method   = me->method-execute.
           ENDIF.
 
           CASE retry_on_error.
@@ -114,10 +116,11 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
               import_requests_managed( retry_on_error = abap_false
                                        test_first     = abap_false ).
             WHEN abap_false.
-              RAISE EXCEPTION NEW ycx_addict_class_method( textid   = ycx_addict_class_method=>unexpected_error
-                                                           previous = import_error
-                                                           class    = CONV #( ycl_addict_class=>get_class_name( me ) )
-                                                           method   = me->method-execute ).
+              RAISE EXCEPTION TYPE ycx_addict_class_method
+                EXPORTING textid   = ycx_addict_class_method=>unexpected_error
+                          previous = import_error
+                          class    = CONV #( ycl_addict_class=>get_class_name( me ) )
+                          method   = me->method-execute.
           ENDCASE.
       ENDTRY.
     ENDLOOP.
@@ -174,16 +177,17 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
       IF     exception       IS NOT INITIAL
          AND exception-msgty CA me->critical_message_types.
 
-        RAISE EXCEPTION NEW ycx_addict_function_subrc(
-                                textid     = ycx_addict_function_subrc=>function_returned_error_txt
-                                funcname   = 'TMS_MGR_IMPORT_TR_REQUEST'
-                                error_text = CONV #( exception-text ) ).
+        RAISE EXCEPTION TYPE ycx_addict_function_subrc
+          EXPORTING textid     = ycx_addict_function_subrc=>function_returned_error_txt
+                    funcname   = 'TMS_MGR_IMPORT_TR_REQUEST'
+                    error_text = CONV #( exception-text ).
       ENDIF.
 
       IF NOT (    retcode = '0000' OR retcode = '0'
                OR retcode = '0004' OR retcode = '4' ).
-        RAISE EXCEPTION NEW ycx_addict_function_subrc( textid   = ycx_addict_function_subrc=>function_returned_error
-                                                       funcname = 'TMS_MGR_IMPORT_TR_REQUEST' ).
+        RAISE EXCEPTION TYPE ycx_addict_function_subrc
+          EXPORTING textid   = ycx_addict_function_subrc=>function_returned_error
+                    funcname = 'TMS_MGR_IMPORT_TR_REQUEST'.
       ENDIF.
     ENDIF.
   ENDMETHOD.
@@ -226,17 +230,19 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
     " Validate input parameters
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     IF me->state-input->sysnam IS INITIAL.
-      RAISE EXCEPTION NEW ycx_addict_method_parameter( textid      = ycx_addict_method_parameter=>param_missing
-                                                       class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
-                                                       method_name = me->method-execute
-                                                       param_name  = me->field-sysnam ).
+      RAISE EXCEPTION TYPE ycx_addict_method_parameter
+        EXPORTING textid      = ycx_addict_method_parameter=>param_missing
+                  class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
+                  method_name = me->method-execute
+                  param_name  = me->field-sysnam.
     ENDIF.
 
     IF me->state-input->trkorr IS INITIAL.
-      RAISE EXCEPTION NEW ycx_addict_method_parameter( textid      = ycx_addict_method_parameter=>param_missing
-                                                       class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
-                                                       method_name = me->method-execute
-                                                       param_name  = me->field-trkorr ).
+      RAISE EXCEPTION TYPE ycx_addict_method_parameter
+        EXPORTING textid      = ycx_addict_method_parameter=>param_missing
+                  class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
+                  method_name = me->method-execute
+                  param_name  = me->field-trkorr.
     ENDIF.
   ENDMETHOD.
 ENDCLASS.

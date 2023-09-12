@@ -120,10 +120,11 @@ CLASS ycx_addict_function_subrc IMPLEMENTATION.
              INTO @stext.
     ENDIF.
 
-    RAISE EXCEPTION NEW ycx_addict_function_subrc( funcname = funcname
-                                                   param    = parameter
-                                                   stext    = stext
-                                                   subrc    = subrc_bak
-                                                   textid   = ycx_addict_function_subrc=>subrc_error ).
+    RAISE EXCEPTION TYPE ycx_addict_function_subrc
+      EXPORTING funcname = funcname
+                param    = parameter
+                stext    = stext
+                subrc    = subrc_bak
+                textid   = ycx_addict_function_subrc=>subrc_error.
   ENDMETHOD.
 ENDCLASS.

@@ -56,10 +56,11 @@ CLASS ycl_addict_se01_reader IMPLEMENTATION.
         ENDLOOP.
 
       CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION NEW ycx_addict_class_method( textid   = ycx_addict_class_method=>unexpected_error
-                                                     previous = diaper
-                                                     class    = CONV #( ycl_addict_class=>get_class_name( me ) )
-                                                     method   = method-execute ).
+        RAISE EXCEPTION TYPE ycx_addict_class_method
+          EXPORTING textid   = ycx_addict_class_method=>unexpected_error
+                    previous = diaper
+                    class    = CONV #( ycl_addict_class=>get_class_name( me ) )
+                    method   = method-execute.
     ENDTRY.
   ENDMETHOD.
 ENDCLASS.

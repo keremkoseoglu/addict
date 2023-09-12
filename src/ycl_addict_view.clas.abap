@@ -53,9 +53,10 @@ CLASS ycl_addict_view IMPLEMENTATION.
            INTO CORRESPONDING FIELDS OF @me->def.
 
     IF sy-subrc <> 0.
-      RAISE EXCEPTION NEW ycx_addict_table_content( textid   = ycx_addict_table_content=>no_entry_for_objectid
-                                                    objectid = CONV #( viewname )
-                                                    tabname  = me->table-def ).
+      RAISE EXCEPTION TYPE ycx_addict_table_content
+        EXPORTING textid   = ycx_addict_table_content=>no_entry_for_objectid
+                  objectid = CONV #( viewname )
+                  tabname  = me->table-def.
     ENDIF.
   ENDMETHOD.
 

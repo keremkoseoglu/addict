@@ -131,7 +131,8 @@ CLASS ycl_addict_email DEFINITION
     CONSTANTS c_att_type_pdf           TYPE soodk-objtp VALUE 'PDF' ##NO_TEXT.
     CONSTANTS c_linsz                  TYPE i           VALUE 255 ##NO_TEXT.
     CONSTANTS c_obj_tp_raw             TYPE so_obj_tp   VALUE 'RAW' ##NO_TEXT.
-    CONSTANTS c_valid_email_characters TYPE string      VALUE '1234567890qwertyuopasdfghjklizxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM-_@.,!#$%&*+/\=?[]{}():<>' ##NO_TEXT.
+    CONSTANTS c_valid_email_characters TYPE string
+              VALUE '1234567890qwertyuopasdfghjklizxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM-_@.,!#$%&*+/\=?[]{}():<>' ##NO_TEXT.
     CONSTANTS c_doc_type_htm           TYPE c LENGTH 3  VALUE 'HTM' ##NO_TEXT ##NEEDED.
     CONSTANTS c_rec_type               TYPE c LENGTH 1  VALUE 'U' ##NO_TEXT ##NEEDED.
     CONSTANTS c_express                TYPE c LENGTH 1  VALUE 'X' ##NO_TEXT.
@@ -189,14 +190,16 @@ CLASS ycl_addict_email IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_email_of_user.
-    SELECT SINGLE smtp_addr FROM adr6
-      WHERE addrnumber = ( SELECT addrnumber FROM usr21 WHERE bname = @iv_uname ) AND
-            persnumber = ( SELECT persnumber FROM usr21 WHERE bname = @iv_uname )
-      INTO @rv_email ##WARN_OK.                         "#EC CI_NOORDER
+    ##WARN_OK
+    SELECT SINGLE smtp_addr FROM adr6 "#EC CI_NOORDER
+           WHERE addrnumber = ( SELECT addrnumber FROM usr21 WHERE bname = @iv_uname ) AND
+                 persnumber = ( SELECT persnumber FROM usr21 WHERE bname = @iv_uname )
+           INTO  @rv_email.
 
     IF rv_email IS INITIAL AND iv_check = abap_true.
-      RAISE EXCEPTION NEW ycx_addict_user_master_data( textid = ycx_addict_user_master_data=>email_missing
-                                                       uname  = iv_uname ).
+      RAISE EXCEPTION TYPE ycx_addict_user_master_data
+        EXPORTING textid = ycx_addict_user_master_data=>email_missing
+                  uname  = iv_uname.
     ENDIF.
   ENDMETHOD.
 
@@ -245,8 +248,9 @@ CLASS ycl_addict_email IMPLEMENTATION.
       WHERE smtp_addr = iv_smtp ##WARN_OK.              "#EC CI_NOORDER
 
     IF rv_bname IS INITIAL.
-      RAISE EXCEPTION NEW ycx_addict_user_master_data( textid = ycx_addict_user_master_data=>user_email_nomatch
-                                                       email  = iv_smtp ).
+      RAISE EXCEPTION TYPE ycx_addict_user_master_data
+        EXPORTING textid = ycx_addict_user_master_data=>user_email_nomatch
+                  email  = iv_smtp.
     ENDIF.
   ENDMETHOD.
 
@@ -370,9 +374,10 @@ CLASS ycl_addict_email IMPLEMENTATION.
            AND it_rlist IS INITIAL.
 
           IF iv_tolerate_no_addr = abap_false.
-            RAISE EXCEPTION NEW ycx_addict_method_parameter( class_name  = 'YCL_ADDICT_EMAIL'
-                                                             method_name = 'SEND_EMAIL'
-                                                             textid      = ycx_addict_method_parameter=>param_error ).
+            RAISE EXCEPTION TYPE ycx_addict_method_parameter
+              EXPORTING class_name  = 'YCL_ADDICT_EMAIL'
+                        method_name = 'SEND_EMAIL'
+                        textid      = ycx_addict_method_parameter=>param_error.
           ELSE.
             RETURN.
           ENDIF.
@@ -431,7 +436,8 @@ CLASS ycl_addict_email IMPLEMENTATION.
         lo_send_request->set_document( lo_doc ).
 
         IF lo_send_request->send( ) <> abap_true.
-          RAISE EXCEPTION NEW ycx_addict_mail_send( textid = ycx_addict_mail_send=>cant_send ).
+          RAISE EXCEPTION TYPE ycx_addict_mail_send
+            EXPORTING textid = ycx_addict_mail_send=>cant_send.
         ELSE.
           IF iv_commit = abap_true.
             COMMIT WORK.
@@ -442,8 +448,9 @@ CLASS ycl_addict_email IMPLEMENTATION.
         RAISE EXCEPTION lo_cx_ms.
 
       CATCH cx_root INTO DATA(lo_cx_root).
-        RAISE EXCEPTION NEW ycx_addict_mail_send( textid   = ycx_addict_mail_send=>cant_send
-                                                  previous = lo_cx_root ).
+        RAISE EXCEPTION TYPE ycx_addict_mail_send
+          EXPORTING textid   = ycx_addict_mail_send=>cant_send
+                    previous = lo_cx_root.
     ENDTRY.
   ENDMETHOD.
 
@@ -579,8 +586,9 @@ CLASS ycl_addict_email IMPLEMENTATION.
                     iv_commit       = iv_commit ).
 
       CATCH cx_root INTO DATA(lo_cx_root) ##CATCH_ALL.
-        RAISE EXCEPTION NEW ycx_addict_mail_send( previous = lo_cx_root
-                                                  textid   = ycx_addict_mail_send=>cant_send ).
+        RAISE EXCEPTION TYPE ycx_addict_mail_send
+          EXPORTING previous = lo_cx_root
+                    textid   = ycx_addict_mail_send=>cant_send.
     ENDTRY.
   ENDMETHOD.
 
@@ -646,7 +654,8 @@ CLASS ycl_addict_email IMPLEMENTATION.
         DESCRIBE TABLE t_columns LINES lv_line_columns.
 
         IF lv_line_data <> lv_line_columns.
-          RAISE EXCEPTION NEW ycx_addict_mail_send( textid = ycx_addict_mail_send=>column_number_not_valid ).
+          RAISE EXCEPTION TYPE ycx_addict_mail_send
+            EXPORTING textid = ycx_addict_mail_send=>column_number_not_valid.
         ENDIF.
 
         " Mail başlık
@@ -835,8 +844,9 @@ CLASS ycl_addict_email IMPLEMENTATION.
         RAISE EXCEPTION lo_cx_html.
 
       CATCH cx_root INTO DATA(lo_cx_root) ##CATCH_ALL.
-        RAISE EXCEPTION NEW ycx_addict_mail_send( previous = lo_cx_root
-                                                  textid   = ycx_addict_mail_send=>cant_send ).
+        RAISE EXCEPTION TYPE ycx_addict_mail_send
+          EXPORTING previous = lo_cx_root
+                    textid   = ycx_addict_mail_send=>cant_send.
 
     ENDTRY.
   ENDMETHOD.
@@ -872,8 +882,9 @@ CLASS ycl_addict_email IMPLEMENTATION.
         RAISE EXCEPTION send_error.
 
       CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION NEW ycx_addict_mail_send( textid   = ycx_addict_mail_send=>cant_send
-                                                  previous = diaper ).
+        RAISE EXCEPTION TYPE ycx_addict_mail_send
+          EXPORTING textid   = ycx_addict_mail_send=>cant_send
+                    previous = diaper.
     ENDTRY.
   ENDMETHOD.
 
@@ -894,8 +905,9 @@ CLASS ycl_addict_email IMPLEMENTATION.
     DATA(matcher) = regex->create_matcher( text = email ).
 
     IF matcher->match( ) IS INITIAL.
-      RAISE EXCEPTION NEW ycx_addict_email_address( textid = ycx_addict_email_address=>invalid_address
-                                                    email  = email ).
+      RAISE EXCEPTION TYPE ycx_addict_email_address
+        EXPORTING textid = ycx_addict_email_address=>invalid_address
+                  email  = email.
     ENDIF.
   ENDMETHOD.
 ENDCLASS.

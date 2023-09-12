@@ -526,8 +526,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                      validate_msg = abap_true ).
 
       CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION NEW ycx_addict_sh_piece_list_comp( previous = diaper
-                                                           trkorr   = me->trkorr ).
+        RAISE EXCEPTION TYPE ycx_addict_sh_piece_list_comp
+          EXPORTING previous = diaper
+                    trkorr   = me->trkorr.
     ENDTRY.
   ENDMETHOD.
 
@@ -773,9 +774,10 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
              INTO @DATA(e070).
 
       IF sy-subrc <> 0.
-        RAISE EXCEPTION NEW ycx_addict_table_content( textid   = ycx_addict_table_content=>no_entry_for_objectid
-                                                      objectid = CONV #( trkorr )
-                                                      tabname  = ycl_addict_transport_request=>table-e070 ).
+        RAISE EXCEPTION TYPE ycx_addict_table_content
+          EXPORTING textid   = ycx_addict_table_content=>no_entry_for_objectid
+                    objectid = CONV #( trkorr )
+                    tabname  = ycl_addict_transport_request=>table-e070.
       ENDIF.
 
       mt-obj = NEW #( ).
@@ -1264,7 +1266,8 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
              TO FIELD-SYMBOL(<history>).
 
       <wr>-creation = xsdbool(     sy-subrc = 0
-                               AND (    <history>-trkorr  = <wr>-trkorr
+                               AND
+                                   (    <history>-trkorr  = <wr>-trkorr
                                      OR <history>-strkorr = <wr>-trkorr ) ).
     ENDLOOP.
   ENDMETHOD.
@@ -1294,10 +1297,11 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
         result = val->*.
 
       CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION NEW ycx_addict_class_method( textid   = ycx_addict_class_method=>unexpected_error
-                                                     previous = diaper
-                                                     class    = CONV #( ycl_addict_class=>get_class_name( me ) )
-                                                     method   = me->method-get_request_subtask_tree ).
+        RAISE EXCEPTION TYPE ycx_addict_class_method
+          EXPORTING textid   = ycx_addict_class_method=>unexpected_error
+                    previous = diaper
+                    class    = CONV #( ycl_addict_class=>get_class_name( me ) )
+                    method   = me->method-get_request_subtask_tree.
     ENDTRY.
   ENDMETHOD.
 
@@ -1407,10 +1411,11 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                                                      object = 'MERG' ] ) ).
 
       CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION NEW ycx_addict_data_read( textid    = ycx_addict_data_read=>cant_read_data_type
-                                                  previous  = diaper
-                                                  objectid  = CONV #( me->trkorr )
-                                                  data_type = CONV #( TEXT-407 ) ).
+        RAISE EXCEPTION TYPE ycx_addict_data_read
+          EXPORTING textid    = ycx_addict_data_read=>cant_read_data_type
+                    previous  = diaper
+                    objectid  = CONV #( me->trkorr )
+                    data_type = CONV #( TEXT-407 ).
     ENDTRY.
   ENDMETHOD.
 
@@ -1499,9 +1504,10 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     IF me->lazy_flag-toc_safe = abap_false.
       DATA(trf) = get_header( )-trfunction.
 
-      me->lazy_val-toc_safe = xsdbool( NOT (     (    trf = ycl_addict_transport_request=>trfunction-cust
-                                                   OR trf = ycl_addict_transport_request=>trfunction-cust_task )
-                                             AND ( get_source_client( ) <> sy-mandt ) ) ).
+      me->lazy_val-toc_safe = xsdbool( NOT
+                                       (     (    trf = ycl_addict_transport_request=>trfunction-cust
+                                               OR trf = ycl_addict_transport_request=>trfunction-cust_task )
+                                         AND ( get_source_client( ) <> sy-mandt ) ) ).
 
       me->lazy_flag-toc_safe = abap_true.
     ENDIF.
@@ -1559,7 +1565,8 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
 
     rel_wait_success = xsdbool(           wait_until_released  = abap_true
                                 AND       wait_success        IS NOT INITIAL
-                                AND ( NOT line_exists( wait_success[ table_line = abap_false ] ) ) ).
+                                AND
+                                    ( NOT line_exists( wait_success[ table_line = abap_false ] ) ) ).
   ENDMETHOD.
 
   METHOD release_single.
@@ -1657,9 +1664,10 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
         ENDIF.
 
       CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION NEW ycx_addict_sort_and_compress( textid   = ycx_addict_sort_and_compress=>soc_function_error
-                                                          previous = diaper
-                                                          trkorr   = me->trkorr ).
+        RAISE EXCEPTION TYPE ycx_addict_sort_and_compress
+          EXPORTING textid   = ycx_addict_sort_and_compress=>soc_function_error
+                    previous = diaper
+                    trkorr   = me->trkorr.
     ENDTRY.
   ENDMETHOD.
 ENDCLASS.

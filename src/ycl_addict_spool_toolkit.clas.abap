@@ -40,10 +40,11 @@ CLASS ycl_addict_spool_toolkit IMPLEMENTATION.
 
     IF sy-subrc <> 0.
       DATA(symsg_error) = ycx_addict_symsg=>get_instance( ).
-      RAISE EXCEPTION NEW ycx_addict_spool_to_pdf( partnum  = partnum
-                                                   previous = symsg_error
-                                                   spoolid  = spoolid
-                                                   textid   = ycx_addict_spool_to_pdf=>conv_error ).
+      RAISE EXCEPTION TYPE ycx_addict_spool_to_pdf
+        EXPORTING partnum  = partnum
+                  previous = symsg_error
+                  spoolid  = spoolid
+                  textid   = ycx_addict_spool_to_pdf=>conv_error.
     ENDIF.
 
     CHECK solix IS REQUESTED.
