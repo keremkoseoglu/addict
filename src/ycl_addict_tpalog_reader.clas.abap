@@ -1,7 +1,7 @@
 CLASS ycl_addict_tpalog_reader DEFINITION
   PUBLIC
   FINAL
-  CREATE PUBLIC .
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
     TYPES: BEGIN OF date_range_dict,
@@ -51,16 +51,15 @@ CLASS ycl_addict_tpalog_reader DEFINITION
     CLASS-METHODS class_constructor.
 
     METHODS get_list
-      IMPORTING !rfcdest          TYPE rfcdest
-                !trkorr_rng       TYPE cts_organizer_tt_wd_request OPTIONAL
-                !sys_data         TYPE sys_data_set OPTIONAL
-                !date_range       TYPE date_range_dict OPTIONAL
-                !read_master      TYPE abap_bool DEFAULT abap_false
-                !only_major_steps TYPE abap_bool DEFAULT abap_false
-      RETURNING VALUE(list)       TYPE output_list
+      IMPORTING rfcdest          TYPE rfcdest
+                trkorr_rng       TYPE cts_organizer_tt_wd_request OPTIONAL
+                sys_data         TYPE sys_data_set                OPTIONAL
+                date_range       TYPE date_range_dict             OPTIONAL
+                read_master      TYPE abap_bool                   DEFAULT abap_false
+                only_major_steps TYPE abap_bool                   DEFAULT abap_false
+      RETURNING VALUE(list)      TYPE output_list
       RAISING   ycx_addict_tpalog_read.
 
-  PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF master_dict,
              trkorr     TYPE e070-trkorr,
@@ -82,7 +81,7 @@ CLASS ycl_addict_tpalog_reader DEFINITION
 
            trkorr_list TYPE STANDARD TABLE OF trkorr_dict WITH DEFAULT KEY.
 
-    CONSTANTS trkorr_size TYPE i VALUE 100.
+    CONSTANTS trkorr_size TYPE i VALUE 10.
 
     CONSTANTS: BEGIN OF trstep,
                  main_import TYPE tpalog-trstep VALUE 'I',
@@ -101,15 +100,15 @@ CLASS ycl_addict_tpalog_reader DEFINITION
     DATA readable_trstep_rng TYPE RANGE OF tpalog-trstep.
 
     METHODS get_req_date
-      IMPORTING !trtime     TYPE tpalog-trtime
+      IMPORTING trtime      TYPE tpalog-trtime
       RETURNING VALUE(date) TYPE dats.
 
     METHODS get_req_status
-      IMPORTING !trkorr       TYPE tpalog-trkorr
+      IMPORTING trkorr        TYPE tpalog-trkorr
       RETURNING VALUE(status) TYPE yd_addict_request_status.
 
     METHODS get_req_time
-      IMPORTING !trtime     TYPE tpalog-trtime
+      IMPORTING trtime      TYPE tpalog-trtime
       RETURNING VALUE(time) TYPE tims.
 
     METHODS parse_tpalog.
@@ -117,20 +116,17 @@ CLASS ycl_addict_tpalog_reader DEFINITION
     METHODS read_tpalog RAISING ycx_addict_tpalog_read.
 
     METHODS read_tpalog_for_requests
-      IMPORTING !trkorr TYPE trkorr_list
+      IMPORTING trkorr TYPE trkorr_list
       RAISING   ycx_addict_function_subrc.
 
     METHODS req_has_retcode
-      IMPORTING !trkorr    TYPE tpalog-trkorr
-                !retcode   TYPE tpalog-retcode
+      IMPORTING trkorr     TYPE tpalog-trkorr
+                retcode    TYPE tpalog-retcode
       RETURNING VALUE(has) TYPE abap_bool.
 ENDCLASS.
 
 
-
 CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
-
-
   METHOD class_constructor.
     ycl_addict_tpalog_reader=>major_trstep_rng =
       VALUE #( sign   = ycl_addict_toolkit=>sign-include
@@ -139,7 +135,6 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
                ( low  = ycl_addict_tpalog_reader=>trstep-activation )
                ( low  = ycl_addict_tpalog_reader=>trstep-generation ) ).
   ENDMETHOD.
-
 
   METHOD get_list.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -166,7 +161,6 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     list = me->list.
   ENDMETHOD.
 
-
   METHOD get_req_date.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns the request date
@@ -174,31 +168,25 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     date = trtime+0(8).
   ENDMETHOD.
 
-
   METHOD get_req_status.
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns request status
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     status = COND #(
         WHEN req_has_retcode( trkorr  = trkorr
-                              retcode = '0012' )
-        THEN me->status-error
+                              retcode = '0012' ) THEN me->status-error
 
         WHEN req_has_retcode( trkorr  = trkorr
-                              retcode = '0008' )
-        THEN me->status-error
+                              retcode = '0008' ) THEN me->status-error
 
         WHEN req_has_retcode( trkorr  = trkorr
-                              retcode = '0004' )
-        THEN me->status-imported
+                              retcode = '0004' ) THEN me->status-imported
 
         WHEN req_has_retcode( trkorr  = trkorr
-                              retcode = '0000' )
-        THEN me->status-imported
+                              retcode = '0000' ) THEN me->status-imported
 
-        ELSE me->status-unknown ).
+        ELSE                                          me->status-unknown ).
   ENDMETHOD.
-
 
   METHOD get_req_time.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -206,7 +194,6 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     time = trtime+8(6).
   ENDMETHOD.
-
 
   METHOD parse_tpalog.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -238,7 +225,6 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
                           admin  = _tr-admin ) ).
   ENDMETHOD.
 
-
   METHOD read_master.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Read request master data
@@ -257,8 +243,8 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
 
     LOOP AT me->list ASSIGNING FIELD-SYMBOL(<list>).
       ASSIGN master[ KEY primary_key
-                     COMPONENTS trkorr = <list>-trkorr
-                   ] TO FIELD-SYMBOL(<master>).
+                     COMPONENTS trkorr = <list>-trkorr ]
+             TO FIELD-SYMBOL(<master>).
 
       CHECK sy-subrc = 0.
 
@@ -268,11 +254,11 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
-
   METHOD read_tpalog.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Reads TPALOG from the target system
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
     DATA trkorr TYPE trkorr_list.
 
     TRY.
@@ -284,9 +270,8 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
         " ______________________________
         " Add requests to where condition
         " ¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
-        ASSIGN me->sys_data[ KEY primary_key COMPONENTS
-                             sysid = sy-sysid
-                           ] TO FIELD-SYMBOL(<sys_data>).
+        ASSIGN me->sys_data[ KEY primary_key COMPONENTS sysid = sy-sysid ]
+               TO FIELD-SYMBOL(<sys_data>).
         IF sy-subrc = 0.
           APPEND LINES OF CORRESPONDING trkorr_list( <sys_data>-list ) TO trkorr.
         ENDIF.
@@ -294,7 +279,7 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
         IF me->trkorr_rng IS NOT INITIAL.
           SELECT trkorr FROM e070
                  WHERE trkorr IN @me->trkorr_rng
-                 APPENDING CORRESPONDING FIELDS OF TABLE @trkorr ##TOO_MANY_ITAB_FIELDS .
+                 APPENDING CORRESPONDING FIELDS OF TABLE @trkorr ##TOO_MANY_ITAB_FIELDS.
         ENDIF.
 
         IF trkorr IS INITIAL.
@@ -321,21 +306,20 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
         RAISE EXCEPTION lo_tr.
       CATCH cx_root INTO DATA(lo_diaper).
         RAISE EXCEPTION TYPE ycx_addict_tpalog_read
-          EXPORTING
-            textid   = ycx_addict_tpalog_read=>read_error
-            previous = lo_diaper
-            rfcdest  = me->rfcdest.
+          EXPORTING textid   = ycx_addict_tpalog_read=>read_error
+                    previous = lo_diaper
+                    rfcdest  = me->rfcdest.
     ENDTRY.
   ENDMETHOD.
-
 
   METHOD read_tpalog_for_requests.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " TPALOG tablosunu iletilen Request'ler için okur
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    DATA dat    TYPE STANDARD TABLE OF tab512.
-    DATA fld    TYPE STANDARD TABLE OF rfc_db_fld.
+
     DATA opt    TYPE STANDARD TABLE OF rfc_db_opt.
+    DATA fld    TYPE STANDARD TABLE OF rfc_db_fld.
+    DATA dat    TYPE STANDARD TABLE OF tab512.
     DATA tpalog TYPE tpalog_list.
 
     DATA(trkorr_appended) = abap_false.
@@ -378,20 +362,17 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     " Read
     " ¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
     CALL FUNCTION 'RFC_READ_TABLE' DESTINATION me->rfcdest
-      EXPORTING
-        query_table          = 'TPALOG'
-      TABLES
-        options              = opt
-        fields               = fld
-        data                 = dat
-      EXCEPTIONS
-        table_not_available  = 1
-        table_without_data   = 2
-        option_not_valid     = 3
-        field_not_valid      = 4
-        not_authorized       = 5
-        data_buffer_exceeded = 6
-        OTHERS               = 7 ##FM_SUBRC_OK.
+      EXPORTING  query_table          = 'TPALOG'
+      TABLES     options              = opt
+                 fields               = fld
+                 data                 = dat
+      EXCEPTIONS table_not_available  = 1
+                 table_without_data   = 2
+                 option_not_valid     = 3
+                 field_not_valid      = 4
+                 not_authorized       = 5
+                 data_buffer_exceeded = 6
+                 OTHERS               = 7 ##FM_SUBRC_OK.
 
     ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'RFC_READ_TABLE' ).
 
@@ -407,7 +388,6 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-
   METHOD req_has_retcode.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Tells if the provided request has the return code
@@ -416,19 +396,18 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
       REDUCE tpalog-tpstat_key( INIT _tt TYPE tpalog-tpstat_key
                                 FOR _tpalog IN me->tpalog
                                 USING KEY k1
-                                WHERE ( trkorr =  trkorr AND
-                                        trstep IN me->major_trstep_rng )
-                                NEXT _tt = COND #( WHEN _tt IS INITIAL THEN _tpalog-tpstat_key
+                                WHERE (     trkorr  = trkorr
+                                        AND trstep IN me->major_trstep_rng )
+                                NEXT _tt = COND #( WHEN _tt IS INITIAL           THEN _tpalog-tpstat_key
                                                    WHEN _tt < _tpalog-tpstat_key THEN _tpalog-tpstat_key
-                                                   ELSE _tt ) ).
-
+                                                   ELSE                               _tt ) ).
 
     LOOP AT me->tpalog TRANSPORTING NO FIELDS
          USING KEY k1
-         WHERE tpstat_key =  latest_tpstat_key     AND
-               trkorr     =  trkorr                AND
-               trstep     IN me->major_trstep_rng  AND
-               retcode    =  retcode.
+         WHERE     tpstat_key  = latest_tpstat_key
+               AND trkorr      = trkorr
+               AND trstep     IN me->major_trstep_rng
+               AND retcode     = retcode.
 
       has = abap_true.
       RETURN.
