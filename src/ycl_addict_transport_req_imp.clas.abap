@@ -12,7 +12,7 @@ CLASS ycl_addict_transport_req_imp DEFINITION
              show_popup     TYPE abap_bool,
              notify_users   TYPE abap_bool,
              retry_on_error TYPE abap_bool,
-             test_first     TYPE abap_bool,
+             test_import    TYPE abap_bool,
            END OF input_dict.
 
     METHODS execute
@@ -52,7 +52,7 @@ CLASS ycl_addict_transport_req_imp DEFINITION
 
     METHODS import_requests_managed
       IMPORTING retry_on_error TYPE abap_bool
-                test_first     TYPE abap_bool
+                test_import    TYPE abap_bool
       RAISING   ycx_addict_class_method.
 
     METHODS import_requests
@@ -88,42 +88,38 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
                                                                      show_popup = input-show_popup ) ).
 
     import_requests_managed( retry_on_error = input-retry_on_error
-                             test_first     = input-test_first ).
+                             test_import    = input-test_import ).
   ENDMETHOD.
 
   METHOD import_requests_managed.
-    DATA(test_import_flags) = SWITCH abap_bool_list( test_first
-                                                     WHEN abap_true
-                                                     THEN VALUE #( ( abap_true ) ( abap_false ) )
-                                                     ELSE VALUE #( ( abap_false ) ) ).
+    TRY.
+        import_requests( test_import = test_import ).
 
-    LOOP AT test_import_flags REFERENCE INTO DATA(test_import_flag).
-      TRY.
-          import_requests( test_import = test_import_flag->* ).
-        CATCH cx_root INTO DATA(import_error).
-          IF test_import_flag->* = abap_true.
+      CATCH cx_root INTO DATA(import_error).
+        IF test_import = abap_true.
+          RAISE EXCEPTION TYPE ycx_addict_class_method
+            EXPORTING textid   = ycx_addict_class_method=>unexpected_error
+                      previous = NEW ycx_addict_transport_request(
+                                         textid   = ycx_addict_transport_request=>import_test_failed
+                                         previous = import_error )
+                      class    = CONV #( ycl_addict_class=>get_class_name( me ) )
+                      method   = me->method-execute.
+        ENDIF.
+
+        CASE retry_on_error.
+          WHEN abap_true.
+            import_requests_managed( retry_on_error = abap_false
+                                     test_import    = abap_false ).
+
+          WHEN abap_false.
             RAISE EXCEPTION TYPE ycx_addict_class_method
               EXPORTING textid   = ycx_addict_class_method=>unexpected_error
-                        previous = NEW ycx_addict_transport_request(
-                                           textid   = ycx_addict_transport_request=>import_test_failed
-                                           previous = import_error )
+                        previous = import_error
                         class    = CONV #( ycl_addict_class=>get_class_name( me ) )
                         method   = me->method-execute.
-          ENDIF.
+        ENDCASE.
 
-          CASE retry_on_error.
-            WHEN abap_true.
-              import_requests_managed( retry_on_error = abap_false
-                                       test_first     = abap_false ).
-            WHEN abap_false.
-              RAISE EXCEPTION TYPE ycx_addict_class_method
-                EXPORTING textid   = ycx_addict_class_method=>unexpected_error
-                          previous = import_error
-                          class    = CONV #( ycl_addict_class=>get_class_name( me ) )
-                          method   = me->method-execute.
-          ENDCASE.
-      ENDTRY.
-    ENDLOOP.
+    ENDTRY.
   ENDMETHOD.
 
   METHOD import_requests.
