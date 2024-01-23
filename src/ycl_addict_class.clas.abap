@@ -1,10 +1,9 @@
 CLASS ycl_addict_class DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PRIVATE .
+  PUBLIC FINAL
+  CREATE PRIVATE.
 
   PUBLIC SECTION.
-    TYPES clsname_list TYPE STANDARD TABLE OF seoclsname WITH EMPTY KEY.
+    TYPES clsname_list  TYPE STANDARD TABLE OF seoclsname WITH EMPTY KEY.
     TYPES dok_text_list TYPE STANDARD TABLE OF dok_text WITH EMPTY KEY.
 
     TYPES clsname_range TYPE RANGE OF seoclsname.
@@ -40,10 +39,15 @@ CLASS ycl_addict_class DEFINITION
                  constructor TYPE seocpdname VALUE 'CONSTRUCTOR',
                END OF method.
 
+    CONSTANTS: BEGIN OF class_type,
+                 class     TYPE seoclass-clstype VALUE '0',
+                 interface TYPE seoclass-clstype VALUE '1',
+               END OF class_type.
+
     DATA def TYPE seoclass READ-ONLY.
 
     CLASS-METHODS check_class_existence
-      IMPORTING !clsname TYPE seoclsname
+      IMPORTING clsname TYPE seoclsname
       RAISING   ycx_addict_table_content.
 
     CLASS-METHODS check_class_has_interface
@@ -52,46 +56,45 @@ CLASS ycl_addict_class DEFINITION
       RAISING   ycx_addict_table_content.
 
     CLASS-METHODS convert_prgname_to_clsname
-      IMPORTING !prgname       TYPE clike
+      IMPORTING prgname        TYPE clike
       RETURNING VALUE(clsname) TYPE seoclsname.
 
     CLASS-METHODS get_class_name
-      IMPORTING !obj          TYPE REF TO object
+      IMPORTING obj           TYPE REF TO object
       RETURNING VALUE(result) TYPE seoclsname.
 
     CLASS-METHODS get_deepest_exception
-      IMPORTING !cx           TYPE REF TO cx_root
+      IMPORTING cx            TYPE REF TO cx_root
       RETURNING VALUE(result) TYPE REF TO cx_root.
 
     CLASS-METHODS get_instance
-      IMPORTING !clsname   TYPE seoclsname
+      IMPORTING clsname    TYPE seoclsname
       RETURNING VALUE(obj) TYPE REF TO ycl_addict_class
       RAISING   ycx_addict_table_content.
 
     METHODS accept
-      IMPORTING !visitor TYPE REF TO yif_addict_class_visitor
+      IMPORTING visitor TYPE REF TO yif_addict_class_visitor
       RAISING   ycx_addict_class_method.
 
     METHODS dequeue_exec.
     METHODS enqueue_exec RAISING ycx_addict_lock.
 
     METHODS get_components
-      IMPORTING !param    TYPE component_param_dict OPTIONAL
-      EXPORTING !cmp_hash TYPE component_set
-                !cmp_sort TYPE component_sort
-                !cmp_std  TYPE component_list.
+      IMPORTING param    TYPE component_param_dict OPTIONAL
+      EXPORTING cmp_hash TYPE component_set
+                cmp_sort TYPE component_sort
+                cmp_std  TYPE component_list.
 
     METHODS get_immediate_subclass_names RETURNING VALUE(output) TYPE clsname_list.
-    METHODS get_instanceable_subclasses RETURNING VALUE(output) TYPE clsname_list.
+    METHODS get_instanceable_subclasses  RETURNING VALUE(output) TYPE clsname_list.
     METHODS get_recursive_subclass_names RETURNING VALUE(output) TYPE clsname_list.
-    METHODS get_text RETURNING VALUE(output) TYPE seoclasstx.
-    METHODS is_in_call_stack RETURNING VALUE(stack) TYPE abap_bool.
+    METHODS get_text                     RETURNING VALUE(output) TYPE seoclasstx.
+    METHODS is_in_call_stack             RETURNING VALUE(stack)  TYPE abap_bool.
 
     METHODS search_class_doc
-      IMPORTING !words     TYPE dok_text_list
+      IMPORTING words      TYPE dok_text_list
       RETURNING VALUE(hit) TYPE abap_bool.
 
-  PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF multiton_dict,
              clsname TYPE seoclsname,
@@ -102,7 +105,7 @@ CLASS ycl_addict_class DEFINITION
                         WITH UNIQUE KEY primary_key COMPONENTS clsname.
 
     CONSTANTS: BEGIN OF doku_id,
-                 class TYPE dokil-id  VALUE 'CL',
+                 class TYPE dokil-id VALUE 'CL',
                END OF doku_id.
 
     CONSTANTS: BEGIN OF doku_typ,
@@ -110,33 +113,30 @@ CLASS ycl_addict_class DEFINITION
                END OF doku_typ.
 
     CONSTANTS: BEGIN OF table,
-                 def TYPE tabname   VALUE 'SEOCLASS',
-                 rel TYPE tabname   VALUE 'SEOMETAREL',
+                 def TYPE tabname VALUE 'SEOCLASS',
+                 rel TYPE tabname VALUE 'SEOMETAREL',
                END OF table.
 
-    DATA dokil                 TYPE dokil.
-    DATA txt                   TYPE seoclasstx.
-    DATA component_std         TYPE component_list.
-    DATA dokil_read            TYPE abap_bool.
-    DATA txt_read              TYPE abap_bool.
-    DATA component_read        TYPE abap_bool.
+    DATA dokil          TYPE dokil.
+    DATA txt            TYPE seoclasstx.
+    DATA component_std  TYPE component_list.
+    DATA dokil_read     TYPE abap_bool.
+    DATA txt_read       TYPE abap_bool.
+    DATA component_read TYPE abap_bool.
 
     CLASS-DATA multiton TYPE multiton_set.
+
     METHODS read_dokil.
 ENDCLASS.
 
 
-
-CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
-
-
+CLASS ycl_addict_class IMPLEMENTATION.
   METHOD accept.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Accepts a visitor
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     visitor->visit( me ).
   ENDMETHOD.
-
 
   METHOD check_class_existence.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -145,7 +145,6 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     get_instance( clsname ).
   ENDMETHOD.
 
-
   METHOD check_class_has_interface.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Ensures that the class has the given interface
@@ -153,13 +152,10 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     DATA(cls) = get_instance( interface )->get_instanceable_subclasses( ).
     CHECK NOT line_exists( cls[ table_line = class ] ).
 
-    RAISE EXCEPTION TYPE ycx_addict_table_content
-      EXPORTING
-        objectid = CONV #( |{ class } { interface }| )
-        tabname  = table-rel
-        textid   = ycx_addict_table_content=>no_entry_for_objectid.
+    RAISE EXCEPTION NEW ycx_addict_table_content( objectid = CONV #( |{ class } { interface }| )
+                                                  tabname  = table-rel
+                                                  textid   = ycx_addict_table_content=>no_entry_for_objectid ).
   ENDMETHOD.
-
 
   METHOD convert_prgname_to_clsname.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -169,38 +165,30 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     REPLACE ALL OCCURRENCES OF '=' IN clsname WITH space.
   ENDMETHOD.
 
-
   METHOD dequeue_exec.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Dequeues class for execution
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     CALL FUNCTION 'DEQUEUE_EYADDICT_CLSNAME'
-      EXPORTING
-        clsname = me->def-clsname.
+      EXPORTING clsname = me->def-clsname.
   ENDMETHOD.
-
 
   METHOD enqueue_exec.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Enqueues class for execution
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     CALL FUNCTION 'ENQUEUE_EYADDICT_CLSNAME'
-      EXPORTING
-        clsname        = me->def-clsname
-      EXCEPTIONS
-        foreign_lock   = 1
-        system_failure = 2
-        OTHERS         = 3
-        ##FM_SUBRC_OK.
+      EXPORTING  clsname        = me->def-clsname
+      EXCEPTIONS foreign_lock   = 1
+                 system_failure = 2
+                 OTHERS         = 3
+      ##FM_SUBRC_OK.
 
     IF sy-subrc <> 0.
-      RAISE EXCEPTION TYPE ycx_addict_lock
-        EXPORTING
-          textid = ycx_addict_lock=>locked_by_user
-          bname  = CONV #( sy-msgv1 ).
+      RAISE EXCEPTION NEW ycx_addict_lock( textid = ycx_addict_lock=>locked_by_user
+                                           bname  = CONV #( sy-msgv1 ) ).
     ENDIF.
   ENDMETHOD.
-
 
   METHOD get_class_name.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -211,7 +199,6 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     REPLACE ALL OCCURRENCES OF '\CLASS=' IN long_class_name WITH space.
     result = long_class_name.
   ENDMETHOD.
-
 
   METHOD get_components.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -228,9 +215,9 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     cmp_std = me->component_std.
 
     DELETE cmp_std WHERE NOT (
-        cmpname IN param-cmpname_rng AND
-        cmptype IN param-cmptype_rng AND
-        mtdtype IN param-mtdtype_rng ).
+                               cmpname IN param-cmpname_rng
+                         AND cmptype IN param-cmptype_rng
+                         AND mtdtype IN param-mtdtype_rng ).
 
     IF cmp_hash IS REQUESTED.
       cmp_hash = cmp_std.
@@ -241,7 +228,6 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-
   METHOD get_deepest_exception.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns the deepest exception object
@@ -251,7 +237,6 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
                      ELSE get_deepest_exception( cx->previous ) ).
   ENDMETHOD.
 
-
   METHOD get_immediate_subclass_names.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns immediate children classes
@@ -259,13 +244,11 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     output = ycl_addict_class_inheritance=>get_instance( )->get_immediate_subclasses( def-clsname ).
   ENDMETHOD.
 
-
   METHOD get_instance.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Factory
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    ASSIGN ycl_addict_class=>multiton[ KEY primary_key COMPONENTS
-                                       clsname = clsname ]
+    ASSIGN ycl_addict_class=>multiton[ KEY primary_key COMPONENTS clsname = clsname ]
            TO FIELD-SYMBOL(<multiton>).
 
     IF sy-subrc <> 0.
@@ -277,11 +260,9 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
              INTO @multiton-obj->def.
 
       IF sy-subrc <> 0.
-        RAISE EXCEPTION TYPE ycx_addict_table_content
-          EXPORTING
-            textid   = ycx_addict_table_content=>no_entry_for_objectid
-            objectid = CONV #( multiton-clsname )
-            tabname  = ycl_addict_class=>table-def.
+        RAISE EXCEPTION NEW ycx_addict_table_content( textid   = ycx_addict_table_content=>no_entry_for_objectid
+                                                      objectid = CONV #( multiton-clsname )
+                                                      tabname  = ycl_addict_class=>table-def ).
       ENDIF.
 
       INSERT multiton INTO TABLE ycl_addict_class=>multiton ASSIGNING <multiton>.
@@ -290,14 +271,12 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     obj = <multiton>-obj.
   ENDMETHOD.
 
-
   METHOD get_instanceable_subclasses.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns subclasses which are instanceable
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     output = ycl_addict_class_inheritance=>get_instance( )->get_instanceable_subclasses( me->def-clsname ).
   ENDMETHOD.
-
 
   METHOD get_recursive_subclass_names.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -306,7 +285,6 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     output = ycl_addict_class_inheritance=>get_instance( )->get_recursive_subclasses( me->def-clsname ).
   ENDMETHOD.
 
-
   METHOD get_text.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns text of class
@@ -314,14 +292,14 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     IF me->txt_read = abap_false. " Lazy initialization
 
       SELECT SINGLE * FROM seoclasstx
-             WHERE clsname = @me->def-clsname AND
-                   langu   = @sy-langu
+             WHERE clsname = @me->def-clsname
+               AND langu   = @sy-langu
              INTO @me->txt.
 
       IF sy-subrc <> 0.
         SELECT SINGLE * FROM seoclasstx
                WHERE clsname = @me->def-clsname
-               INTO @me->txt ##WARN_OK .                "#EC CI_NOORDER
+               INTO @me->txt ##WARN_OK.                "#EC CI_NOORDER
       ENDIF.
 
       me->txt_read = abap_true.
@@ -330,7 +308,6 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     output = me->txt.
   ENDMETHOD.
 
-
   METHOD is_in_call_stack.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Tells if the class is in the call stack
@@ -338,8 +315,7 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     DATA cs TYPE sys_callst.
 
     CALL FUNCTION 'SYSTEM_CALLSTACK'
-      IMPORTING
-        et_callstack = cs.
+      IMPORTING et_callstack = cs.
 
     ASSERT cs IS NOT INITIAL. " Can't be
     DATA(progname_pattern) = |{ me->def-clsname }*|.
@@ -352,7 +328,6 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
-
   METHOD read_dokil.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Reads dokil table (lazy)
@@ -361,23 +336,22 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
     me->dokil_read = abap_true.
 
     SELECT SINGLE * FROM dokil
-           WHERE id     = @me->doku_id-class AND
-                 object = @me->def-clsname AND
-                 langu  = @sy-langu AND
-                 typ    = @me->doku_typ-class
-           INTO @me->dokil .
+           WHERE id     = @me->doku_id-class
+             AND object = @me->def-clsname
+             AND langu  = @sy-langu
+             AND typ    = @me->doku_typ-class
+           INTO @me->dokil.
 
     IF sy-subrc <> 0.
       RETURN.
     ENDIF.
 
     SELECT SINGLE * FROM dokil                          "#EC CI_GENBUFF
-           WHERE id     = @me->doku_id-class AND        "#EC CI_NOORDER
-                 object = @me->def-clsname   AND
-                 typ    = @me->doku_typ-class
+           WHERE id     = @me->doku_id-class        "#EC CI_NOORDER
+             AND object = @me->def-clsname
+             AND typ    = @me->doku_typ-class
            INTO @me->dokil ##WARN_OK.
   ENDMETHOD.
-
 
   METHOD search_class_doc.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -394,14 +368,12 @@ CLASS YCL_ADDICT_CLASS IMPLEMENTATION.
 
     LOOP AT words ASSIGNING FIELD-SYMBOL(<word>).
       CALL FUNCTION 'DOCU_SEARCH_TEXT'
-        EXPORTING
-          id           = me->dokil-id
-          langu        = me->dokil-langu
-          object       = me->dokil-object
-          typ          = me->dokil-typ
-          searchstring = <word>
-        TABLES
-          hitlist      = hitlist.
+        EXPORTING id           = me->dokil-id
+                  langu        = me->dokil-langu
+                  object       = me->dokil-object
+                  typ          = me->dokil-typ
+                  searchstring = <word>
+        TABLES    hitlist      = hitlist.
 
       CHECK hitlist IS NOT INITIAL.
       hit = abap_true.
