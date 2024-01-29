@@ -1,6 +1,5 @@
 CLASS ycl_addict_transport_request DEFINITION
-  PUBLIC
-  FINAL
+  PUBLIC FINAL
   CREATE PUBLIC.
 
   PUBLIC SECTION.
@@ -172,11 +171,12 @@ CLASS ycl_addict_transport_request DEFINITION
       RETURNING VALUE(output) TYPE request_and_object_list.
 
     CLASS-METHODS get_request_objects
-      IMPORTING trkorr_rng    TYPE ytt_addict_trkorr_rng
-                pgmid_rng     TYPE pgmid_range OPTIONAL
-                read_creation TYPE abap_bool   DEFAULT abap_false
-      EXPORTING !list         TYPE ycl_addict_dol_model=>dol_list
-                list_wr       TYPE ycl_addict_dol_model=>dol_list_wr.
+      IMPORTING trkorr_rng      TYPE ytt_addict_trkorr_rng
+                pgmid_rng       TYPE pgmid_range OPTIONAL
+                read_creation   TYPE abap_bool   DEFAULT abap_false
+                include_deleted TYPE abap_bool   DEFAULT abap_false
+      EXPORTING !list           TYPE ycl_addict_dol_model=>dol_list
+                list_wr         TYPE ycl_addict_dol_model=>dol_list_wr.
 
     CLASS-METHODS get_requests_containing_obj
       IMPORTING obj            TYPE ytt_addict_e071_obj_key
@@ -505,9 +505,11 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
         bdc->add_scr( prg = 'RS_STREE_OBJECTS_TO_REQ_GET'
                       dyn = '1000' ).
 
-        bdc->add_fld( nam = 'BDC_OKCODE' val = '=ONLI' ).
+        bdc->add_fld( nam = 'BDC_OKCODE'
+                      val = '=ONLI' ).
 
-        bdc->add_fld( nam = 'P_TRKORR'   val = CONV #( me->trkorr ) ).
+        bdc->add_fld( nam = 'P_TRKORR'
+                      val = CONV #( me->trkorr ) ).
 
         bdc->add_scr( prg = 'RS_STREE_OBJECTS_TO_REQ_GET'
                       dyn = '0100' ).
@@ -526,9 +528,8 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                      validate_msg = abap_true ).
 
       CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION TYPE ycx_addict_sh_piece_list_comp
-          EXPORTING previous = diaper
-                    trkorr   = me->trkorr.
+        RAISE EXCEPTION NEW ycx_addict_sh_piece_list_comp( previous = diaper
+                                                           trkorr   = me->trkorr ).
     ENDTRY.
   ENDMETHOD.
 
@@ -576,10 +577,8 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     DATA tr005 TYPE STANDARD TABLE OF tr005.
     DATA msg   TYPE STANDARD TABLE OF tr004.
 
-    CLEAR: tr005,
-           msg.
-
-    tr005 = VALUE #( FOR _user IN user ( as4user = _user ) ).
+    tr005 = VALUE #( FOR _user IN user
+                     ( as4user = _user ) ).
 
     CALL FUNCTION 'TR40_TASK_ADD'
       EXPORTING iv_trkorr   = me->trkorr
@@ -714,12 +713,12 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     " Returns empty open requests
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     SELECT trkorr FROM e070 AS request
-           WHERE trkorr IN @trkorr_rng AND
-                 ( strkorr = @space OR strkorr IS NULL ) AND
-                 ( NOT EXISTS ( SELECT trkorr FROM e071 WHERE trkorr = request~trkorr ) ) AND
-                 ( NOT EXISTS ( SELECT trkorr FROM e070 AS task
-                                WHERE strkorr = request~trkorr AND
-                                EXISTS ( SELECT trkorr FROM e071 WHERE trkorr = task~trkorr ) ) )
+           WHERE trkorr IN @trkorr_rng
+             AND ( strkorr = @space OR strkorr IS NULL )
+             AND ( NOT EXISTS ( SELECT trkorr FROM e071 WHERE trkorr = request~trkorr ) )
+             AND ( NOT EXISTS ( SELECT trkorr FROM e070 AS task
+                                       WHERE strkorr = request~trkorr
+                                         AND EXISTS ( SELECT trkorr FROM e071 WHERE trkorr = task~trkorr ) ) )
            INTO TABLE @DATA(trkorr).
 
     LOOP AT trkorr ASSIGNING FIELD-SYMBOL(<trkorr>).
@@ -768,16 +767,14 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
       DATA(mt) = VALUE multiton_dict( trkorr = trkorr
                                       top    = top ).
 
-      SELECT SINGLE trkorr, strkorr
-             FROM e070
+      SELECT SINGLE trkorr, strkorr FROM e070
              WHERE trkorr = @trkorr
              INTO @DATA(e070).
 
       IF sy-subrc <> 0.
-        RAISE EXCEPTION TYPE ycx_addict_table_content
-          EXPORTING textid   = ycx_addict_table_content=>no_entry_for_objectid
-                    objectid = CONV #( trkorr )
-                    tabname  = ycl_addict_transport_request=>table-e070.
+        RAISE EXCEPTION NEW ycx_addict_table_content( textid   = ycx_addict_table_content=>no_entry_for_objectid
+                                                      objectid = CONV #( trkorr )
+                                                      tabname  = ycl_addict_transport_request=>table-e070 ).
       ENDIF.
 
       mt-obj = NEW #( ).
@@ -955,10 +952,10 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     SELECT trkorr, pgmid, object, obj_name
            FROM e071
            FOR ALL ENTRIES IN @obj
-           WHERE trkorr   IN @ycl_addict_transport_request=>clazy_val-dev_req_rng AND
-                 pgmid     = @obj-pgmid AND
-                 object    = @obj-object AND
-                 obj_name  = @obj-obj_name
+           WHERE trkorr   IN @ycl_addict_transport_request=>clazy_val-dev_req_rng
+             AND pgmid     = @obj-pgmid
+             AND object    = @obj-object
+             AND obj_name  = @obj-obj_name
            INTO TABLE @DATA(e071).
 
     " Do holistic search if requested """""""""""""""""""""""""""""""
@@ -992,10 +989,10 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
       IF obj_name_rng IS NOT INITIAL.
         SELECT trkorr, pgmid, object, obj_name
                FROM e071
-               WHERE trkorr IN @ycl_addict_transport_request=>clazy_val-dev_req_rng AND
-                     ( pgmid = @yif_addict_dol_obj=>pgmid-r3tr OR
-                       pgmid = @yif_addict_dol_obj=>pgmid-limu ) AND
-                     obj_name IN @obj_name_rng
+               WHERE trkorr IN @ycl_addict_transport_request=>clazy_val-dev_req_rng
+                 AND (    pgmid = @yif_addict_dol_obj=>pgmid-r3tr
+                       OR pgmid = @yif_addict_dol_obj=>pgmid-limu )
+                 AND obj_name IN @obj_name_rng
                APPENDING CORRESPONDING FIELDS OF TABLE @e071. "#EC CI_NOFIRST
       ENDIF.
     ENDIF.
@@ -1051,13 +1048,15 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
 
     SELECT e070~trkorr, e07t~as4text, e070~strkorr, e071~obj_name
            FROM e071
-                INNER JOIN e070 ON e070~trkorr = e071~trkorr
-                LEFT  JOIN e07t ON e07t~trkorr = e071~trkorr AND
-                                   e07t~langu  = @sy-langu
+                INNER JOIN e070
+                  ON e070~trkorr = e071~trkorr
+                LEFT JOIN e07t
+                  ON  e07t~trkorr = e071~trkorr
+                  AND e07t~langu  = @sy-langu
            FOR ALL ENTRIES IN @tags
-           WHERE pgmid    = @tags-pgmid AND
-                 object   = @tags-object AND
-                 obj_name = @tags-obj_name
+           WHERE pgmid    = @tags-pgmid
+             AND object   = @tags-object
+             AND obj_name = @tags-obj_name
            INTO CORRESPONDING FIELDS OF TABLE @output ##TOO_MANY_ITAB_FIELDS.
   ENDMETHOD.
 
@@ -1068,32 +1067,31 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
 
     " Raw list """"""""""""""""""""""""""""""""""""""""""""""""""""""
     IF param-ignore_trkorr = abap_false.
-      SELECT e070~trkorr, e070~trfunction, e070~trstatus,
-             e07t~as4text, e070~as4user, e070~strkorr,
-             e070~as4date, e070~as4time,
-             e070~tarsystem
+      SELECT e070~trkorr, e070~trfunction, e070~trstatus, e07t~as4text, e070~as4user, e070~strkorr, e070~as4date,
+             e070~as4time, e070~tarsystem
              FROM e070
-                  LEFT JOIN e07t ON e07t~trkorr = e070~trkorr
-             WHERE e070~trkorr     IN @param-trkorr_rng     AND
-                   e070~trfunction IN @param-trfunction_rng AND
-                   e070~trstatus   IN @param-trstatus_rng   AND
-                   e070~as4date    IN @param-as4date_rng    AND
-                   e070~as4user    IN @param-as4user_rng
+                  LEFT JOIN e07t
+                    ON e07t~trkorr = e070~trkorr
+             WHERE e070~trkorr     IN @param-trkorr_rng
+               AND e070~trfunction IN @param-trfunction_rng
+               AND e070~trstatus   IN @param-trstatus_rng
+               AND e070~as4date    IN @param-as4date_rng
+               AND e070~as4user    IN @param-as4user_rng
              APPENDING CORRESPONDING FIELDS OF TABLE @output ##TOO_MANY_ITAB_FIELDS.
     ENDIF.
 
     IF param-srch_strkorr = abap_true.
-      SELECT e070~trkorr, e070~trfunction, e070~trstatus, e07t~as4text,
-             e070~as4user, e070~strkorr, e070~as4date, e070~as4time,
-             e070~tarsystem
+      SELECT e070~trkorr, e070~trfunction, e070~trstatus, e07t~as4text, e070~as4user, e070~strkorr, e070~as4date,
+             e070~as4time, e070~tarsystem
              FROM e070
-                  LEFT JOIN e07t ON e07t~trkorr = e070~strkorr
-             WHERE e070~strkorr    IN @param-trkorr_rng     AND
-                   e070~trfunction IN @param-trfunction_rng AND
-                   e070~trstatus   IN @param-trstatus_rng   AND
-                   e070~as4date    IN @param-as4date_rng  AND
-                   e070~as4user    IN @param-as4user_rng
-        APPENDING CORRESPONDING FIELDS OF TABLE @output ##TOO_MANY_ITAB_FIELDS.
+                  LEFT JOIN e07t
+                    ON e07t~trkorr = e070~strkorr
+             WHERE e070~strkorr    IN @param-trkorr_rng
+               AND e070~trfunction IN @param-trfunction_rng
+               AND e070~trstatus   IN @param-trstatus_rng
+               AND e070~as4date    IN @param-as4date_rng
+               AND e070~as4user    IN @param-as4user_rng
+             APPENDING CORRESPONDING FIELDS OF TABLE @output ##TOO_MANY_ITAB_FIELDS.
     ENDIF.
 
     DELETE output WHERE as4text NOT IN param-as4text_rng.
@@ -1106,9 +1104,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
 
       SELECT trkorr, strkorr FROM e070
              FOR ALL ENTRIES IN @output
-             WHERE strkorr  =  @output-trkorr AND
-                   trstatus IN (@ycl_addict_transport_request=>trstatus-modif,
-                                @ycl_addict_transport_request=>trstatus-modif_prot)
+             WHERE strkorr   = @output-trkorr
+               AND trstatus IN (@ycl_addict_transport_request=>trstatus-modif,
+                            @ycl_addict_transport_request=>trstatus-modif_prot)
              INTO TABLE @DATA(task).
 
       SORT task BY strkorr.
@@ -1150,20 +1148,20 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
            list_wr.
 
     " Detect requests """""""""""""""""""""""""""""""""""""""""""""""
-    SELECT @ycl_addict_toolkit=>option-eq AS option,
+    SELECT @ycl_addict_toolkit=>option-eq    AS option,
            @ycl_addict_toolkit=>sign-include AS sign,
-           trkorr AS low
+           trkorr                            AS low
            FROM e070
-           WHERE trkorr  IN @trkorr_rng OR
-                 strkorr IN @trkorr_rng
+           WHERE trkorr  IN @trkorr_rng
+              OR strkorr IN @trkorr_rng
            APPENDING CORRESPONDING FIELDS OF TABLE @trkorr ##TOO_MANY_ITAB_FIELDS.
 
-    SELECT @ycl_addict_toolkit=>option-eq AS option,
+    SELECT @ycl_addict_toolkit=>option-eq    AS option,
            @ycl_addict_toolkit=>sign-include AS sign,
-           strkorr AS low
+           strkorr                           AS low
            FROM e070
-           WHERE trkorr  IN @trkorr_rng OR
-                 strkorr IN @trkorr_rng
+           WHERE trkorr  IN @trkorr_rng
+              OR strkorr IN @trkorr_rng
            APPENDING CORRESPONDING FIELDS OF TABLE @trkorr ##TOO_MANY_ITAB_FIELDS.
 
     SORT trkorr BY low.
@@ -1179,14 +1177,13 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                                                      sign   = ycl_addict_toolkit=>sign-include
                                                      low    = yif_addict_dol_obj=>pgmid-r3tr ) ) ).
 
-    SELECT DISTINCT
-           e071~trkorr, e071~pgmid, e071~object, e071~obj_name,
-           e07t~as4text
+    SELECT DISTINCT e071~trkorr, e071~pgmid, e071~object, e071~obj_name, e07t~as4text
            FROM e071
-                LEFT JOIN e07t ON e07t~trkorr = e071~trkorr AND
-                                  e07t~langu = @sy-langu
-           WHERE e071~trkorr IN @trkorr AND
-                 e071~pgmid  IN @active_pgmid_rng
+                LEFT JOIN e07t
+                  ON  e07t~trkorr = e071~trkorr
+                  AND e07t~langu  = @sy-langu
+           WHERE e071~trkorr IN @trkorr
+             AND e071~pgmid  IN @active_pgmid_rng
            ORDER BY e071~pgmid, e071~object, e071~obj_name
            INTO CORRESPONDING FIELDS OF TABLE @list_wr
            ##TOO_MANY_ITAB_FIELDS.
@@ -1212,9 +1209,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
           CONTINUE.
       ENDTRY.
 
-      IF dol->is_deleted( pgmid    = main_pgmid
-                          object   = main_object
-                          obj_name = main_obj_name ).
+      IF include_deleted = abap_false AND dol->is_deleted( pgmid    = main_pgmid
+                                                           object   = main_object
+                                                           obj_name = main_obj_name ).
 
         DELETE list_wr.
         CONTINUE.
@@ -1247,11 +1244,12 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
 
     SELECT e071~trkorr, e071~object, e071~obj_name, e070~strkorr, e070~as4date, e070~as4time
            FROM e071
-                INNER JOIN e070 ON e070~trkorr = e071~trkorr
+                INNER JOIN e070
+                  ON e070~trkorr = e071~trkorr
            FOR ALL ENTRIES IN @e071_tmp
-           WHERE e071~pgmid    = @ycl_addict_transport_request=>pgmid-r3tr AND
-                 e071~object   = @e071_tmp-object AND
-                 e071~obj_name = @e071_tmp-obj_name
+           WHERE e071~pgmid    = @ycl_addict_transport_request=>pgmid-r3tr
+             AND e071~object   = @e071_tmp-object
+             AND e071~obj_name = @e071_tmp-obj_name
            INTO TABLE @DATA(req_history).
 
     SORT req_history BY object
@@ -1290,18 +1288,18 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
           DATA(subtasks) = get_instance( parent_request )->get_subtasks( ).
 
           val->* = VALUE #( ( parent_request ) ).
-          APPEND LINES OF VALUE trkorr_list( FOR _subtask IN subtasks ( _subtask-trkorr ) ) TO val->*.
+          APPEND LINES OF VALUE trkorr_list( FOR _subtask IN subtasks
+                                             ( _subtask-trkorr ) ) TO val->*.
           flag->* = abap_true.
         ENDIF.
 
         result = val->*.
 
       CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION TYPE ycx_addict_class_method
-          EXPORTING textid   = ycx_addict_class_method=>unexpected_error
-                    previous = diaper
-                    class    = CONV #( ycl_addict_class=>get_class_name( me ) )
-                    method   = me->method-get_request_subtask_tree.
+        RAISE EXCEPTION NEW ycx_addict_class_method( textid   = ycx_addict_class_method=>unexpected_error
+                                                     previous = diaper
+                                                     class    = CONV #( ycl_addict_class=>get_class_name( me ) )
+                                                     method   = me->method-get_request_subtask_tree ).
     ENDTRY.
   ENDMETHOD.
 
@@ -1351,8 +1349,8 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     IF me->lazy_flag-as4text = abap_false.
       SELECT SINGLE as4text FROM e07t
-             WHERE trkorr = @me->trkorr AND
-                   langu  = @sy-langu
+             WHERE trkorr = @me->trkorr
+               AND langu  = @sy-langu
              INTO @me->lazy_val-as4text.
 
       IF sy-subrc <> 0.
@@ -1393,8 +1391,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     " Does the Request contain a locked object?
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     SELECT SINGLE lockflag FROM e071
-           WHERE trkorr = @me->trkorr AND
-                 lockflag = @abap_true
+           WHERE trkorr   = @me->trkorr
+             AND lockflag = @abap_true
+           " TODO: variable is assigned but never used (ABAP cleaner)
            INTO @DATA(dummy) ##WARN_OK.
 
     has = xsdbool( sy-subrc = 0 ).
@@ -1411,11 +1410,10 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                                                      object = 'MERG' ] ) ).
 
       CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION TYPE ycx_addict_data_read
-          EXPORTING textid    = ycx_addict_data_read=>cant_read_data_type
-                    previous  = diaper
-                    objectid  = CONV #( me->trkorr )
-                    data_type = CONV #( TEXT-407 ).
+        RAISE EXCEPTION NEW ycx_addict_data_read( textid    = ycx_addict_data_read=>cant_read_data_type
+                                                  previous  = diaper
+                                                  objectid  = CONV #( me->trkorr )
+                                                  data_type = CONV #( TEXT-407 ) ).
     ENDTRY.
   ENDMETHOD.
 
@@ -1664,10 +1662,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
         ENDIF.
 
       CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION TYPE ycx_addict_sort_and_compress
-          EXPORTING textid   = ycx_addict_sort_and_compress=>soc_function_error
-                    previous = diaper
-                    trkorr   = me->trkorr.
+        RAISE EXCEPTION NEW ycx_addict_sort_and_compress( textid   = ycx_addict_sort_and_compress=>soc_function_error
+                                                          previous = diaper
+                                                          trkorr   = me->trkorr ).
     ENDTRY.
   ENDMETHOD.
 ENDCLASS.
