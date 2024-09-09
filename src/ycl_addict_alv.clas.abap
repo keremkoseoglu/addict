@@ -1,7 +1,6 @@
 CLASS ycl_addict_alv DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC .
+  PUBLIC FINAL
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
     TYPES: BEGIN OF form_dict,
@@ -22,8 +21,8 @@ CLASS ycl_addict_alv DEFINITION
            END OF build_fcat_input_dict.
 
     CONSTANTS: BEGIN OF default_fields,
-                 alvsl   TYPE fieldname     VALUE 'ALVSL',
-                 celltab TYPE fieldname     VALUE 'CELLTAB',
+                 alvsl   TYPE fieldname VALUE 'ALVSL',
+                 celltab TYPE fieldname VALUE 'CELLTAB',
                END OF default_fields.
 
     CONSTANTS: BEGIN OF default_forms,
@@ -32,19 +31,21 @@ CLASS ycl_addict_alv DEFINITION
                  user_command     TYPE slis_formname VALUE 'USER_COMMAND',
                END OF default_forms.
 
-    DATA cprog  TYPE sycprog.
-    DATA itab   TYPE REF TO data.
-    DATA forms  TYPE form_dict.
-    DATA layout TYPE slis_layout_alv.
-    DATA fcat   TYPE slis_t_fieldcat_alv.
+    DATA cprog             TYPE sycprog.
+    DATA itab              TYPE REF TO data.
+    DATA forms             TYPE form_dict.
+    DATA layout            TYPE slis_layout_alv.
+    DATA fcat              TYPE slis_t_fieldcat_alv.
+    DATA toolbar_excluding TYPE slis_t_extab.
 
     METHODS constructor
-      IMPORTING !itab       TYPE REF TO data
-                !cprog      TYPE sy-cprog OPTIONAL
-                !forms      TYPE form_dict OPTIONAL
-                !layout     TYPE slis_layout_alv OPTIONAL
-                !fcat       TYPE slis_t_fieldcat_alv OPTIONAL
-                !fcat_param TYPE build_fcat_input_dict OPTIONAL
+      IMPORTING itab              TYPE REF TO data
+                cprog             TYPE sy-cprog              OPTIONAL
+                forms             TYPE form_dict             OPTIONAL
+                !layout           TYPE slis_layout_alv       OPTIONAL
+                fcat              TYPE slis_t_fieldcat_alv   OPTIONAL
+                fcat_param        TYPE build_fcat_input_dict OPTIONAL
+                toolbar_excluding TYPE slis_t_extab          OPTIONAL
       RAISING   ycx_addict_alv.
 
     METHODS build_fcat
@@ -53,11 +54,11 @@ CLASS ycl_addict_alv DEFINITION
 
     METHODS show_grid RAISING ycx_addict_alv.
     METHODS show_list RAISING ycx_addict_alv.
-    METHODS show RAISING ycx_addict_alv.
+    METHODS show      RAISING ycx_addict_alv.
 
-  PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES field_range TYPE RANGE OF fieldname.
+
     CONSTANTS alv_save TYPE char1 VALUE 'A'.
 
     CLASS-METHODS conv_field_list_to_range
@@ -72,25 +73,19 @@ CLASS ycl_addict_alv DEFINITION
 ENDCLASS.
 
 
-
-CLASS YCL_ADDICT_ALV IMPLEMENTATION.
-
-
+CLASS ycl_addict_alv IMPLEMENTATION.
   METHOD build_fcat.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Builds FCAT out of structure
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     TRY.
         CALL FUNCTION 'REUSE_ALV_FIELDCATALOG_MERGE'
-          EXPORTING
-            i_internal_tabname     = input-itab_name
-            i_structure_name       = input-structure
-          CHANGING
-            ct_fieldcat            = me->fcat
-          EXCEPTIONS
-            inconsistent_interface = 1
-            program_error          = 2
-            OTHERS                 = 3 ##FM_SUBRC_OK.
+          EXPORTING  i_internal_tabname     = input-itab_name
+                     i_structure_name       = input-structure
+          CHANGING   ct_fieldcat            = me->fcat
+          EXCEPTIONS inconsistent_interface = 1
+                     program_error          = 2
+                     OTHERS                 = 3 ##FM_SUBRC_OK.
 
         ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'REUSE_ALV_FIELDCATALOG_MERGE' ).
 
@@ -129,21 +124,19 @@ CLASS YCL_ADDICT_ALV IMPLEMENTATION.
       CATCH ycx_addict_alv INTO DATA(alv_error).
         RAISE EXCEPTION alv_error.
       CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION TYPE ycx_addict_alv
-          EXPORTING
-            textid   = ycx_addict_alv=>fcat_creation_error
-            previous = diaper.
+        RAISE EXCEPTION NEW ycx_addict_alv( textid   = ycx_addict_alv=>fcat_creation_error
+                                            previous = diaper ).
     ENDTRY.
   ENDMETHOD.
-
 
   METHOD constructor.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Object creation
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    me->cprog = cprog.
-    me->itab  = itab.
-    me->forms = forms.
+    me->cprog             = cprog.
+    me->itab              = itab.
+    me->forms             = forms.
+    me->toolbar_excluding = toolbar_excluding.
 
     IF fcat IS NOT INITIAL.
       me->fcat = fcat.
@@ -152,28 +145,26 @@ CLASS YCL_ADDICT_ALV IMPLEMENTATION.
     ELSE.
       TRY.
           set_fcat_from_itab( ).
-        CATCH cx_root ##no_handler .
+        CATCH cx_root ##NO_HANDLER.
       ENDTRY.
     ENDIF.
 
     me->layout = COND #(
-        WHEN layout IS SUPPLIED THEN layout
-        ELSE VALUE #( zebra = abap_true
+        WHEN layout IS SUPPLIED
+        THEN layout
+        ELSE VALUE #( zebra             = abap_true
                       colwidth_optimize = abap_true ) ).
   ENDMETHOD.
-
 
   METHOD conv_field_list_to_range.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Convert field list to field range
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    range = VALUE #(
-        FOR _field IN list (
-          sign   = ycl_addict_toolkit=>sign-include
-          option = ycl_addict_toolkit=>option-eq
-          low    = _field ) ).
+    range = VALUE #( FOR _field IN list
+                     ( sign   = ycl_addict_toolkit=>sign-include
+                       option = ycl_addict_toolkit=>option-eq
+                       low    = _field ) ).
   ENDMETHOD.
-
 
   METHOD set_fcat_from_itab.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -196,7 +187,6 @@ CLASS YCL_ADDICT_ALV IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-
   METHOD set_fcat_from_itab_line.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Sets the field catalog from the passed internal table line
@@ -206,18 +196,16 @@ CLASS YCL_ADDICT_ALV IMPLEMENTATION.
     build_fcat( VALUE #( structure = name ) ).
   ENDMETHOD.
 
-
   METHOD show.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Display grid or list, depending on SY-BATCH
     " Why? Grid produces an error in case the program is in the background
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     CASE sy-batch.
-      WHEN abap_true . show_list( ).
+      WHEN abap_true. show_list( ).
       WHEN abap_false. show_grid( ).
     ENDCASE.
   ENDMETHOD.
-
 
   METHOD show_grid.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -230,33 +218,28 @@ CLASS YCL_ADDICT_ALV IMPLEMENTATION.
         DATA(grid_settings) = VALUE lvc_s_glay( edt_cll_cb = ycl_addict_gui_toolkit=>is_gui_on( ) ).
 
         CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
-          EXPORTING
-            i_callback_program          = me->cprog
-            i_callback_pf_status_set    = me->forms-pf_status
-            i_callback_user_command     = me->forms-user_command
-            i_callback_html_end_of_list = me->forms-html_end_of_list
-            i_grid_settings             = grid_settings
-            is_layout                   = me->layout
-            it_fieldcat                 = me->fcat
-            i_save                      = me->alv_save
-          TABLES
-            t_outtab                    = <itab>
-          EXCEPTIONS
-            program_error               = 1
-            OTHERS                      = 2 ##FM_SUBRC_OK.
+          EXPORTING  i_callback_program          = me->cprog
+                     i_callback_pf_status_set    = me->forms-pf_status
+                     i_callback_user_command     = me->forms-user_command
+                     i_callback_html_end_of_list = me->forms-html_end_of_list
+                     i_grid_settings             = grid_settings
+                     is_layout                   = me->layout
+                     it_fieldcat                 = me->fcat
+                     i_save                      = me->alv_save
+                     it_excluding                = me->toolbar_excluding
+          TABLES     t_outtab                    = <itab>
+          EXCEPTIONS program_error               = 1
+                     OTHERS                      = 2 ##FM_SUBRC_OK.
 
         ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'REUSE_ALV_GRID_DISPLAY' ).
 
       CATCH ycx_addict_alv INTO DATA(alv_error).
         RAISE EXCEPTION alv_error.
       CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION TYPE ycx_addict_alv
-          EXPORTING
-            textid   = ycx_addict_alv=>grid_error
-            previous = diaper.
+        RAISE EXCEPTION NEW ycx_addict_alv( textid   = ycx_addict_alv=>grid_error
+                                            previous = diaper ).
     ENDTRY.
   ENDMETHOD.
-
 
   METHOD show_list.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -268,28 +251,24 @@ CLASS YCL_ADDICT_ALV IMPLEMENTATION.
         ASSIGN me->itab->* TO <itab>.
 
         CALL FUNCTION 'REUSE_ALV_LIST_DISPLAY'
-          EXPORTING
-            i_callback_program       = me->cprog
-            i_callback_pf_status_set = me->forms-pf_status
-            i_callback_user_command  = me->forms-user_command
-            is_layout                = me->layout
-            it_fieldcat              = me->fcat
-            i_save                   = me->alv_save
-          TABLES
-            t_outtab                 = <itab>
-          EXCEPTIONS
-            program_error            = 1
-            OTHERS                   = 2 ##FM_SUBRC_OK.
+          EXPORTING  i_callback_program       = me->cprog
+                     i_callback_pf_status_set = me->forms-pf_status
+                     i_callback_user_command  = me->forms-user_command
+                     is_layout                = me->layout
+                     it_fieldcat              = me->fcat
+                     i_save                   = me->alv_save
+                     it_excluding             = me->toolbar_excluding
+          TABLES     t_outtab                 = <itab>
+          EXCEPTIONS program_error            = 1
+                     OTHERS                   = 2 ##FM_SUBRC_OK.
 
         ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'REUSE_ALV_LIST_DISPLAY' ).
 
       CATCH ycx_addict_alv INTO DATA(alv_error).
         RAISE EXCEPTION alv_error.
       CATCH cx_root INTO DATA(diaper).
-        RAISE EXCEPTION TYPE ycx_addict_alv
-          EXPORTING
-            textid   = ycx_addict_alv=>grid_error
-            previous = diaper.
+        RAISE EXCEPTION NEW ycx_addict_alv( textid   = ycx_addict_alv=>grid_error
+                                            previous = diaper ).
     ENDTRY.
   ENDMETHOD.
 ENDCLASS.

@@ -1,6 +1,5 @@
 CLASS ycl_addict_tpalog_reader DEFINITION
-  PUBLIC
-  FINAL
+  PUBLIC FINAL
   CREATE PUBLIC.
 
   PUBLIC SECTION.
@@ -34,7 +33,7 @@ CLASS ycl_addict_tpalog_reader DEFINITION
     CONSTANTS: BEGIN OF status,
                  error        TYPE icon_d   VALUE '@5C@',
                  error_txt    TYPE iconname VALUE 'ICON_LED_RED',
-                 imported     TYPE icon_d   VALUE '@K5@',
+                 imported     TYPE icon_d   VALUE '@K5@', " DONT USE THAT! USE ycl_safetms_sap_system - get_transported_icon_rng_safe
                  imported_txt TYPE iconname VALUE 'ICON_IMPORT_TRANSPORT_REQUEST',
                  missing      TYPE icon_d   VALUE '@BZ@',
                  missing_txt  TYPE iconname VALUE 'ICON_LED_INACTIVE',
@@ -232,14 +231,14 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     CHECK me->list IS NOT INITIAL.
     DATA(master) = VALUE master_set( ).
 
-    SELECT e070~trkorr, e070~trfunction, e070~tarsystem,
-           e07t~as4text
+    SELECT e070~trkorr, e070~trfunction, e070~tarsystem, e07t~as4text
            FROM e070
-                LEFT JOIN e07t ON e07t~trkorr = e070~trkorr AND
-                                  e07t~langu  = @sy-langu
-        FOR ALL ENTRIES IN @me->list
-        WHERE e070~trkorr = @me->list-trkorr
-        INTO CORRESPONDING FIELDS OF TABLE @master.
+                LEFT JOIN e07t
+                  ON  e07t~trkorr = e070~trkorr
+                  AND e07t~langu  = @sy-langu
+           FOR ALL ENTRIES IN @me->list
+           WHERE e070~trkorr = @me->list-trkorr
+           INTO CORRESPONDING FIELDS OF TABLE @master.
 
     LOOP AT me->list ASSIGNING FIELD-SYMBOL(<list>).
       ASSIGN master[ KEY primary_key
@@ -305,10 +304,9 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
       CATCH ycx_addict_tpalog_read INTO DATA(lo_tr).
         RAISE EXCEPTION lo_tr.
       CATCH cx_root INTO DATA(lo_diaper).
-        RAISE EXCEPTION TYPE ycx_addict_tpalog_read
-          EXPORTING textid   = ycx_addict_tpalog_read=>read_error
-                    previous = lo_diaper
-                    rfcdest  = me->rfcdest.
+        RAISE EXCEPTION NEW ycx_addict_tpalog_read( textid   = ycx_addict_tpalog_read=>read_error
+                                                    previous = lo_diaper
+                                                    rfcdest  = me->rfcdest ).
     ENDTRY.
   ENDMETHOD.
 
@@ -343,9 +341,9 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
     " Add date range to where condition
     " ¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
     IF me->date_range IS NOT INITIAL.
-      ASSERT me->date_range-begda IS NOT INITIAL AND
-             me->date_range-endda IS NOT INITIAL AND
-             me->date_range-begda <= me->date_range-endda.
+      ASSERT     me->date_range-begda IS NOT INITIAL
+             AND me->date_range-endda IS NOT INITIAL
+             AND me->date_range-begda <= me->date_range-endda.
 
       IF opt IS INITIAL.
         APPEND VALUE #( text = '(' ) TO opt.
@@ -384,7 +382,7 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
            TO me->tpalog.
 
     IF 1 = 0. " Where Used List
-      SELECT SINGLE trkorr FROM tpalog INTO @DATA(dummy). "#EC CI_GENBUFF
+      SELECT SINGLE trkorr FROM tpalog INTO @DATA(dummy) ##NEEDED. "#EC CI_GENBUFF
     ENDIF.
   ENDMETHOD.
 
