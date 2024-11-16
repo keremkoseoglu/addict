@@ -1,6 +1,5 @@
 CLASS ycl_addict_transport_req_imp DEFINITION
-  PUBLIC
-  FINAL
+  PUBLIC FINAL
   CREATE PUBLIC.
 
   PUBLIC SECTION.
@@ -17,7 +16,7 @@ CLASS ycl_addict_transport_req_imp DEFINITION
 
     METHODS execute
       IMPORTING !input TYPE input_dict
-      RAISING   ycx_addict_class_method.
+      RAISING   ycx_addict_trans_req_import.
 
   PRIVATE SECTION.
     TYPES: BEGIN OF state_dict,
@@ -53,12 +52,11 @@ CLASS ycl_addict_transport_req_imp DEFINITION
     METHODS import_requests_managed
       IMPORTING retry_on_error TYPE abap_bool
                 test_import    TYPE abap_bool
-      RAISING   ycx_addict_class_method.
+      RAISING   ycx_addict_trans_req_import.
 
     METHODS import_requests
       IMPORTING test_import TYPE abap_bool
-      RAISING   ycx_addict_function_subrc
-                ycx_addict_class_method.
+      RAISING   ycx_addict_trans_req_import.
 
 ENDCLASS.
 
@@ -73,19 +71,25 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
     TRY.
         validate_input( ).
       CATCH cx_root INTO DATA(validation_error).
-        RAISE EXCEPTION TYPE ycx_addict_class_method
-          EXPORTING textid   = ycx_addict_class_method=>unexpected_error
-                    previous = validation_error
-                    class    = CONV #( ycl_addict_class=>get_class_name( me ) )
-                    method   = me->method-execute.
+        RAISE EXCEPTION NEW ycx_addict_trans_req_import( textid   = ycx_addict_trans_req_import=>parameter_error
+                                                         previous = validation_error
+                                                         sysnam   = input-sysnam ).
     ENDTRY.
 
     IF input-notify_users = abap_true.
       notify_users( ).
     ENDIF.
 
-    ycl_addict_transmit_tr_queue=>get_instance( )->execute( VALUE #( sysnam     = input-sysnam
-                                                                     show_popup = input-show_popup ) ).
+    TRY.
+        ycl_addict_transmit_tr_queue=>get_instance( )->execute( VALUE #( sysnam     = input-sysnam
+                                                                         show_popup = input-show_popup ) ).
+
+      CATCH cx_root INTO DATA(transmit_queue_error).
+        RAISE EXCEPTION NEW ycx_addict_trans_req_import(
+                                textid   = ycx_addict_trans_req_import=>transmit_tr_queue_failed
+                                previous = transmit_queue_error
+                                sysnam   = input-sysnam ).
+    ENDTRY.
 
     import_requests_managed( retry_on_error = input-retry_on_error
                              test_import    = input-test_import ).
@@ -97,13 +101,9 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
 
       CATCH cx_root INTO DATA(import_error).
         IF test_import = abap_true.
-          RAISE EXCEPTION TYPE ycx_addict_class_method
-            EXPORTING textid   = ycx_addict_class_method=>unexpected_error
-                      previous = NEW ycx_addict_transport_request(
-                                         textid   = ycx_addict_transport_request=>import_test_failed
-                                         previous = import_error )
-                      class    = CONV #( ycl_addict_class=>get_class_name( me ) )
-                      method   = me->method-execute.
+          RAISE EXCEPTION NEW ycx_addict_trans_req_import( textid   = ycx_addict_trans_req_import=>import_test_failed
+                                                           previous = import_error
+                                                           sysnam   = me->state-input->sysnam ).
         ENDIF.
 
         CASE retry_on_error.
@@ -112,11 +112,10 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
                                      test_import    = abap_false ).
 
           WHEN abap_false.
-            RAISE EXCEPTION TYPE ycx_addict_class_method
-              EXPORTING textid   = ycx_addict_class_method=>unexpected_error
-                        previous = import_error
-                        class    = CONV #( ycl_addict_class=>get_class_name( me ) )
-                        method   = me->method-execute.
+            RAISE EXCEPTION NEW ycx_addict_trans_req_import(
+                                    textid   = ycx_addict_trans_req_import=>import_request_error
+                                    previous = import_error
+                                    sysnam   = me->state-input->sysnam ).
         ENDCASE.
 
     ENDTRY.
@@ -139,52 +138,66 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
                    import_request_failed = 3
                    OTHERS                = 4.
 
-      ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'TMS_UI_IMPORT_TR_REQUEST' ).
-
-    ELSE.
-      DATA(retcode)   = CONV stpa-retcode( space ).
-      DATA(exception) = VALUE stmscalert( ).
-
-      ##FM_SUBRC_OK
-      CALL FUNCTION 'TMS_MGR_IMPORT_TR_REQUEST'
-        EXPORTING  iv_system                  = me->state-input->sysnam
-                   iv_request                 = me->trkorr-some
-                   iv_client                  = me->state-input->mandt
-                   iv_overtake                = abap_true   " Leave transport request in queue
-                   iv_import_again            = abap_true   " Import transport request again
-                   iv_ignore_originality      = abap_true   " Overwrite originals
-                   iv_ignore_repairs          = abap_true   " Overwrite objects in unconfirmed repairs
-                   iv_ignore_transtype        = abap_false  " Ignore invalid transport type
-                   iv_ignore_tabletype        = abap_false  " Ignore invalid table class
-                   iv_ignore_qaflag           = abap_false  " ?
-                   iv_ignore_predec           = abap_false  " Skip predecessior relationships
-                   iv_ignore_cvers            = abap_true   " Ignore invalid component version
-                   iv_ignore_spam             = abap_false  " ?
-                   iv_test_import             = test_import " Test import
-                   it_requests                = requests
-        IMPORTING  ev_tp_ret_code             = retcode
-                   es_exception               = exception
-        EXCEPTIONS read_config_failed         = 1
-                   table_of_requests_is_empty = 2
-                   OTHERS                     = 3.
-
-      ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'TMS_MGR_IMPORT_TR_REQUEST' ).
-
-      IF     exception       IS NOT INITIAL
-         AND exception-msgty CA me->critical_message_types.
-
-        RAISE EXCEPTION TYPE ycx_addict_function_subrc
-          EXPORTING textid     = ycx_addict_function_subrc=>function_returned_error_txt
-                    funcname   = 'TMS_MGR_IMPORT_TR_REQUEST'
-                    error_text = CONV #( exception-text ).
+      IF sy-subrc <> 0.
+        RAISE EXCEPTION NEW ycx_addict_trans_req_import(
+                                sysnam = me->state-input->sysnam
+                                textid = SWITCH #( sy-subrc
+                                                   WHEN 1 THEN ycx_addict_trans_req_import=>cancelled_by_user
+                                                   WHEN 2 THEN ycx_addict_trans_req_import=>import_request_denied
+                                                   ELSE        ycx_addict_trans_req_import=>import_request_failed ) ).
       ENDIF.
 
-      IF NOT (    retcode = '0000' OR retcode = '0'
-               OR retcode = '0004' OR retcode = '4' ).
-        RAISE EXCEPTION TYPE ycx_addict_function_subrc
-          EXPORTING textid   = ycx_addict_function_subrc=>function_returned_error
-                    funcname = 'TMS_MGR_IMPORT_TR_REQUEST'.
-      ENDIF.
+      RETURN.
+    ENDIF.
+
+    DATA(retcode)   = CONV stpa-retcode( space ).
+    DATA(exception) = VALUE stmscalert( ).
+
+    ##FM_SUBRC_OK
+    CALL FUNCTION 'TMS_MGR_IMPORT_TR_REQUEST'
+      EXPORTING  iv_system                  = me->state-input->sysnam
+                 iv_request                 = me->trkorr-some
+                 iv_client                  = me->state-input->mandt
+                 iv_overtake                = abap_true   " Leave transport request in queue
+                 iv_import_again            = abap_true   " Import transport request again
+                 iv_ignore_originality      = abap_true   " Overwrite originals
+                 iv_ignore_repairs          = abap_true   " Overwrite objects in unconfirmed repairs
+                 iv_ignore_transtype        = abap_false  " Ignore invalid transport type
+                 iv_ignore_tabletype        = abap_false  " Ignore invalid table class
+                 iv_ignore_qaflag           = abap_false  " ?
+                 iv_ignore_predec           = abap_false  " Skip predecessior relationships
+                 iv_ignore_cvers            = abap_true   " Ignore invalid component version
+                 iv_ignore_spam             = abap_false  " ?
+                 iv_test_import             = test_import " Test import
+                 it_requests                = requests
+      IMPORTING  ev_tp_ret_code             = retcode
+                 es_exception               = exception
+      EXCEPTIONS read_config_failed         = 1
+                 table_of_requests_is_empty = 2
+                 OTHERS                     = 3.
+
+    IF sy-subrc <> 0.
+      RAISE EXCEPTION NEW ycx_addict_trans_req_import(
+                              sysnam = me->state-input->sysnam
+                              textid = SWITCH #( sy-subrc
+                                                 WHEN 1 THEN ycx_addict_trans_req_import=>read_config_failed
+                                                 WHEN 2 THEN ycx_addict_trans_req_import=>table_of_requests_is_empty
+                                                 ELSE        ycx_addict_trans_req_import=>import_request_failed ) ).
+    ENDIF.
+
+    IF     exception       IS NOT INITIAL
+       AND exception-msgty CA me->critical_message_types.
+
+      RAISE EXCEPTION NEW ycx_addict_trans_req_import( textid = ycx_addict_trans_req_import=>import_failed_with_reason
+                                                       sysnam = me->state-input->sysnam
+                                                       citext = exception-text ).
+    ENDIF.
+
+    IF NOT (    retcode = '0000' OR retcode = '0'
+             OR retcode = '0004' OR retcode = '4' ).
+
+      RAISE EXCEPTION NEW ycx_addict_trans_req_import( textid = ycx_addict_trans_req_import=>import_request_failed
+                                                       sysnam = me->state-input->sysnam ).
     ENDIF.
   ENDMETHOD.
 
@@ -226,19 +239,17 @@ CLASS ycl_addict_transport_req_imp IMPLEMENTATION.
     " Validate input parameters
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     IF me->state-input->sysnam IS INITIAL.
-      RAISE EXCEPTION TYPE ycx_addict_method_parameter
-        EXPORTING textid      = ycx_addict_method_parameter=>param_missing
-                  class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
-                  method_name = me->method-execute
-                  param_name  = me->field-sysnam.
+      RAISE EXCEPTION NEW ycx_addict_method_parameter( textid      = ycx_addict_method_parameter=>param_missing
+                                                       class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
+                                                       method_name = me->method-execute
+                                                       param_name  = me->field-sysnam ).
     ENDIF.
 
     IF me->state-input->trkorr IS INITIAL.
-      RAISE EXCEPTION TYPE ycx_addict_method_parameter
-        EXPORTING textid      = ycx_addict_method_parameter=>param_missing
-                  class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
-                  method_name = me->method-execute
-                  param_name  = me->field-trkorr.
+      RAISE EXCEPTION NEW ycx_addict_method_parameter( textid      = ycx_addict_method_parameter=>param_missing
+                                                       class_name  = CONV #( ycl_addict_class=>get_class_name( me ) )
+                                                       method_name = me->method-execute
+                                                       param_name  = me->field-trkorr ).
     ENDIF.
   ENDMETHOD.
 ENDCLASS.

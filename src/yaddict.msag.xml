@@ -203,6 +203,66 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>040</MSGNR>
+     <TEXT>&amp;1 Import işlemi kullanıcı tarafından iptal edildi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>041</MSGNR>
+     <TEXT>&amp;1 Import işlemi reddedildi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>042</MSGNR>
+     <TEXT>&amp;1 Import işlemi başarısız, STMS&apos;ten inceleyin</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>043</MSGNR>
+     <TEXT>Konfigürasyon okuma hatası, &amp;1 Import işlemi başarısız</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>044</MSGNR>
+     <TEXT>Request listesi boş, &amp;1 Import işlemi başarısız</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>045</MSGNR>
+     <TEXT>&amp;1 Import başarısız: &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>046</MSGNR>
+     <TEXT>&amp;1 Import testi sırasında bir hata oluştu (gerçek Import edilmedi)</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>047</MSGNR>
+     <TEXT>&amp;1 Import işlemi hata aldı</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>048</MSGNR>
+     <TEXT>İletilen parametreler hatalı, &amp;1 Import yürütülemeyecek</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>049</MSGNR>
+     <TEXT>&amp;1 STMS kuyruğu güncellenemedi, Import yürütülemeyecek</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>051</MSGNR>
      <TEXT>Kuyruk verileri okunamadı</TEXT>
     </T100>
@@ -755,6 +815,56 @@
      <SPRSL>E</SPRSL>
      <MSGNR>039</MSGNR>
      <TEXT>Tasks under &amp;1 could not be retrieved, cannot be released.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>040</MSGNR>
+     <TEXT>&amp;1 import operation was canceled by the user</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>041</MSGNR>
+     <TEXT>&amp;1 import operation was rejected</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>042</MSGNR>
+     <TEXT>&amp;1 import operation failed, check in STMS</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>043</MSGNR>
+     <TEXT>Configuration reading error, &amp;1 import operation failed</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>044</MSGNR>
+     <TEXT>Request list is empty, &amp;1 import operation failed</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>045</MSGNR>
+     <TEXT>&amp;1 import failed: &amp;2</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>046</MSGNR>
+     <TEXT>&amp;1 Import test failed (actual import not performed)</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>047</MSGNR>
+     <TEXT>&amp;1 import operation encountered an error</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>048</MSGNR>
+     <TEXT>Invalid parameters provided, &amp;1 import cannot be executed</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>049</MSGNR>
+     <TEXT>&amp;1 STMS queue could not be updated, import cannot be executed</TEXT>
     </item>
     <item>
      <SPRSL>E</SPRSL>
