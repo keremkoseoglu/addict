@@ -298,8 +298,7 @@ CLASS ycl_addict_transport_request DEFINITION
                 max_rel_wait        TYPE i         OPTIONAL
                 compl_sh_piece_list TYPE abap_bool DEFAULT abap_true
       EXPORTING rel_wait_success    TYPE abap_bool
-      RAISING   ycx_addict_function_subrc
-                ycx_addict_table_content.
+      RAISING   ycx_addict_trans_req_release.
 
     METHODS sort_and_compress RAISING ycx_addict_sort_and_compress.
 
@@ -379,8 +378,7 @@ CLASS ycl_addict_transport_request DEFINITION
                 max_rel_wait        TYPE i
                 compl_sh_piece_list TYPE abap_bool                           DEFAULT abap_true
       EXPORTING rel_wait_success    TYPE abap_bool
-      RAISING   ycx_addict_function_subrc
-                ycx_addict_table_content.
+      RAISING   ycx_addict_trans_req_release.
 ENDCLASS.
 
 
@@ -1522,7 +1520,14 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     DATA(wait_success) = VALUE abap_bool_list( ).
 
     IF del_empty_subtasks = abap_true.
-      delete_empty_subtasks( ).
+      TRY.
+          delete_empty_subtasks( ).
+        CATCH cx_root INTO DATA(del_subtask_error).
+          RAISE EXCEPTION NEW ycx_addict_trans_req_release( textid   = ycx_addict_trans_req_release=>empty_task_del_fail
+                                                            previous = del_subtask_error
+                                                            trkorr   = me->trkorr ).
+      ENDTRY.
+
     ENDIF.
 
     " Release subtasks if wanted """"""""""""""""""""""""""""""""""""
@@ -1531,7 +1536,14 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                              ELSE ycl_addict_transport_request=>seconds-default_max_release_wait ).
 
     IF rel_subtasks_too = abap_true.
-      DATA(sub) = get_subtasks( ).
+      TRY.
+          DATA(sub) = get_subtasks( ).
+
+        CATCH cx_root INTO DATA(subtask_read_error).
+          RAISE EXCEPTION NEW ycx_addict_trans_req_release( textid   = ycx_addict_trans_req_release=>subtask_read_fail
+                                                            previous = subtask_read_error
+                                                            trkorr   = me->trkorr ).
+      ENDTRY.
 
       LOOP AT sub ASSIGNING FIELD-SYMBOL(<sub>).
         release_single( EXPORTING trkorr              = <sub>-trkorr
@@ -1571,15 +1583,21 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Releases a single request
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
     DATA request TYPE REF TO ycl_addict_transport_request.
 
     CLEAR rel_wait_success.
 
     " Detect & check request """"""""""""""""""""""""""""""""""""""""
-    request = COND #( WHEN req IS INITIAL
-                      THEN get_instance( trkorr )
-                      ELSE req ).
+    TRY.
+        request = COND #( WHEN req IS INITIAL
+                          THEN get_instance( trkorr )
+                          ELSE req ).
+
+      CATCH cx_root INTO DATA(request_instance_error).
+        RAISE EXCEPTION NEW ycx_addict_trans_req_release( textid   = ycx_addict_trans_req_release=>request_not_found
+                                                          previous = request_instance_error
+                                                          trkorr   = trkorr ).
+    ENDTRY.
 
     IF NOT request->get_header( )-trstatus IN get_open_status_rng( ).
       RETURN.
@@ -1594,6 +1612,7 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     ENDIF.
 
     " Release """""""""""""""""""""""""""""""""""""""""""""""""""""""
+    ##NUMBER_OK
     CALL FUNCTION 'TR_RELEASE_REQUEST'
       EXPORTING  iv_trkorr                  = trkorr
                  iv_dialog                  = abap_true
@@ -1613,34 +1632,51 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                  db_access_error            = 10
                  action_aborted_by_user     = 11
                  export_failed              = 12
-                 OTHERS                     = 13
-      ##FM_SUBRC_OK ##NUMBER_OK.
+                 OTHERS                     = 13.
 
-    IF sy-subrc <> 5.
-      ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'TR_RELEASE_REQUEST' ).
-    ENDIF.
+    CASE sy-subrc.
+      WHEN 0.
+        IF wait_until_released = abap_true.
+          DATA(max_wait) = COND i( WHEN max_rel_wait IS NOT INITIAL
+                                   THEN max_rel_wait
+                                   ELSE ycl_addict_transport_request=>seconds-default_max_release_wait ).
+          DATA(total_wait) = 0.
 
-    " Wait until released (if wanted) """""""""""""""""""""""""""""""
-    IF wait_until_released = abap_true.
-      DATA(max_wait) = COND i( WHEN max_rel_wait IS NOT INITIAL
-                               THEN max_rel_wait
-                               ELSE ycl_addict_transport_request=>seconds-default_max_release_wait ).
-      DATA(total_wait) = 0.
+          DO.
+            IF request->has_locked_object( ) = abap_false.
+              rel_wait_success = abap_true.
+              EXIT.
+            ENDIF.
 
-      DO.
-        IF request->has_locked_object( ) = abap_false.
-          rel_wait_success = abap_true.
-          EXIT.
+            WAIT UP TO 1 SECONDS.
+
+            total_wait = total_wait + 1.
+            CHECK total_wait > max_wait.
+            rel_wait_success = abap_false.
+            EXIT.
+          ENDDO.
         ENDIF.
 
-        WAIT UP TO 1 SECONDS.
+      WHEN 5.
+        RETURN. " Already released
+      WHEN OTHERS.
 
-        total_wait = total_wait + 1.
-        CHECK total_wait > max_wait.
-        rel_wait_success = abap_false.
-        EXIT.
-      ENDDO.
-    ENDIF.
+        RAISE EXCEPTION NEW ycx_addict_trans_req_release(
+                                trkorr = trkorr
+                                textid = SWITCH #( sy-subrc
+                                                   WHEN 1  THEN ycx_addict_trans_req_release=>cts_initialization_failure
+                                                   WHEN 2  THEN ycx_addict_trans_req_release=>enqueue_failed
+                                                   WHEN 3  THEN ycx_addict_trans_req_release=>no_authorization
+                                                   WHEN 4  THEN ycx_addict_trans_req_release=>invalid_request
+                                                   WHEN 6  THEN ycx_addict_trans_req_release=>repeat_too_early
+                                                   WHEN 7  THEN ycx_addict_trans_req_release=>error_in_export_methods
+                                                   WHEN 8  THEN ycx_addict_trans_req_release=>object_check_error
+                                                   WHEN 9  THEN ycx_addict_trans_req_release=>docu_missing
+                                                   WHEN 10 THEN ycx_addict_trans_req_release=>db_access_error
+                                                   WHEN 11 THEN ycx_addict_trans_req_release=>action_aborted_by_user
+                                                   WHEN 12 THEN ycx_addict_trans_req_release=>export_failed
+                                                   ELSE         ycx_addict_trans_req_release=>release_failed ) ).
+    ENDCASE.
   ENDMETHOD.
 
   METHOD sort_and_compress.

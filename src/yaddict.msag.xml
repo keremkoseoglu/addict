@@ -113,6 +113,96 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>025</MSGNR>
+     <TEXT>CTS hatası, &amp;1 Release edilemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>026</MSGNR>
+     <TEXT>&amp;1 bir başkasında açık, Release edilemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>027</MSGNR>
+     <TEXT>Yetkiniz eksik, &amp;1 Release edilemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>028</MSGNR>
+     <TEXT>Hatalı Request, &amp;1 Release edilemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>029</MSGNR>
+     <TEXT>Erken deneme, &amp;1 Release edilemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>030</MSGNR>
+     <TEXT>Export yordamlarında hata, &amp;1 Release edilemedi, SE01&apos;den kontrol edin</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>031</MSGNR>
+     <TEXT>&amp;1 içeriğindeki nesnelerde hata var, Release edilemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>032</MSGNR>
+     <TEXT>Doküman / açıklama eksik, &amp;1 Release edilemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>033</MSGNR>
+     <TEXT>Veritabanı erişim hatası, &amp;1 Release edilemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>034</MSGNR>
+     <TEXT>&amp;1 Release işlemi kullanıcı tarafından iptal edildi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>035</MSGNR>
+     <TEXT>Export hatası, &amp;1 Release edilemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>036</MSGNR>
+     <TEXT>&amp;1 Release edilemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>037</MSGNR>
+     <TEXT>&amp;1 sistemde bulunamadı veya hatalı, Release edilemeyecek</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>038</MSGNR>
+     <TEXT>&amp;1 altındaki boş görevler silinemedi, Release edilemeyecek</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>039</MSGNR>
+     <TEXT>&amp;1 altındaki görevler alınamadı, Release edilemeyecek</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>051</MSGNR>
      <TEXT>Kuyruk verileri okunamadı</TEXT>
     </T100>
@@ -590,6 +680,81 @@
      <SPRSL>E</SPRSL>
      <MSGNR>024</MSGNR>
      <TEXT>Table &amp;1 entry &amp;2 has an invalid value in field &amp;3</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>025</MSGNR>
+     <TEXT>CTS error, &amp;1 could not be released.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>026</MSGNR>
+     <TEXT>&amp;1 is open in another session, could not be released.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>027</MSGNR>
+     <TEXT>Insufficient authorization, &amp;1 could not be released.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>028</MSGNR>
+     <TEXT>Invalid request, &amp;1 could not be released.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>029</MSGNR>
+     <TEXT>Premature attempt, &amp;1 could not be released.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>030</MSGNR>
+     <TEXT>Error in export methods, &amp;1 could not be released; check in SE01.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>031</MSGNR>
+     <TEXT>Errors in the objects contained in &amp;1, could not be released.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>032</MSGNR>
+     <TEXT>Missing document/description, &amp;1 could not be released.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>033</MSGNR>
+     <TEXT>Database access error, &amp;1 could not be released.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>034</MSGNR>
+     <TEXT>&amp;1 release operation was canceled by the user.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>035</MSGNR>
+     <TEXT>Export error, &amp;1 could not be released.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>036</MSGNR>
+     <TEXT>&amp;1 could not be released.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>037</MSGNR>
+     <TEXT>&amp;1 not found or is invalid, cannot be released</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>038</MSGNR>
+     <TEXT>Empty tasks under &amp;1 could not be deleted, cannot be released.</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>039</MSGNR>
+     <TEXT>Tasks under &amp;1 could not be retrieved, cannot be released.</TEXT>
     </item>
     <item>
      <SPRSL>E</SPRSL>
