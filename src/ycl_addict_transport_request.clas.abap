@@ -220,11 +220,10 @@ CLASS ycl_addict_transport_request DEFINITION
 
     METHODS complete_shi_piece_list RAISING   ycx_addict_sh_piece_list_comp.
     METHODS create_subtask          IMPORTING !user TYPE user_list.
-    METHODS delete                  RAISING   ycx_addict_function_subrc.
+    METHODS delete                  RAISING   ycx_addict_trans_req_delete.
 
     METHODS delete_empty_subtasks
-      RAISING ycx_addict_function_subrc
-              ycx_addict_table_content.
+      RAISING ycx_addict_trans_req_delete.
 
     METHODS delete_object
       IMPORTING obj TYPE ysaddict_e071_obj_key
@@ -379,6 +378,9 @@ CLASS ycl_addict_transport_request DEFINITION
                 compl_sh_piece_list TYPE abap_bool                           DEFAULT abap_true
       EXPORTING rel_wait_success    TYPE abap_bool
       RAISING   ycx_addict_trans_req_release.
+
+    CLASS-METHODS extract_bname_from_sy_msg
+      RETURNING VALUE(result) TYPE xubname.
 ENDCLASS.
 
 
@@ -588,6 +590,7 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Deletes the transport request
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    ##NUMBER_OK
     CALL FUNCTION 'TRINT_DELETE_COMM'
       EXPORTING  wi_dialog                     = abap_false
                  wi_trkorr                     = me->trkorr
@@ -607,17 +610,47 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                  wrong_client                  = 11
                  project_still_referenced      = 12
                  successors_already_released   = 13
-                 OTHERS                        = 14
-      ##FM_SUBRC_OK ##NUMBER_OK.
+                 OTHERS                        = 14.
 
-    ycx_addict_function_subrc=>raise_if_sysubrc_not_initial( 'TRINT_DELETE_COMM' ).
+    CHECK sy-subrc <> 0.
+
+    DATA(del_subrc) = sy-subrc.
+
+    RAISE EXCEPTION NEW ycx_addict_trans_req_delete(
+                            trkorr = me->trkorr
+                            bname  = extract_bname_from_sy_msg( )
+                            textid = SWITCH #( del_subrc
+                                               WHEN 1  THEN ycx_addict_trans_req_delete=>file_access_error
+                                               WHEN 2  THEN ycx_addict_trans_req_delete=>order_already_released
+                                               WHEN 3  THEN ycx_addict_trans_req_delete=>order_contains_c_member
+                                               WHEN 4  THEN ycx_addict_trans_req_delete=>order_contains_locked_entries
+                                               WHEN 5  THEN ycx_addict_trans_req_delete=>order_is_refered
+                                               WHEN 6  THEN ycx_addict_trans_req_delete=>repair_order
+                                               WHEN 7  THEN ycx_addict_trans_req_delete=>user_not_owner
+                                               WHEN 8  THEN ycx_addict_trans_req_delete=>delete_was_cancelled
+                                               WHEN 9  THEN ycx_addict_trans_req_delete=>objects_free_but_still_locks
+                                               WHEN 10 THEN ycx_addict_trans_req_delete=>order_lock_failed
+                                               WHEN 11 THEN ycx_addict_trans_req_delete=>wrong_client
+                                               WHEN 12 THEN ycx_addict_trans_req_delete=>project_still_referenced
+                                               WHEN 13 THEN ycx_addict_trans_req_delete=>successors_already_released
+                                               ELSE         ycx_addict_trans_req_delete=>request_delete_fail ) ).
   ENDMETHOD.
 
   METHOD delete_empty_subtasks.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Deletes the empty subtasks within the request
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    LOOP AT get_subtasks( only_empty = abap_true ) ASSIGNING FIELD-SYMBOL(<sub>).
+    TRY.
+        DATA(empty_subtasks) = get_subtasks( only_empty = abap_true ).
+
+      CATCH cx_root INTO DATA(empty_subtask_error).
+        RAISE EXCEPTION NEW ycx_addict_trans_req_delete(
+                                textid   = ycx_addict_trans_req_delete=>cant_find_emp_subs_cant_del
+                                previous = empty_subtask_error
+                                trkorr   = me->trkorr ).
+    ENDTRY.
+
+    LOOP AT empty_subtasks ASSIGNING FIELD-SYMBOL(<sub>).
       <sub>-obj->delete( ).
     ENDLOOP.
   ENDMETHOD.
@@ -1634,7 +1667,9 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                  export_failed              = 12
                  OTHERS                     = 13.
 
-    CASE sy-subrc.
+    DATA(release_subrc) = sy-subrc.
+
+    CASE release_subrc.
       WHEN 0.
         IF wait_until_released = abap_true.
           DATA(max_wait) = COND i( WHEN max_rel_wait IS NOT INITIAL
@@ -1663,7 +1698,8 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
 
         RAISE EXCEPTION NEW ycx_addict_trans_req_release(
                                 trkorr = trkorr
-                                textid = SWITCH #( sy-subrc
+                                bname  = extract_bname_from_sy_msg( )
+                                textid = SWITCH #( release_subrc
                                                    WHEN 1  THEN ycx_addict_trans_req_release=>cts_initialization_failure
                                                    WHEN 2  THEN ycx_addict_trans_req_release=>enqueue_failed
                                                    WHEN 3  THEN ycx_addict_trans_req_release=>no_authorization
@@ -1677,6 +1713,12 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                                                    WHEN 12 THEN ycx_addict_trans_req_release=>export_failed
                                                    ELSE         ycx_addict_trans_req_release=>release_failed ) ).
     ENDCASE.
+  ENDMETHOD.
+
+  METHOD extract_bname_from_sy_msg.
+    result = COND #( WHEN sy-msgid = 'TK' AND sy-msgno = '133'
+                     THEN CONV #( sy-msgv2 )
+                     ELSE space ).
   ENDMETHOD.
 
   METHOD sort_and_compress.

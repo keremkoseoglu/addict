@@ -120,7 +120,7 @@
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>026</MSGNR>
-     <TEXT>&amp;1 bir başkasında açık, Release edilemedi</TEXT>
+     <TEXT>&amp;1 bir başkasında açık, Release edilemedi (&amp;2)</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
@@ -271,6 +271,96 @@
      <ARBGB>YADDICT</ARBGB>
      <MSGNR>052</MSGNR>
      <TEXT>Kolon sayısı uyumsuz!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>053</MSGNR>
+     <TEXT>Dosya erişim hatası, &amp;1 silinemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>054</MSGNR>
+     <TEXT>&amp;1 Release edilmiş, silinemez</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>055</MSGNR>
+     <TEXT>&amp;1 içerisinde C öğesi var, silinemez</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>056</MSGNR>
+     <TEXT>&amp;1 içerisinde kilitli nesneler var, silinemez</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>057</MSGNR>
+     <TEXT>&amp;1 refere ediliyor, silinemez</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>058</MSGNR>
+     <TEXT>&amp;1 tamir ihtiyacında, silinemez</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>059</MSGNR>
+     <TEXT>&amp;1 size ait değil, silinemez</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>060</MSGNR>
+     <TEXT>&amp;1 silme işlemi iptal edildi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>061</MSGNR>
+     <TEXT>&amp;1 nesneleri hala kilitli, silinemez</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>062</MSGNR>
+     <TEXT>&amp;1 bir başkasında açık, silinemez (&amp;2)</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>063</MSGNR>
+     <TEXT>Hatalı Client, &amp;1 silinemez</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>064</MSGNR>
+     <TEXT>Proje hala refere ediliyor, &amp;1 silinemez</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>065</MSGNR>
+     <TEXT>Sonradan gelenler Release edilmiş, &amp;1 silinemez</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>066</MSGNR>
+     <TEXT>&amp;1 silinemedi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>067</MSGNR>
+     <TEXT>&amp;1 boş alt görevleri elde edilemedi, o yüzden silinemeyecekler</TEXT>
     </T100>
     <T100>
      <SPRSL>T</SPRSL>
@@ -875,6 +965,81 @@
      <SPRSL>E</SPRSL>
      <MSGNR>052</MSGNR>
      <TEXT>Invalid column count!</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>053</MSGNR>
+     <TEXT>File access error, &amp;1 could not be deleted</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>054</MSGNR>
+     <TEXT>&amp;1 has been released, cannot be deleted</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>055</MSGNR>
+     <TEXT>C element exists within &amp;1, cannot be deleted</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>056</MSGNR>
+     <TEXT>Locked objects exist within &amp;1, cannot be deleted</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>057</MSGNR>
+     <TEXT>&amp;1 is being referenced, cannot be deleted</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>058</MSGNR>
+     <TEXT>&amp;1 requires repair, cannot be deleted</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>059</MSGNR>
+     <TEXT>&amp;1 does not belong to you, cannot be deleted</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>060</MSGNR>
+     <TEXT>Deletion of &amp;1 was canceled</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>061</MSGNR>
+     <TEXT>Objects of &amp;1 are still locked, cannot be deleted</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>062</MSGNR>
+     <TEXT>&amp;1 is being edited, cannot be deleted (&amp;2)</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>063</MSGNR>
+     <TEXT>Invalid client, &amp;1 cannot be deleted</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>064</MSGNR>
+     <TEXT>Project is still being referenced, &amp;1 cannot be deleted</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>065</MSGNR>
+     <TEXT>Successors have been released, &amp;1 cannot be deleted</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>066</MSGNR>
+     <TEXT>&amp;1 could not be deleted</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>067</MSGNR>
+     <TEXT>Empty subtasks under &amp;1 could not be retrieved, so they cannot be deleted</TEXT>
     </item>
     <item>
      <SPRSL>E</SPRSL>
