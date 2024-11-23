@@ -204,7 +204,7 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
                        trstep
                        trtime DESCENDING.
 
-    DELETE ADJACENT DUPLICATES FROM me->tpalog COMPARING trstep trstep.
+    DELETE ADJACENT DUPLICATES FROM me->tpalog COMPARING trkorr trstep.
 
     SORT me->tpalog BY trtime
                        trkorr
