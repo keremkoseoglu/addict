@@ -76,6 +76,7 @@ CLASS ycl_addict_transport_request DEFINITION
                  cpri TYPE e071-object VALUE 'CPRI',
                  cpro TYPE e071-object VALUE 'CPRO',
                  ddls TYPE e071-object VALUE 'DDLS',
+                 devc TYPE e071-object VALUE 'DEVC',
                  doma TYPE e071-object VALUE 'DOMA',
                  domd TYPE e071-object VALUE 'DOMD',
                  dted TYPE e071-object VALUE 'DTED',
