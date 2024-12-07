@@ -85,11 +85,11 @@ CLASS ycl_addict_class_inheritance IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Singleton design pattern
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    result = ycl_addict_class_inheritance=>singleton.
-
-    IF result IS INITIAL.
-      result = NEW #( ).
+    IF singleton IS INITIAL.
+      singleton = NEW #( ).
     ENDIF.
+
+    result = singleton.
   ENDMETHOD.
 
   METHOD get_instanceable_subclasses.
