@@ -122,6 +122,10 @@ CLASS ycl_addict_tpalog_reader DEFINITION
       IMPORTING trkorr     TYPE tpalog-trkorr
                 retcode    TYPE tpalog-retcode
       RETURNING VALUE(has) TYPE abap_bool.
+
+    METHODS read_e070_by_req_rng
+      IMPORTING trkorr_rng TYPE cts_organizer_tt_wd_request
+      CHANGING  trkorrs    TYPE trkorr_list.
 ENDCLASS.
 
 
@@ -276,9 +280,8 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
         ENDIF.
 
         IF me->trkorr_rng IS NOT INITIAL.
-          SELECT trkorr FROM e070
-                 WHERE trkorr IN @me->trkorr_rng
-                 APPENDING CORRESPONDING FIELDS OF TABLE @trkorr ##TOO_MANY_ITAB_FIELDS.
+          read_e070_by_req_rng( EXPORTING trkorr_rng = me->trkorr_rng
+                                CHANGING  trkorrs    = trkorr ).
         ENDIF.
 
         IF trkorr IS INITIAL.
@@ -410,5 +413,32 @@ CLASS ycl_addict_tpalog_reader IMPLEMENTATION.
       has = abap_true.
       RETURN.
     ENDLOOP.
+  ENDMETHOD.
+
+  METHOD read_e070_by_req_rng.
+    LOOP AT trkorr_rng TRANSPORTING NO FIELDS
+         WHERE NOT (     sign   = ycl_addict_toolkit=>sign-include
+                     AND option = ycl_addict_toolkit=>option-eq ).
+
+      DATA(is_complex_rng) = abap_true.
+      EXIT.
+    ENDLOOP.
+
+    CASE is_complex_rng.
+      WHEN abap_true.
+        ##TOO_MANY_ITAB_FIELDS
+        SELECT trkorr FROM e070
+               WHERE trkorr IN @trkorr_rng
+               APPENDING CORRESPONDING FIELDS OF TABLE @trkorrs.
+
+      WHEN abap_false.
+        CHECK trkorr_rng IS NOT INITIAL.
+
+        ##TOO_MANY_ITAB_FIELDS
+        SELECT trkorr FROM e070
+               FOR ALL ENTRIES IN @trkorr_rng
+               WHERE e070~trkorr = @trkorr_rng-low
+               APPENDING CORRESPONDING FIELDS OF TABLE @trkorrs.
+    ENDCASE.
   ENDMETHOD.
 ENDCLASS.
