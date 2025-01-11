@@ -1116,6 +1116,14 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                       obj_name = <e071>-obj_name )
              TO req.
     ENDLOOP.
+
+    " Flush """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    SORT req BY trkorr
+                pgmid
+                object
+                obj_name.
+
+    DELETE ADJACENT DUPLICATES FROM req COMPARING trkorr pgmid object obj_name.
   ENDMETHOD.
 
   METHOD get_request_and_objects.
