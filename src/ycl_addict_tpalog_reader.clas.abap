@@ -80,7 +80,7 @@ CLASS ycl_addict_tpalog_reader DEFINITION
 
            trkorr_list TYPE STANDARD TABLE OF trkorr_dict WITH DEFAULT KEY.
 
-    CONSTANTS trkorr_size TYPE i VALUE 10.
+    CONSTANTS trkorr_size TYPE i VALUE 20.
 
     CONSTANTS: BEGIN OF trstep,
                  main_import TYPE tpalog-trstep VALUE 'I',

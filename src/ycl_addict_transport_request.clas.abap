@@ -46,7 +46,6 @@ CLASS ycl_addict_transport_request DEFINITION
     TYPES: BEGIN OF request_and_object_dict,
              trkorr   TYPE e070-trkorr,
              as4text  TYPE e07t-as4text,
-             strkorr  TYPE e070-strkorr,
              pgmid    TYPE e071-pgmid,
              object   TYPE e071-object,
              obj_name TYPE e071-obj_name,
@@ -181,7 +180,6 @@ CLASS ycl_addict_transport_request DEFINITION
 
     CLASS-METHODS get_requests_containing_obj
       IMPORTING obj            TYPE ytt_addict_e071_obj_key
-                !top           TYPE abap_bool                 DEFAULT abap_true
                 holistic_cls   TYPE abap_bool                 DEFAULT abap_false
                 trfunction_rng TYPE ytt_addict_trfunction_rng OPTIONAL
       RETURNING VALUE(req)     TYPE request_and_object_list.
@@ -248,7 +246,6 @@ CLASS ycl_addict_transport_request DEFINITION
 
     METHODS get_obj_related_requests
       IMPORTING include_self   TYPE abap_bool                         DEFAULT abap_false
-                !top           TYPE abap_bool                         DEFAULT abap_true
                 object_rng     TYPE object_range                      OPTIONAL
                 obj_name_rng   TYPE obj_name_range                    OPTIONAL
                 holistic_cls   TYPE abap_bool                         DEFAULT abap_false
@@ -340,6 +337,10 @@ CLASS ycl_addict_transport_request DEFINITION
 
     TYPES abap_bool_list TYPE STANDARD TABLE OF abap_bool WITH EMPTY KEY.
     TYPES obj_name_list  TYPE STANDARD TABLE OF e071-obj_name WITH EMPTY KEY.
+
+    TYPES e07t_set       TYPE HASHED TABLE OF e07t
+                   WITH UNIQUE KEY primary_key COMPONENTS trkorr langu
+                   WITH NON-UNIQUE SORTED KEY k1 COMPONENTS trkorr.
 
     TYPES: BEGIN OF multiton_dict,
              trkorr TYPE trkorr,
@@ -828,7 +829,6 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     " Returns modified objects within the request
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     DATA(req) = get_requests_containing_obj( obj          = obj
-                                             top          = abap_true
                                              holistic_cls = abap_true ).
 
     DELETE req WHERE trkorr+0(3) <> sy-sysid.
@@ -898,7 +898,6 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                                  devclass_rng = devclass_rng ).
 
     list = get_requests_containing_obj( obj            = CORRESPONDING #( objects )
-                                        top            = top
                                         holistic_cls   = holistic_cls
                                         trfunction_rng = trfunction_rng ).
 
@@ -910,16 +909,12 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
         DATA(head) = get_header( ).
 
         DELETE list WHERE    trkorr = head-trkorr
-                          OR trkorr = head-strkorr
-                          OR (     strkorr IS NOT INITIAL
-                               AND (    strkorr = head-trkorr
-                                     OR strkorr = head-strkorr ) ).
+                          OR trkorr = head-strkorr.
 
         IF head-strkorr IS NOT INITIAL.
           DATA(shead) = get_instance( head-strkorr )->get_header( ).
 
-          DELETE list WHERE    trkorr  = shead-trkorr
-                            OR strkorr = shead-trkorr.
+          DELETE list WHERE trkorr = shead-trkorr.
         ENDIF.
 
       CATCH cx_root ##NO_HANDLER.
@@ -972,7 +967,6 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns a list of requests which contain the provided objects
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
     DATA obj_name_tmp TYPE obj_name_list.
     DATA obj_name_rng TYPE RANGE OF e071-obj_name.
 
@@ -1029,47 +1023,99 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
       ENDIF.
     ENDIF.
 
-    " Build a list of found requests """"""""""""""""""""""""""""""""
+    " Delete duplicates """""""""""""""""""""""""""""""""""""""""""""
     SORT e071 BY trkorr
                  pgmid
                  object
                  obj_name.
     DELETE ADJACENT DUPLICATES FROM e071 COMPARING trkorr pgmid object obj_name.
 
-    LOOP AT e071 ASSIGNING FIELD-SYMBOL(<e071>).
+    CHECK e071 IS NOT INITIAL.
 
-      TRY.
-          DATA(found_request) = get_instance( trkorr = <e071>-trkorr
-                                              top    = top ).
+    " Read request master """""""""""""""""""""""""""""""""""""""""""
+    DATA(unique_trkorrs) = VALUE tms_trkorrs( FOR GROUPS _trk OF _e IN e071
+                                              WHERE ( trkorr IS NOT INITIAL )
+                                              GROUP BY _e-trkorr
+                                              ( trkorr = _trk ) ).
 
-          DATA(head) = found_request->get_header( ).
+    IF unique_trkorrs IS NOT INITIAL.
+      SELECT e1~trkorr,
+             e1~strkorr,
+             e1~trfunction AS tr_func,
+             e2~trfunction AS str_func
+             FROM e070                 AS e1
+                  LEFT OUTER JOIN e070 AS e2
+                    ON e2~trkorr = e1~strkorr
+             FOR ALL ENTRIES IN @unique_trkorrs
+             WHERE e1~trkorr = @unique_trkorrs-trkorr
+             INTO TABLE @DATA(req_headers).
 
-          APPEND VALUE #( trkorr   = head-trkorr
-                          as4text  = found_request->get_text( )
-                          strkorr  = head-strkorr
-                          pgmid    = <e071>-pgmid
-                          object   = <e071>-object
-                          obj_name = <e071>-obj_name )
-                 TO req.
+      SORT req_headers BY trkorr.
+    ENDIF.
 
-        CATCH cx_root ##NO_HANDLER.
-      ENDTRY.
-    ENDLOOP.
+    CHECK req_headers IS NOT INITIAL. " Paranoia
 
     " Filter by request type if wanted """"""""""""""""""""""""""""""
     IF trfunction_rng IS NOT INITIAL.
-      LOOP AT req ASSIGNING FIELD-SYMBOL(<req>).
-        TRY.
-            CHECK get_instance( trkorr = <req>-trkorr
-                                top    = abap_true
-                              )->get_header( )-trfunction NOT IN trfunction_rng.
-            DELETE req.
-            CONTINUE.
+      LOOP AT req_headers REFERENCE INTO DATA(req_header).
+        IF req_header->str_func IS NOT INITIAL.
+          CHECK req_header->str_func NOT IN trfunction_rng.
+        ELSE.
+          CHECK req_header->tr_func NOT IN trfunction_rng.
+        ENDIF.
 
-          CATCH cx_root ##NO_HANDLER.
-        ENDTRY.
+        DELETE req_headers.
+        CONTINUE.
       ENDLOOP.
     ENDIF.
+
+    CHECK req_headers IS NOT INITIAL.
+
+    " Read request texts """"""""""""""""""""""""""""""""""""""""""""
+    DATA(req_texts) = VALUE e07t_set( ).
+
+    IF req_headers IS NOT INITIAL.
+      ##ITAB_KEY_IN_SELECT
+      SELECT e07t~trkorr, e07t~langu, e07t~as4text
+             FROM e07t
+             FOR ALL ENTRIES IN @req_headers
+             WHERE e07t~trkorr = @req_headers-trkorr
+             INTO CORRESPONDING FIELDS OF TABLE @req_texts.
+    ENDIF.
+
+    " Build a list of found requests """"""""""""""""""""""""""""""""
+    LOOP AT e071 ASSIGNING FIELD-SYMBOL(<e071>).
+      READ TABLE req_headers ASSIGNING FIELD-SYMBOL(<req_header>)
+           WITH KEY trkorr = <e071>-trkorr
+           BINARY SEARCH.
+
+      CHECK sy-subrc = 0.
+
+      DATA(top_trkorr) = COND trkorr( WHEN <req_header>-strkorr IS NOT INITIAL
+                                      THEN <req_header>-strkorr
+                                      ELSE <req_header>-trkorr ).
+
+      ASSIGN req_texts[ KEY primary_key
+                        trkorr = top_trkorr
+                        langu  = sy-langu ] TO FIELD-SYMBOL(<req_text>).
+
+      IF sy-subrc <> 0.
+        ASSIGN req_texts[ KEY k1 COMPONENTS trkorr = top_trkorr ] TO <req_text>.
+
+        IF sy-subrc <> 0.
+          UNASSIGN <req_text>.
+        ENDIF.
+      ENDIF.
+
+      APPEND VALUE #( trkorr   = top_trkorr
+                      as4text  = COND #( WHEN <req_text> IS ASSIGNED
+                                         THEN <req_text>-as4text
+                                         ELSE space )
+                      pgmid    = <e071>-pgmid
+                      object   = <e071>-object
+                      obj_name = <e071>-obj_name )
+             TO req.
+    ENDLOOP.
   ENDMETHOD.
 
   METHOD get_request_and_objects.
@@ -1607,8 +1653,8 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     SORT wait_success BY table_line.
     DELETE ADJACENT DUPLICATES FROM wait_success COMPARING table_line.
 
-    rel_wait_success = xsdbool(           wait_until_released  = abap_true
-                                AND       wait_success        IS NOT INITIAL
+    rel_wait_success = xsdbool(     wait_until_released  = abap_true
+                                AND wait_success        IS NOT INITIAL
                                 AND
                                     ( NOT line_exists( wait_success[ table_line = abap_false ] ) ) ).
   ENDMETHOD.
