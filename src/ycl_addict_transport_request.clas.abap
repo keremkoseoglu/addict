@@ -203,6 +203,10 @@ CLASS ycl_addict_transport_request DEFINITION
       IMPORTING trkorr        TYPE e070-trkorr
       RETURNING VALUE(result) TYPE abap_bool.
 
+    CLASS-METHODS parentify_tadir_key
+      IMPORTING tadir_key     TYPE ycl_addict_package=>tadir_key_dict
+      RETURNING VALUE(result) TYPE ycl_addict_package=>tadir_key_dict.
+
     METHODS add_objects
       IMPORTING obj               TYPE ytt_addict_e071_obj_key
                 sort_and_compress TYPE abap_bool DEFAULT abap_false
@@ -274,6 +278,18 @@ CLASS ycl_addict_transport_request DEFINITION
     METHODS has_merge
       RETURNING VALUE(has) TYPE abap_bool
       RAISING   ycx_addict_data_read.
+
+    METHODS has_object
+      IMPORTING obj           TYPE ycl_addict_package=>tadir_key_dict
+      RETURNING VALUE(result) TYPE abap_bool
+      RAISING   ycx_addict_function_subrc
+                ycx_addict_table_content.
+
+    METHODS has_object_parent
+      IMPORTING obj           TYPE ycl_addict_package=>tadir_key_dict
+      RETURNING VALUE(result) TYPE abap_bool
+      RAISING   ycx_addict_function_subrc
+                ycx_addict_table_content.
 
     METHODS is_empty
       RETURNING VALUE(empty) TYPE abap_bool
@@ -1263,6 +1279,7 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                                                      sign   = ycl_addict_toolkit=>sign-include
                                                      low    = yif_addict_dol_obj=>pgmid-r3tr ) ) ).
 
+    ##TOO_MANY_ITAB_FIELDS
     SELECT DISTINCT e071~trkorr, e071~pgmid, e071~object, e071~obj_name, e07t~as4text
            FROM e071
                 LEFT JOIN e07t
@@ -1271,44 +1288,35 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
            WHERE e071~trkorr IN @trkorr
              AND e071~pgmid  IN @active_pgmid_rng
            ORDER BY e071~pgmid, e071~object, e071~obj_name
-           INTO CORRESPONDING FIELDS OF TABLE @list_wr
-           ##TOO_MANY_ITAB_FIELDS.
+           INTO CORRESPONDING FIELDS OF TABLE @list_wr.
 
     DELETE ADJACENT DUPLICATES FROM list_wr COMPARING trkorr pgmid object obj_name.
 
     " Correct object names """"""""""""""""""""""""""""""""""""""""""
     LOOP AT list_wr ASSIGNING FIELD-SYMBOL(<list>).
-      IF is_obj_type_class_related( CORRESPONDING #( <list> ) ).
-        DATA(main_pgmid)    = ycl_addict_transport_request=>pgmid-r3tr.
-        DATA(main_object)   = ycl_addict_transport_request=>object-clas.
-        DATA(main_obj_name) = CONV yd_addict_dol_obj_name( <list>-obj_name+0(30) ).
-      ELSE.
-        main_pgmid    = <list>-pgmid.
-        main_object   = <list>-object.
-        main_obj_name = <list>-obj_name.
-      ENDIF.
+      DATA(main_tadir_key) = parentify_tadir_key( CORRESPONDING #( <list> ) ).
 
       TRY.
-          ycl_addict_dol_model=>get_dol_obj( EXPORTING object = main_object
+          ycl_addict_dol_model=>get_dol_obj( EXPORTING object = main_tadir_key-object
                                              IMPORTING dol    = DATA(dol) ).
         CATCH cx_root.
           CONTINUE.
       ENDTRY.
 
-      IF include_deleted = abap_false AND dol->is_deleted( pgmid    = main_pgmid
-                                                           object   = main_object
-                                                           obj_name = main_obj_name ).
+      IF include_deleted = abap_false AND dol->is_deleted( pgmid    = main_tadir_key-pgmid
+                                                           object   = main_tadir_key-object
+                                                           obj_name = main_tadir_key-obj_name ).
 
         DELETE list_wr.
         CONTINUE.
       ENDIF.
 
-      <list>-object_txt = dol->get_object_txt( pgmid  = main_pgmid
-                                               object = main_object ).
+      <list>-object_txt = dol->get_object_txt( pgmid  = main_tadir_key-pgmid
+                                               object = main_tadir_key-object ).
 
-      <list>-ddtext     = dol->get_ddtext( pgmid    = main_pgmid
-                                           object   = main_object
-                                           obj_name = main_obj_name ).
+      <list>-ddtext     = dol->get_ddtext( pgmid    = main_tadir_key-pgmid
+                                           object   = main_tadir_key-object
+                                           obj_name = main_tadir_key-obj_name ).
     ENDLOOP.
 
     list = CORRESPONDING #( list_wr ).
@@ -1476,13 +1484,10 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Does the Request contain a locked object?
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    SELECT SINGLE lockflag FROM e071
+    SELECT SINGLE @abap_true FROM e071
            WHERE trkorr   = @me->trkorr
              AND lockflag = @abap_true
-           " TODO: variable is assigned but never used (ABAP cleaner)
-           INTO @DATA(dummy) ##WARN_OK.
-
-    has = xsdbool( sy-subrc = 0 ).
+           INTO @has.
   ENDMETHOD.
 
   METHOD has_merge.
@@ -1501,6 +1506,26 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
                                                   objectid  = CONV #( me->trkorr )
                                                   data_type = CONV #( TEXT-407 ) ).
     ENDTRY.
+  ENDMETHOD.
+
+  METHOD has_object.
+    DATA(objects) = get_objects( ).
+
+    result = xsdbool( line_exists( objects[ pgmid    = obj-pgmid
+                                            object   = obj-object
+                                            obj_name = obj-obj_name ] ) ).
+  ENDMETHOD.
+
+  METHOD has_object_parent.
+    DATA(obj_parent)  = parentify_tadir_key( obj ).
+
+    DATA(req_objects) = get_objects( ).
+
+    LOOP AT req_objects REFERENCE INTO DATA(req_object).
+      CHECK parentify_tadir_key( CORRESPONDING #( req_object->* ) ) = obj_parent.
+      result = abap_true.
+      RETURN.
+    ENDLOOP.
   ENDMETHOD.
 
   METHOD is_empty.
@@ -1562,6 +1587,15 @@ CLASS ycl_addict_transport_request IMPLEMENTATION.
   METHOD is_request_external.
     " Is the given request external? """"""""""""""""""""""""""""""""
     result = xsdbool( trkorr+0(3) <> sy-sysid ).
+  ENDMETHOD.
+
+  METHOD parentify_tadir_key.
+    result = SWITCH #( is_obj_type_class_related( CORRESPONDING #( tadir_key ) )
+                       WHEN abap_true
+                       THEN VALUE #( pgmid    = ycl_addict_transport_request=>pgmid-r3tr
+                                     object   = ycl_addict_transport_request=>object-clas
+                                     obj_name = CONV yd_addict_dol_obj_name( tadir_key-obj_name+0(30) ) )
+                       ELSE tadir_key ).
   ENDMETHOD.
 
   METHOD is_toc_safe.
