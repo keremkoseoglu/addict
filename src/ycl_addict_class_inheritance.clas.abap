@@ -69,7 +69,7 @@ CLASS ycl_addict_class_inheritance IMPLEMENTATION.
 
     IF cache->immediate_subclasses_read = abap_false.
       SELECT clsname FROM seometarel                    "#EC CI_GENBUFF
-             WHERE       refclsname = @cache->clsname    "#EC CI_BUFFSUBQ
+             WHERE refclsname = @cache->clsname    "#EC CI_BUFFSUBQ
                AND ( NOT EXISTS ( SELECT clsname FROM ytaddict_class
                                          WHERE clsname         = seometarel~clsname
                                            AND disable_inherit = @abap_true ) )
@@ -120,8 +120,8 @@ CLASS ycl_addict_class_inheritance IMPLEMENTATION.
              ORDER BY clsname
              INTO TABLE @DATA(abstracts).               "#EC CI_BUFFSUBQ
 
-      SELECT clsname FROM seoclass
-             WHERE clsname IN @clsname_rng
+      SELECT clsname FROM seoclass "#EC CI_BYPASS
+             WHERE clsname IN @clsname_rng "#EC CI_GENBUFF
                AND clstype  = @ycl_addict_class=>class_type-interface
              ORDER BY clsname
              INTO TABLE @DATA(interfaces).
