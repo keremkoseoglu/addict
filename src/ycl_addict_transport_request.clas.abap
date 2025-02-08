@@ -104,6 +104,7 @@ CLASS ycl_addict_transport_request DEFINITION
                  toc       TYPE trfunction VALUE 'T',
                  unclass   TYPE trfunction VALUE 'X',
                  wb        TYPE trfunction VALUE 'K',
+                 repair    TYPE trfunction VALUE 'R',
                END OF trfunction.
 
     CONSTANTS: BEGIN OF trstatus,
