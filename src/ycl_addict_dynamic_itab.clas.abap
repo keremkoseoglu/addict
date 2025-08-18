@@ -272,8 +272,8 @@ CLASS ycl_addict_dynamic_itab IMPLEMENTATION.
         RETURN.
     ENDTRY.
 
-    fcat_entry->seltext_l =
-    fcat_entry->seltext_m =
+    fcat_entry->seltext_l = text.
+    fcat_entry->seltext_m = text.
     fcat_entry->seltext_s = text.
   ENDMETHOD.
 
