@@ -89,6 +89,18 @@
     <T100>
      <SPRSL>T</SPRSL>
      <ARBGB>YADDICT</ARBGB>
+     <MSGNR>013</MSGNR>
+     <TEXT>&amp;1 kullanıcısı sistemde mevcut değil</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
+     <MSGNR>014</MSGNR>
+     <TEXT>&amp;1 kullanıcısı var, ancak etkin değil</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YADDICT</ARBGB>
      <MSGNR>017</MSGNR>
      <TEXT>Entegrasyon verileri okunamadı</TEXT>
     </T100>
@@ -810,6 +822,16 @@
      <SPRSL>E</SPRSL>
      <MSGNR>012</MSGNR>
      <TEXT>&amp;1 must be imported to &amp;2 manually</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>013</MSGNR>
+     <TEXT>User &amp;1 not found in system</TEXT>
+    </item>
+    <item>
+     <SPRSL>E</SPRSL>
+     <MSGNR>014</MSGNR>
+     <TEXT>User &amp;1 exists, but is not active</TEXT>
     </item>
     <item>
      <SPRSL>E</SPRSL>
