@@ -1,7 +1,6 @@
 CLASS ycl_addict_data_element DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PRIVATE .
+  PUBLIC FINAL
+  CREATE PRIVATE.
 
   PUBLIC SECTION.
     CONSTANTS: BEGIN OF class,
@@ -12,16 +11,19 @@ CLASS ycl_addict_data_element DEFINITION
     DATA txt TYPE dd04t READ-ONLY.
 
     CLASS-METHODS get_instance
-      IMPORTING !rollname     TYPE rollname
+      IMPORTING rollname      TYPE rollname
+                langu         TYPE sylangu DEFAULT sy-langu
       RETURNING VALUE(output) TYPE REF TO ycl_addict_data_element
       RAISING   ycx_addict_table_content.
 
     CLASS-METHODS get_shortest_text_safe
-      IMPORTING !rollname   TYPE rollname
+      IMPORTING rollname    TYPE rollname
+                langu       TYPE sylangu DEFAULT sy-langu
       RETURNING VALUE(text) TYPE ddtext.
 
     CLASS-METHODS get_text_safe
-      IMPORTING !rollname   TYPE rollname
+      IMPORTING rollname    TYPE rollname
+                langu       TYPE sylangu DEFAULT sy-langu
       RETURNING VALUE(text) TYPE ddtext.
 
     METHODS get_domain
@@ -29,19 +31,18 @@ CLASS ycl_addict_data_element DEFINITION
       RAISING   ycx_addict_table_content.
 
     METHODS get_shortest_text
-      IMPORTING !worst_case_rollname TYPE abap_bool DEFAULT abap_true
-      RETURNING VALUE(text)          TYPE ddtext.
+      IMPORTING worst_case_rollname TYPE abap_bool DEFAULT abap_true
+      RETURNING VALUE(text)         TYPE ddtext.
 
     METHODS get_text
-      IMPORTING !worst_case_rollname TYPE abap_bool DEFAULT abap_true
-      RETURNING VALUE(text)          TYPE ddtext.
+      IMPORTING worst_case_rollname TYPE abap_bool DEFAULT abap_true
+      RETURNING VALUE(text)         TYPE ddtext.
 
     METHODS validate_value
       IMPORTING !value TYPE val_single
       RAISING   ycx_addict_domain
                 ycx_addict_table_content.
 
-  PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF lazy_flg_dict,
              shortest_text TYPE abap_bool,
@@ -58,11 +59,12 @@ CLASS ycl_addict_data_element DEFINITION
 
     TYPES: BEGIN OF multiton_dict,
              rollname TYPE rollname,
+             langu    TYPE sylangu,
              obj      TYPE REF TO ycl_addict_data_element,
            END OF multiton_dict,
 
            multiton_set TYPE HASHED TABLE OF multiton_dict
-                        WITH UNIQUE KEY primary_key COMPONENTS rollname.
+                        WITH UNIQUE KEY primary_key COMPONENTS rollname langu.
 
     CONSTANTS: BEGIN OF table,
                  main TYPE tabname VALUE 'DD04L',
@@ -70,18 +72,17 @@ CLASS ycl_addict_data_element DEFINITION
 
     CLASS-DATA multitons TYPE multiton_set.
 
-    DATA lazy TYPE lazy_dict.
+    DATA: lazy  TYPE lazy_dict,
+          langu TYPE sylangu.
 
     METHODS constructor
-      IMPORTING !rollname TYPE rollname
+      IMPORTING rollname TYPE rollname
+                langu    TYPE sylangu
       RAISING   ycx_addict_table_content.
 ENDCLASS.
 
 
-
-CLASS YCL_ADDICT_DATA_ELEMENT IMPLEMENTATION.
-
-
+CLASS ycl_addict_data_element IMPLEMENTATION.
   METHOD constructor.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Object creation
@@ -92,16 +93,14 @@ CLASS YCL_ADDICT_DATA_ELEMENT IMPLEMENTATION.
            INTO @me->def ##WARN_OK.
 
     IF sy-subrc <> 0.
-      RAISE EXCEPTION TYPE ycx_addict_table_content
-        EXPORTING
-          textid   = ycx_addict_table_content=>no_entry_for_objectid
-          objectid = CONV #( rollname )
-          tabname  = me->table-main.
+      RAISE EXCEPTION NEW ycx_addict_table_content( textid   = ycx_addict_table_content=>no_entry_for_objectid
+                                                    objectid = CONV #( rollname )
+                                                    tabname  = me->table-main ).
     ENDIF.
 
     SELECT SINGLE * FROM dd04t                          "#EC CI_NOORDER
-           WHERE rollname   = @rollname AND
-                 ddlanguage = @sy-langu
+           WHERE rollname   = @rollname
+             AND ddlanguage = @langu
            INTO @me->txt ##WARN_OK.
 
     IF sy-subrc <> 0.
@@ -109,8 +108,9 @@ CLASS YCL_ADDICT_DATA_ELEMENT IMPLEMENTATION.
              WHERE rollname = @rollname
              INTO @me->txt ##WARN_OK.
     ENDIF.
-  ENDMETHOD.
 
+    me->langu = langu.
+  ENDMETHOD.
 
   METHOD get_domain.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -119,20 +119,20 @@ CLASS YCL_ADDICT_DATA_ELEMENT IMPLEMENTATION.
     domain = ycl_addict_domain=>get_instance( me->def-domname ).
   ENDMETHOD.
 
-
   METHOD get_instance.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns a new instance
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    ASSIGN ycl_addict_data_element=>multitons[
-             KEY primary_key COMPONENTS
-             rollname = rollname
-          ] TO FIELD-SYMBOL(<multiton>).
+    ASSIGN ycl_addict_data_element=>multitons[ KEY primary_key
+                                               rollname = rollname
+                                               langu    = langu ]
+           TO FIELD-SYMBOL(<multiton>).
 
     IF sy-subrc <> 0.
-      DATA(multiton) = VALUE multiton_dict(
-          rollname = rollname
-          obj      = NEW #( rollname ) ).
+      DATA(multiton) = VALUE multiton_dict( rollname = rollname
+                                            langu    = langu
+                                            obj      = NEW #( rollname = rollname
+                                                              langu    = langu ) ).
 
       INSERT multiton INTO TABLE ycl_addict_data_element=>multitons
              ASSIGNING <multiton>.
@@ -141,7 +141,6 @@ CLASS YCL_ADDICT_DATA_ELEMENT IMPLEMENTATION.
     output = <multiton>-obj.
   ENDMETHOD.
 
-
   METHOD get_shortest_text.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns shortest text of data element
@@ -149,11 +148,11 @@ CLASS YCL_ADDICT_DATA_ELEMENT IMPLEMENTATION.
     IF me->lazy-flg-shortest_text = abap_false.
 
       me->lazy-val-shortest_text = ycl_addict_text_toolkit=>get_shortest_text(
-        VALUE #( ( CONV #( me->txt-ddtext ) )
-                 ( CONV #( me->txt-reptext ) )
-                 ( CONV #( me->txt-scrtext_l ) )
-                 ( CONV #( me->txt-scrtext_m ) )
-                 ( CONV #( me->txt-scrtext_s ) ) ) ).
+                                       VALUE #( ( CONV #( me->txt-ddtext ) )
+                                                ( CONV #( me->txt-reptext ) )
+                                                ( CONV #( me->txt-scrtext_l ) )
+                                                ( CONV #( me->txt-scrtext_m ) )
+                                                ( CONV #( me->txt-scrtext_s ) ) ) ).
 
       me->lazy-flg-shortest_text = abap_true.
     ENDIF.
@@ -167,45 +166,46 @@ CLASS YCL_ADDICT_DATA_ELEMENT IMPLEMENTATION.
           ELSE space ) ).
   ENDMETHOD.
 
-
   METHOD get_shortest_text_safe.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns shortext text without raising an exception
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     TRY.
-        text = ycl_addict_data_element=>get_instance( rollname )->get_shortest_text( ).
+        text = ycl_addict_data_element=>get_instance( rollname = rollname
+                                                      langu    = langu
+               )->get_shortest_text( ).
+
       CATCH cx_root.
         text = rollname.
     ENDTRY.
-
   ENDMETHOD.
-
 
   METHOD get_text.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns data element text
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     text = COND #(
-        WHEN me->txt-ddtext    IS NOT INITIAL THEN me->txt-ddtext
-        WHEN me->txt-reptext   IS NOT INITIAL THEN me->txt-reptext
+        WHEN me->txt-ddtext IS NOT INITIAL    THEN me->txt-ddtext
+        WHEN me->txt-reptext IS NOT INITIAL   THEN me->txt-reptext
         WHEN me->txt-scrtext_l IS NOT INITIAL THEN me->txt-scrtext_l
         WHEN me->txt-scrtext_m IS NOT INITIAL THEN me->txt-scrtext_m
         WHEN me->txt-scrtext_s IS NOT INITIAL THEN me->txt-scrtext_s
         WHEN worst_case_rollname = abap_true  THEN me->def-rollname ).
   ENDMETHOD.
 
-
   METHOD get_text_safe.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Returns text without raising an exception
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     TRY.
-        text = ycl_addict_data_element=>get_instance( rollname )->get_text( ).
+        text = ycl_addict_data_element=>get_instance( rollname = rollname
+                                                      langu    = langu
+               )->get_text( ).
+
       CATCH cx_root.
         text = rollname.
     ENDTRY.
   ENDMETHOD.
-
 
   METHOD validate_value.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
